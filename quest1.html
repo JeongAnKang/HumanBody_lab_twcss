@@ -5,60 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quest 1: 영양소 탐험</title>
     
-    <!-- 메인 디자인 CSS 연결 -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- ✅ Tailwind CSS 라이브러리 추가 -->
+    <!-- Tailwind CSS 스크립트 추가 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 꽃가루 효과(Confetti) 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* =========================================
-           Mission 1: 오개념 점검 전용 스타일
-        ========================================= */
-        .comic-area {
-            display: flex; flex-direction: column; align-items: center;
-            background: rgba(255, 255, 255, 0.8); border-radius: 24px;
-            padding: 30px; box-shadow: var(--shadow-soft); margin-bottom: 20px;
-        }
+        .comic-area { display: flex; flex-direction: column; align-items: center; background: rgba(255, 255, 255, 0.8); border-radius: 24px; padding: 30px; box-shadow: var(--shadow-soft); margin-bottom: 20px; }
         .comic-img { max-width: 100%; height: auto; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .student-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         
-        .btn-student {
-            background-color: white; border: 3px solid var(--color-coral-light); color: var(--text-main);
-            padding: 12px 24px; border-radius: 20px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+        .btn-student { background-color: white; border: 3px solid var(--color-coral-light); color: var(--text-main); padding: 12px 24px; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .btn-student:hover { border-color: var(--color-coral); transform: translateY(-2px); }
         .btn-student.checked { background-color: #EAE3E3; border-color: #ccc; color: #888; }
 
-        .quiz-area {
-            max-height: 0; overflow: hidden; opacity: 0;
-            transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
-            background: white; border-radius: 24px; box-shadow: var(--shadow-soft);
-            display: flex; flex-direction: column; align-items: center;
-        }
+        .quiz-area { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s; background: white; border-radius: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; align-items: center; }
         .quiz-area.visible { max-height: 1200px; opacity: 1; padding: 30px; margin-top: 20px; overflow-y: auto;}
 
         .quiz-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; width: 100%; max-width: 500px; }
         .input-group { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 10px 15px; border-radius: 12px; }
         .hint { font-weight: 800; color: var(--color-coral); width: 60px; text-align: center; }
-        .nutrient-input {
-            flex: 1; border: 2px solid #ddd; border-radius: 8px; padding: 8px;
-            font-size: 1rem; font-weight: bold; text-align: center; outline: none; transition: border-color 0.2s;
-        }
+        .nutrient-input { flex: 1; border: 2px solid #ddd; border-radius: 8px; padding: 8px; font-size: 1rem; font-weight: bold; text-align: center; outline: none; transition: border-color 0.2s; }
         .nutrient-input:focus { border-color: var(--color-mint); }
         .nutrient-input.error { border-color: var(--color-error, #FF6B6B); animation: shake 0.3s; }
 
-        /* 모달 공통 스타일 */
-        #explanation-modal, #help-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
+        #explanation-modal, #help-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         #explanation-modal.visible, #help-modal.visible { opacity: 1; pointer-events: auto; }
         .modal-box { background: white; width: 80%; max-width: 500px; border-radius: 24px; padding: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .modal-icon { font-size: 4rem; color: #FF6B6B; margin-bottom: 10px; }
@@ -70,11 +42,7 @@
 
         #btn-next-mission { display: none; margin-top: 20px; animation: pulseBounce 1s infinite; }
 
-        /* =========================================
-           Mission 2: 분류 게임 전용 스타일
-        ========================================= */
         #m2-card-area { transition: opacity 0.4s ease-out; }
-        
         .stack-area { flex: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border-radius: 24px; box-shadow: var(--shadow-soft); padding: 20px; position: relative;}
         .deck { width: 150px; height: 220px; background: linear-gradient(135deg, var(--color-coral), #FF9F1C); border-radius: 16px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; text-align: center; }
         .deck:active { transform: scale(0.95); }
@@ -114,38 +82,20 @@
         .btn-close { background: var(--color-mint); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
         .btn-close:active { transform: scale(0.95); }
 
-        /* =========================================
-           M2 드래그앤드롭 뱃지 무한 생성 전용 스타일 
-        ========================================= */
-        .badge-pool {
-            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-            background: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 16px;
-            border: 2px dashed var(--color-coral-light); min-height: 80px; margin-bottom: 25px;
-            width: 100%; max-width: 550px; transition: background-color 0.2s;
-        }
+        .badge-pool { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; background: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 16px; border: 2px dashed var(--color-coral-light); min-height: 80px; margin-bottom: 25px; width: 100%; max-width: 550px; transition: background-color 0.2s; }
         .badge-pool.dnd-over { background: rgba(130, 209, 217, 0.1); border-color: var(--color-mint); }
         
-        .nutrient-badge {
-            background-color: white; border: 2px solid var(--color-coral-light); color: var(--text-main);
-            padding: 8px 18px; border-radius: 20px; font-size: 1rem; font-weight: bold;
-            cursor: grab; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            user-select: none; touch-action: none;
-        }
+        .nutrient-badge { background-color: white; border: 2px solid var(--color-coral-light); color: var(--text-main); padding: 8px 18px; border-radius: 20px; font-size: 1rem; font-weight: bold; cursor: grab; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); user-select: none; touch-action: none; }
         .nutrient-badge:active { cursor: grabbing; transform: scale(0.95); }
         .nutrient-badge.dnd-selected { border-color: var(--color-mint); box-shadow: 0 0 15px rgba(130, 209, 217, 0.6); transform: scale(1.05); }
         .nutrient-badge.dnd-locked { cursor: default; pointer-events: none; border-color: #ddd; background: #f9f9f9; color: #aaa; box-shadow: none; }
         
-        .answer-slot {
-            width: 105px; height: 44px; border: 2px dashed #ccc; border-radius: 22px;
-            background-color: #FAFAFA; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; box-sizing: border-box;
-        }
+        .answer-slot { width: 105px; height: 44px; border: 2px dashed #ccc; border-radius: 22px; background-color: #FAFAFA; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-sizing: border-box; }
         .answer-slot.dnd-over { border-color: var(--color-coral); background-color: rgba(255, 143, 171, 0.1); transform: scale(1.05); }
         .answer-slot.drop-success { border-color: var(--color-mint); background-color: #EFFFFD; }
         .answer-slot.error { border-color: var(--color-error); background-color: rgba(255,107,107,0.1); animation: shake 0.3s; }
         .answer-slot .nutrient-badge { margin: 0; box-shadow: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: none; }
 
-        /* 공통 애니메이션 */
         @keyframes pulseBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes float-card { 0%, 100% { transform: translateY(-10px) scale(1.05); } 50% { transform: translateY(-20px) scale(1.05); } }
@@ -167,13 +117,10 @@
         </div>
     </header>
 
-    <!-- ✅ Tailwind 기반 Grid 구조 적용 (기본 1열, lg이상 4열) -->
+    <!-- Tailwind 기반 Grid 구조 적용 (기본 1열, lg이상 4열) -->
     <main class="quest-layout grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        <!-- =========================================
-             MISSION 1 SECTION : 오개념 확인 
-             ========================================= -->
-        <!-- ✅ lg 화면에서 3칸 차지 (col-span-3), 기존 flex: 3 제거 -->
+        <!-- 미션 영역: lg 화면에서 3칸 차지 -->
         <section id="mission1-section" class="card lg:col-span-3" style="overflow-y: auto; display: block;">
             
             <div class="comic-area">
@@ -218,16 +165,11 @@
             </div>
         </section>
 
-        <!-- =========================================
-             MISSION 2 SECTION : 드래그 앤 드롭 
-             ========================================= -->
-        <!-- ✅ lg 화면에서 3칸 차지 (col-span-3), 기존 flex: 3 제거 -->
+        <!-- 미션 영역 2: lg 화면에서 3칸 차지 -->
         <section id="mission2-section" class="card lg:col-span-3" style="display: none; flex-direction: column; overflow-y: auto;">
             
-            <!-- 카드 숨김/보기 토글 버튼 (완료 시 등장) -->
             <button id="btn-toggle-m2-cards" class="btn-ghost" style="display: none; margin: 0 auto 20px; align-self: center;" onclick="toggleM2Cards()">카드 분류 다시 보기 🔄</button>
 
-            <!-- 상단 분류 게임 영역 (완료 시 숨겨짐) -->
             <div id="m2-card-area" style="display: flex; gap: 20px; width: 100%; min-height: 400px; margin-bottom: 20px;">
                 <div class="stack-area">
                     <div id="deck" class="deck">카드 뽑기<br><span id="deck-count" style="font-size:1rem; margin-top:5px; font-weight:normal;"></span></div>
@@ -236,12 +178,10 @@
                 <div class="baskets-area" id="baskets-container"></div>
             </div>
 
-            <!-- 하단 뱃지 퀴즈 영역 -->
             <div id="m2-quiz-area" class="quiz-area" style="width: 100%;">
                 <h2 style="color: var(--color-mint); margin-bottom: 10px;">🎉 모두 분류되었습니다!</h2>
                 <p style="color: var(--text-sub); font-weight: bold; margin-bottom: 20px;">아래 뱃지를 탭하거나 드래그하여 빈칸을 알맞게 채워보세요.</p>
                 
-                <!-- 영양소 뱃지 풀 -->
                 <div id="badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="20">
                     <div class="nutrient-badge dnd-item" data-nutrient="탄수화물">탄수화물</div>
                     <div class="nutrient-badge dnd-item" data-nutrient="단백질">단백질</div>
@@ -251,7 +191,6 @@
                     <div class="nutrient-badge dnd-item" data-nutrient="물">물</div>
                 </div>
 
-                <!-- Q1. 에너지원 3가지 -->
                 <div style="width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
                     <p style="font-weight: bold; color: var(--text-main); margin-bottom: 15px; text-align: center;">
                         <span style="color: var(--color-mint); font-size: 1.2rem;">Q1.</span> 에너지원으로 이용되는 영양소 3가지를 순서 상관없이 채워보세요.
@@ -263,7 +202,6 @@
                     </div>
                 </div>
 
-                <!-- Q2. 구성성분 4가지 -->
                 <div style="width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; border-top: 2px dashed #eee; padding-top: 25px; margin-bottom: 20px;">
                     <p style="font-weight: bold; color: var(--text-main); margin-bottom: 15px; text-align: center;">
                         <span style="color: var(--color-mint); font-size: 1.2rem;">Q2.</span> 몸의 구성 성분이 되는 영양소를 비율이 많은 순서대로 4가지 채워보세요.
@@ -292,18 +230,14 @@
             </div>
         </section>
 
-        <!-- =========================================
-             MISSION 3 SECTION : 준비중
-             ========================================= -->
-        <!-- ✅ lg 화면에서 3칸 차지 (col-span-3), 기존 flex: 3 제거 -->
+        <!-- 미션 영역 3: lg 화면에서 3칸 차지 -->
         <section id="mission3-section" class="card lg:col-span-3" style="display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
             <h2 style="color: var(--color-coral); font-size: 2rem; margin-bottom: 20px;">🚧 Mission 3: 영양소 검출</h2>
             <p style="color: var(--text-sub); font-size: 1.2rem; font-weight: bold;">현재 재미있는 콘텐츠를 열심히 준비 중입니다.<br>조금만 기다려 주세요!</p>
         </section>
 
-        <!-- 사이드바 네비게이션 -->
-        <!-- ✅ lg 화면에서 1칸 차지 (col-span-1) -->
-        <aside class="card mission-sidebar lg:col-span-1">
+        <!-- 사이드바 네비게이션: lg 화면에서 1칸 차지 -->
+        <aside class="card mission-sidebar lg:col-span-1 flex flex-col gap-4">
             <div class="sidebar-title">진행 상황</div>
             <div id="nav-m1" class="mission-item"></div>
             <div id="nav-m2" class="mission-item"></div>
@@ -312,7 +246,6 @@
     </main>
 
     <!-- 모달창 영역 -->
-    <!-- 도움말 모달 -->
     <div id="help-modal">
         <div class="modal-box" style="max-width: 550px;">
             <div class="modal-title" style="font-size: 1.6rem; font-weight: 800; color: var(--color-coral); margin-bottom: 10px;">💡 영양소 카드 분류 방법</div>
@@ -329,7 +262,6 @@
         </div>
     </div>
 
-    <!-- M1 해설 모달 -->
     <div id="explanation-modal">
         <div class="modal-box">
             <div class="modal-icon">❌</div>
@@ -338,7 +270,6 @@
         </div>
     </div>
 
-    <!-- M2 점검 모달 -->
     <div id="check-modal">
         <div class="modal-content">
             <div class="modal-title" id="modal-title">바구니 점검</div>
@@ -353,13 +284,9 @@
     <script src="js/dragdrop.js"></script>
 
     <script>
-        // 도움말 모달 로직
         function openHelp() { document.getElementById('help-modal').classList.add('visible'); }
         function closeHelp() { document.getElementById('help-modal').classList.remove('visible'); }
 
-        // =========================================
-        // 페이지 로드 및 동적 사이드바 네비게이션 로직
-        // =========================================
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mission1-section').style.display = 'block';
             document.getElementById('mission2-section').style.display = 'none';
@@ -367,7 +294,6 @@
             
             updateSidebarUI('nav-m1');
 
-            // M1 이미 깬 유저를 위한 패스 버튼 생성
             if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, 1)) {
                 const comicArea = document.querySelector('.comic-area');
                 if (!document.getElementById('btn-skip-m1')) {
@@ -412,13 +338,8 @@
             });
         });
 
-        // 사이드바 상태와 아이콘을 실시간으로 업데이트하는 마법의 함수
         function updateSidebarUI(activeNavId) {
-            const missionTitles = {
-                1: "영양소 종류 확인",
-                2: "기능과 특징 찾기",
-                3: "영양소 검출"
-            };
+            const missionTitles = { 1: "영양소 종류 확인", 2: "기능과 특징 찾기", 3: "영양소 검출" };
 
             [1, 2, 3].forEach(num => {
                 const id = 'nav-m' + num;
@@ -431,31 +352,19 @@
                 const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(1, num);
                 const isAccessible = typeof canAccessMission === 'function' ? canAccessMission(1, num).access : (num === 1 || isCompleted);
                 
-                if (id === activeNavId) {
-                    el.classList.add('active');
-                    icon = '💓'; 
-                } else if (isCompleted) {
-                    el.classList.add('completed');
-                    icon = '✅';
-                } else if (!isAccessible) {
-                    el.classList.add('locked');
-                    icon = '🔒';
-                } else {
-                    el.classList.add('available');
-                    icon = '🔓'; 
-                }
+                if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
+                else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
+                else if (!isAccessible) { el.classList.add('locked'); icon = '🔒'; } 
+                else { el.classList.add('available'); icon = '🔓'; }
                 
                 el.innerHTML = `<span class="mission-icon">${icon}</span> Mission ${num}:${missionTitles[num]}`;
             });
         }
 
-        // =========================================
-        // Mission 1: 로직
-        // =========================================
         const status = { A: false, B: false, C: false };
         const explanations = {
             A: "우리 몸에서 에너지원으로 이용되는 영양소는 탄수화물, 단백질, 지방입니다. 바이타민은 에너지원이 아니라 적은 양으로 생명 활동을 조절하는 역할을 합니다.",
-            B: "단백질이 몸을 구성하는 성분인 초점은 맞지만, 인체의 구성 성분 중 가장 많은 비중을 차지하는 것은 물입니다.",
+            B: "단백질이 몸을 구성하는 성분인 것은 맞지만, 인체의 구성 성분 중 가장 많은 비중을 차지하는 것은 물입니다.",
             C: "지방은 몸을 구성하는 성분이자 에너지원으로 이용됩니다. 세포막을 만드는데 매우 중요하고, 특히 체온을 유지하는 데 중요한 역할을 하므로 무조건 없애야 하는 적이 아닙니다."
         };
 
@@ -526,7 +435,6 @@
                 
                 updateSidebarUI('nav-m1');
                 
-                // M1 완료 버튼 동적 생성
                 const comicArea = document.querySelector('.comic-area');
                 if (!document.getElementById('btn-skip-m1')) {
                     const skipBtn = document.createElement('button');
@@ -556,26 +464,17 @@
             }());
         }
 
-        // =========================================
-        // Mission 2: 카드 게임판 숨김/보기 토글 기능
-        // =========================================
         function toggleM2Cards() {
             const cardArea = document.getElementById('m2-card-area');
             const btn = document.getElementById('btn-toggle-m2-cards');
             
             if (cardArea.style.display === 'none') {
                 cardArea.style.display = 'flex';
-                setTimeout(() => {
-                    cardArea.style.opacity = '1';
-                    document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' });
-                }, 10);
+                setTimeout(() => { cardArea.style.opacity = '1'; document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' }); }, 10);
                 btn.innerHTML = '카드 분류 숨기기 ⬆️';
             } else {
                 cardArea.style.opacity = '0';
-                setTimeout(() => {
-                    cardArea.style.display = 'none';
-                    document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' });
-                }, 400);
+                setTimeout(() => { cardArea.style.display = 'none'; document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' }); }, 400);
                 btn.innerHTML = '카드 분류 다시 보기 🔄';
             }
         }
@@ -599,9 +498,7 @@
 
             initGame();
 
-            // M2 이미 깬 유저를 위한 화면 정리 및 패스 버튼
             if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, 2)) {
-                
                 document.getElementById('m2-card-area').style.display = 'none';
                 document.getElementById('m2-card-area').style.opacity = '0';
                 document.getElementById('btn-toggle-m2-cards').style.display = 'block';
@@ -632,9 +529,6 @@
             }
         }
 
-        // =========================================
-        // Mission 3: 이동 기능
-        // =========================================
         function transitionToMission3() {
             document.getElementById('mission1-section').style.display = 'none';
             document.getElementById('mission2-section').style.display = 'none';
@@ -647,9 +541,6 @@
             guide.style.color = "var(--text-sub)";
         }
 
-        // =========================================
-        // Mission 2: 분류 게임 로직
-        // =========================================
         const NUTRIENTS = ['탄수화물', '단백질', '지방', '바이타민', '무기염류', '물'];
         const CARD_DATA = [
             { id: 1, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '주로 에너지원으로 이용된다.' },
@@ -664,7 +555,7 @@
             { id: 10, nutrient: '바이타민', type: '특징', imgSrc: null, text: '몸의 구성성분은 아니나, 적은 양으로 생명 활동을 조절한다.' },
             { id: 11, nutrient: '바이타민', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
             { id: 12, nutrient: '바이타민', type: '그림', imgSrc: 'images/q1_m2_04.png', text: '과일, 채소 등에 많이 들어 있다.' },
-            { id: 13, nutrient: '무기염류', type: '특징', imgSrc: null, text: '뼈와 이 등 몸을 구성하거나 생명 활동 조절한다.' },
+            { id: 13, nutrient: '무기염류', type: '특징', imgSrc: null, text: '뼈와 이 등 몸을 구성하거나 생명 활동을 조절한다.' },
             { id: 14, nutrient: '무기염류', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
             { id: 15, nutrient: '무기염류', type: '특징', imgSrc: null, text: '칼슘, 칼륨, 나트륨, 철, 마그네슘 등이 있다.' },
             { id: 16, nutrient: '무기염류', type: '그림', imgSrc: 'images/q1_m2_05.png', text: '멸치, 다시마, 우유, 치즈, 버섯 등에 많이 들어 있다.' },
@@ -705,11 +596,9 @@
                 basketEl.innerHTML = `<div class="basket-title">${nut}</div><div class="basket-count" id="count-${nut}">0</div>`;
                 
                 basketEl.addEventListener('click', () => {
-                    if (basketEl.classList.contains('completed')) {
-                        openCheckModal(nut);
-                    } else if (currentPhase === 'check') {
-                        openCheckModal(nut);
-                    } else if (currentPhase === 'play' && isCardSelected && activeCard) {
+                    if (basketEl.classList.contains('completed')) { openCheckModal(nut); } 
+                    else if (currentPhase === 'check') { openCheckModal(nut); } 
+                    else if (currentPhase === 'play' && isCardSelected && activeCard) {
                         const cardEl = elActiveZone.children[0];
                         processDrop(basketEl, cardEl); 
                     }
@@ -859,11 +748,8 @@
                 const el = document.createElement('div'); el.className = 'modal-card';
                 
                 let isCorrect = false;
-                if (card.nutrient === nutrient) {
-                    isCorrect = true;
-                } else if ((card.id === 11 || card.id === 14) && (nutrient === '바이타민' || nutrient === '무기염류')) {
-                    isCorrect = true; 
-                }
+                if (card.nutrient === nutrient) { isCorrect = true; } 
+                else if ((card.id === 11 || card.id === 14) && (nutrient === '바이타민' || nutrient === '무기염류')) { isCorrect = true; }
 
                 if (isCorrect) {
                     el.classList.add('correct');
@@ -913,9 +799,7 @@
                         const quizArea = document.getElementById('m2-quiz-area');
                         if (!quizArea.classList.contains('visible')) {
                             quizArea.classList.add('visible');
-                            
                             if(window.humanBadyDnD) window.humanBadyDnD.init();
-                            
                             const container = document.getElementById('mission2-section');
                             container.scrollTo({ top: 0, behavior: 'smooth' });
                         }
@@ -924,10 +808,6 @@
             }
         });
 
-        // =========================================
-        // Mission 2: 드래그 앤 드롭 무한 뱃지 로직
-        // =========================================
-        
         document.addEventListener('dnd-dropped', () => {
             const pool = document.getElementById('badge-pool');
             if (!pool) return;
@@ -968,13 +848,11 @@
                         zone.style.borderColor = 'var(--color-mint)';
                         zone.classList.remove('error');
                     } else {
-                        zone.classList.add('error');
-                        q1Correct = false;
+                        zone.classList.add('error'); q1Correct = false;
                         setTimeout(() => zone.classList.remove('error'), 300);
                     }
                 } else {
-                    zone.classList.add('error');
-                    q1Correct = false;
+                    zone.classList.add('error'); q1Correct = false;
                     setTimeout(() => zone.classList.remove('error'), 300);
                 }
             });
@@ -990,13 +868,11 @@
                         zone.style.borderColor = 'var(--color-mint)';
                         zone.classList.remove('error');
                     } else {
-                        zone.classList.add('error');
-                        q2Correct = false;
+                        zone.classList.add('error'); q2Correct = false;
                         setTimeout(() => zone.classList.remove('error'), 300);
                     }
                 } else {
-                    zone.classList.add('error');
-                    q2Correct = false;
+                    zone.classList.add('error'); q2Correct = false;
                     setTimeout(() => zone.classList.remove('error'), 300);
                 }
             });
@@ -1006,7 +882,6 @@
                 launchConfettiEffect();
                 
                 document.querySelectorAll('.nutrient-badge').forEach(badge => badge.classList.add('dnd-locked'));
-                
                 document.getElementById('btn-check-m2-quiz').style.display = 'none';
                 
                 if (!document.getElementById('btn-skip-m2')) {
@@ -1024,7 +899,6 @@
                 }
 
                 updateSidebarUI('nav-m2');
-
                 const container = document.getElementById('mission2-section');
                 setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
             }
