@@ -115,6 +115,7 @@ body {
 /* ====================================================
    인체 탐험 지도 (원형 궤도)
    ==================================================== */
+ 
 .map-area {
     flex: 1;
     background-color: transparent; 
@@ -123,11 +124,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    --radius: clamp(110px, 20vw, 170px);       
-    --bubble-size: clamp(75px, 10vw, 105px);   
+    
+    /* 🚀 1. 잘림 현상 해제 (hidden -> visible) */
+    overflow: visible; 
+    
+    /* 🚀 2. 가로 모드 높이 부족 대응 (vw -> vmin 단위 변경 및 크기 최적화) */
+    --radius: clamp(90px, 18vmin, 160px);       
+    --bubble-size: clamp(60px, 12vmin, 95px);   
 }
-
 .quest-circle-container {
     position: relative;
     width: calc(var(--radius) * 2);  
