@@ -6,7 +6,7 @@
     <title>인체 에너지 추적단</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Tailwind CSS 스크립트 추가 -->
+    <!-- Tailwind CSS 라이브러리 추가 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -16,11 +16,11 @@
         <button id="btn-reset" class="btn-ghost">기록 초기화 ↺</button>
     </header>
 
-    <!-- Tailwind Grid 적용: 1열 기본, lg에서 3열 -->
-    <main class="dashboard grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Tailwind Grid 적용: 스마트폰 1열, 태블릿 2열, 데스크톱 3열 / 태블릿 이상부터는 화면 높이 고정 -->
+    <main class="dashboard grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:max-h-[calc(100dvh-75px)]">
         
-        <!-- 지도 영역: lg에서 2칸 차지 -->
-        <section class="card map-card lg:col-span-2">
+        <!-- 지도 영역: 태블릿에서 1칸(반반), 데스크톱에서 2칸 차지 / min-h-0으로 내부 넘침 방지 -->
+        <section class="card map-card md:col-span-1 lg:col-span-2 min-h-0">
             <div class="card-header-text">
                 <h2 class="card-title">인체 탐험 지도</h2>
                 <p class="card-subtitle">안내도를 중심으로 둥글게 모인 퀘스트를 시작하세요.</p>
@@ -41,8 +41,8 @@
             </div>
         </section>
 
-        <!-- 보물 창고 영역: lg에서 1칸 차지 -->
-        <aside class="card reward-card lg:col-span-1">
+        <!-- 보물 창고 영역: 태블릿에서 1칸, 데스크톱에서 1칸 차지 / min-h-0으로 개별 스크롤 생성 -->
+        <aside class="card reward-card md:col-span-1 lg:col-span-1 min-h-0">
             <div class="reward-header">
                 <h2 class="card-title">보물 창고</h2>
                 <div class="ticket-badge">
@@ -56,12 +56,13 @@
     </main>
 
     <script src="js/main.js"></script>
-    <script src="js/rewards.js"></script>
+    <script src="rewards/rewards.js"></script>
     <script>
         window.launchConfetti = function() {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
         };
 
+        // 데이터 동기화 초기화 로직
         document.getElementById('btn-reset').addEventListener('click', () => {
             if(confirm("모든 기록을 지우고 처음부터 다시 시작할까요?")) {
                 if(window.UniversalReward) window.UniversalReward.reset();
