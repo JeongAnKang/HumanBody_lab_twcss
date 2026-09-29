@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>인체 에너지 추적단</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logo">🧬 인체 에너지 추적단</div>
+        <button id="btn-reset" class="btn-ghost">기록 초기화 ↺</button>
+    </header>
+
+    <main class="dashboard">
+        <section class="card map-card">
+            <div class="card-header-text">
+                <h2 class="card-title">인체 탐험 지도</h2>
+                <p class="card-subtitle">안내도를 중심으로 둥글게 모인 퀘스트를 시작하세요.</p>
+            </div>
+            
+            <div class="map-area">
+                <div class="quest-circle-container">
+                    <div class="center-illustration">
+                        <div class="energy-core">👤</div>
+                    </div>
+                    <a href="quest1.html" class="quest-bubble q1">1. 영양소</a>
+                    <a href="quest2.html" class="quest-bubble q2">2. 소화</a>
+                    <a href="quest3.html" class="quest-bubble q3">3. 순환</a>
+                    <a href="quest4.html" class="quest-bubble q4">4. 호흡</a>
+                    <a href="quest5.html" class="quest-bubble q5">5. 배설</a>
+                    <a href="quest6.html" class="quest-bubble q6">6. 종합</a>
+                </div>
+            </div>
+        </section>
+
+        <aside class="card reward-card">
+            <div class="reward-header">
+                <h2 class="card-title">보물 창고</h2>
+                <div class="ticket-badge">
+                    쿠폰 <span id="reward-count" class="count-highlight">0</span>
+                </div>
+            </div>
+            
+            <button id="btn-claim-reward" class="btn-primary" disabled>보상 상자 열기 🎁</button>
+            <div id="reward-area" class="reward-grid"></div>
+        </aside>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/rewards.js"></script>
+    <script>
+        window.launchConfetti = function() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
+        };
+
+        // 데이터 동기화 초기화 로직 수정
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            if(confirm("모든 기록을 지우고 처음부터 다시 시작할까요?")) {
+                // 1. 보상 데이터 비우기
+                if(window.UniversalReward) window.UniversalReward.reset();
+                // 2. 퀘스트 진행 권한 데이터 비우기 (main.js 연동)
+                if(window.resetAllProgress) window.resetAllProgress();
+                
+                alert("기록이 완벽하게 백지화되었습니다.");
+                location.reload(); // 화면 즉시 갱신
+            }
+        });
+    </script>
+</body>
+</html>
