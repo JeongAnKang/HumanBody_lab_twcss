@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quest 1: 영양소 탐험</title>
+    <title>Quest 1: 영양소</title>
     
     <link rel="stylesheet" href="style.css">
     
-    <!-- Tailwind CSS 스크립트 추가 -->
+    <!-- Tailwind CSS 및 Confetti 스크립트 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
@@ -20,8 +20,9 @@
         .btn-student:hover { border-color: var(--color-coral); transform: translateY(-2px); }
         .btn-student.checked { background-color: #EAE3E3; border-color: #ccc; color: #888; }
 
-        .quiz-area { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s; background: white; border-radius: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; align-items: center; }
-        .quiz-area.visible { max-height: 1200px; opacity: 1; padding: 30px; margin-top: 20px; overflow-y: auto;}
+        /* 결과 정리 창이 내용을 전부 담을 수 있도록 max-height를 2500px로 넉넉히 확장 */
+        .quiz-area { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s; background: white; border-radius: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; align-items: center; width: 100%; box-sizing: border-box; }
+        .quiz-area.visible { max-height: 2500px; opacity: 1; padding: 30px; margin-top: 20px; overflow-y: auto;}
 
         .quiz-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; width: 100%; max-width: 500px; }
         .input-group { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 10px 15px; border-radius: 12px; }
@@ -30,8 +31,8 @@
         .nutrient-input:focus { border-color: var(--color-mint); }
         .nutrient-input.error { border-color: var(--color-error, #FF6B6B); animation: shake 0.3s; }
 
-        #explanation-modal, #help-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        #explanation-modal.visible, #help-modal.visible { opacity: 1; pointer-events: auto; }
+        #explanation-modal, #help-modal, #check-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #explanation-modal.visible, #help-modal.visible, #check-modal.visible { opacity: 1; pointer-events: auto; }
         .modal-box { background: white; width: 80%; max-width: 500px; border-radius: 24px; padding: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .modal-icon { font-size: 4rem; color: #FF6B6B; margin-bottom: 10px; }
         .modal-text { font-size: 1.1rem; line-height: 1.5; font-weight: bold; color: var(--text-main); margin-bottom: 25px; word-break: keep-all; }
@@ -70,8 +71,6 @@
         .basket-title { font-size: 1.4rem; font-weight: 800; color: var(--text-main); }
         .basket-count { position: absolute; top: -10px; right: -10px; background: var(--color-coral); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(255,143,171,0.5); }
 
-        #check-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        #check-modal.visible { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--bg-color); width: 85%; max-width: 700px; border-radius: 32px; padding: 30px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .modal-title { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; }
         .modal-cards { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 25px; width: 100%; min-height: 150px; }
@@ -82,7 +81,7 @@
         .btn-close { background: var(--color-mint); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
         .btn-close:active { transform: scale(0.95); }
 
-        .badge-pool { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; background: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 16px; border: 2px dashed var(--color-coral-light); min-height: 80px; margin-bottom: 25px; width: 100%; max-width: 550px; transition: background-color 0.2s; }
+        .badge-pool { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; background: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 16px; border: 2px dashed var(--color-coral-light); min-height: 160px; margin-bottom: 25px; width: 100%; max-width: 550px; transition: background-color 0.2s; }
         .badge-pool.dnd-over { background: rgba(130, 209, 217, 0.1); border-color: var(--color-mint); }
         
         .nutrient-badge { background-color: white; border: 2px solid var(--color-coral-light); color: var(--text-main); padding: 8px 18px; border-radius: 20px; font-size: 1rem; font-weight: bold; cursor: grab; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); user-select: none; touch-action: none; }
@@ -96,20 +95,28 @@
         .answer-slot.error { border-color: var(--color-error); background-color: rgba(255,107,107,0.1); animation: shake 0.3s; }
         .answer-slot .nutrient-badge { margin: 0; box-shadow: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: none; }
 
+        .guide-text { flex: 1; text-align: center; font-weight: 800; font-size: 1.5rem; background-color: #FFF0F5; color: var(--text-main) !important; padding: 10px 20px; border-radius: 16px; border: 2px dashed var(--color-coral); margin: 0 15px; box-shadow: 0 4px 10px rgba(255, 143, 171, 0.2); }
+        
+        /* 문장 완성용 인라인 슬롯 CSS */
+        .inline-slot { display: inline-flex; vertical-align: middle; margin: 0 5px; width: 100px; height: 40px; }
+
+        .m3-bath-tube { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; background: rgba(255,255,255,0.6); transition: background-color 0.5s ease, transform 0.3s; position: relative; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .m3-bath-tube.active-target { border-color: #fcc419; box-shadow: 0 0 10px #fcc419; }
+        .m3-bath-tube::after { content: attr(data-label); pointer-events: none; }
+        .heating-active { animation: boil 0.4s infinite alternate; border-color: #fcc419 !important; box-shadow: 0 0 15px #fcc419 !important; }
+
         @keyframes pulseBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes float-card { 0%, 100% { transform: translateY(-10px) scale(1.05); } 50% { transform: translateY(-20px) scale(1.05); } }
         @keyframes pulse-mint { 0% { box-shadow: 0 0 0 0 rgba(130, 209, 217, 0.6); } 70% { box-shadow: 0 0 0 15px rgba(130, 209, 217, 0); } 100% { box-shadow: 0 0 0 0 rgba(130, 209, 217, 0); } }
-        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+        @keyframes boil { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(1.05) translateY(-3px); background-color: rgba(255, 152, 0, 0.8); } }
     </style>
 </head>
 <body>
 
     <header class="top-bar">
         <div class="quest-title">✨ Quest 1: 영양소</div>
-        <div class="guide-text" id="main-guide-text" style="flex: 1; text-align: center; font-weight: bold; color: var(--text-sub);">
-            학생들의 대화 속에서 잘못된 점을 찾아보세요!
-        </div>
+        <div class="guide-text" id="main-guide-text">학생들의 대화 속에서 잘못된 점을 찾아보세요!</div>
         <div class="header-buttons">
             <button class="btn-ghost" onclick="openHelp()">도움말 💡</button>
             <button class="btn-ghost" onclick="location.href='index.html'">메인 🏠</button>
@@ -117,15 +124,13 @@
         </div>
     </header>
 
-    <!-- Tailwind 기반 Grid 구조 적용 (기본 1열, lg이상 4열) -->
-    <main class="quest-layout grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
         
-        <!-- 미션 영역: lg 화면에서 3칸 차지 -->
-        <section id="mission1-section" class="card lg:col-span-3" style="overflow-y: auto; display: block;">
-            
+        <!-- 미션 1 영역 -->
+        <section id="mission1-section" class="card" style="overflow-y: auto; display: block;">
             <div class="comic-area">
                 <img src="images/q1_m1_01_inbody.png" alt="건강 검진실 대화" class="comic-img" onerror="this.src='https://via.placeholder.com/600x300?text=이미지+준비중+(images/q1_m1_01.png)'">
-                <h3 style="margin-bottom: 15px; color: var(--text-main);">누구의 말이 맞을까요? (버튼을 눌러 확인하세요)</h3>
+                <h3 style="margin-bottom: 15px; color: var(--text-main);">학생들의 대화에서 잘못된 점을 찾아 보세요! (버튼을 눌러 확인)</h3>
                 <div class="student-buttons">
                     <button class="btn-student" id="btn-a" onclick="checkStudent('A')">(가) 학생 확인</button>
                     <button class="btn-student" id="btn-b" onclick="checkStudent('B')">(나) 학생 확인</button>
@@ -134,8 +139,7 @@
             </div>
 
             <div class="quiz-area" id="quiz-area">
-                <h2 style="color: var(--color-coral); margin-bottom: 15px;">✨ 3명의 말이 모두 틀렸습니다!</h2>
-                
+                <h2 style="color: var(--color-coral); margin-bottom: 15px;">✨ 영양소에 관해 바르게 익혀봅시다!</h2>
                 <div id="q1-area" style="width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center;">
                     <p style="font-weight: bold; color: var(--text-main); margin-bottom: 15px; text-align: center; line-height: 1.4;">
                         <span style="color: var(--color-coral); font-size: 1.2rem;">Q1.</span> 우리가 매일 먹고 마시는 음식물 속에 들어있는<br>몸을 구성하거나 생명활동에 이용되는 물질을 무엇이라고 하는가?
@@ -160,16 +164,13 @@
                     </div>
                     <button class="btn-primary" id="btn-check-q2" style="max-width: 200px;" onclick="verifyQ2()">정답 확인</button>
                 </div>
-
                 <button class="btn-primary" id="btn-next-mission" style="max-width: 300px; background-color: #FF9F1C;" onclick="transitionToMission2()">Mission 2 가기 🚀</button>
             </div>
         </section>
 
-        <!-- 미션 영역 2: lg 화면에서 3칸 차지 -->
-        <section id="mission2-section" class="card lg:col-span-3" style="display: none; flex-direction: column; overflow-y: auto;">
-            
+        <!-- 미션 2 영역 -->
+        <section id="mission2-section" class="card" style="display: none; flex-direction: column; overflow-y: auto;">
             <button id="btn-toggle-m2-cards" class="btn-ghost" style="display: none; margin: 0 auto 20px; align-self: center;" onclick="toggleM2Cards()">카드 분류 다시 보기 🔄</button>
-
             <div id="m2-card-area" style="display: flex; gap: 20px; width: 100%; min-height: 400px; margin-bottom: 20px;">
                 <div class="stack-area">
                     <div id="deck" class="deck">카드 뽑기<br><span id="deck-count" style="font-size:1rem; margin-top:5px; font-weight:normal;"></span></div>
@@ -208,44 +209,165 @@
                     </p>
                     <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap; justify-content: center;">
                         <div class="input-group" style="padding: 5px 10px; background: none;">
-                            <div class="hint" style="width: 30px;">1위</div>
-                            <div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="물"></div>
+                            <div class="hint" style="width: 30px;">1위</div><div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="물"></div>
                         </div>
                         <div class="input-group" style="padding: 5px 10px; background: none;">
-                            <div class="hint" style="width: 30px;">2위</div>
-                            <div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="단백질"></div>
+                            <div class="hint" style="width: 30px;">2위</div><div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="단백질"></div>
                         </div>
                         <div class="input-group" style="padding: 5px 10px; background: none;">
-                            <div class="hint" style="width: 30px;">3위</div>
-                            <div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="지방"></div>
+                            <div class="hint" style="width: 30px;">3위</div><div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="지방"></div>
                         </div>
                         <div class="input-group" style="padding: 5px 10px; background: none;">
-                            <div class="hint" style="width: 30px;">4위</div>
-                            <div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="무기염류"></div>
+                            <div class="hint" style="width: 30px;">4위</div><div class="answer-slot dnd-zone m2-q2-zone" data-dnd-capacity="1" data-answer="무기염류"></div>
                         </div>
                     </div>
                 </div>
-
                 <button class="btn-primary" id="btn-check-m2-quiz" style="max-width: 200px;" onclick="verifyM2Quiz()">정답 확인</button>
+                <button class="btn-primary" id="btn-next-m3-from-m2" style="max-width: 300px; background-color: #FF9F1C; display: none; margin-top: 20px; animation: pulseBounce 1s infinite;" onclick="transitionToMission3()">Mission 3 가기 🚀</button>
             </div>
         </section>
 
-        <!-- 미션 영역 3: lg 화면에서 3칸 차지 -->
-        <section id="mission3-section" class="card lg:col-span-3" style="display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <h2 style="color: var(--color-coral); font-size: 2rem; margin-bottom: 20px;">🚧 Mission 3: 영양소 검출</h2>
-            <p style="color: var(--text-sub); font-size: 1.2rem; font-weight: bold;">현재 재미있는 콘텐츠를 열심히 준비 중입니다.<br>조금만 기다려 주세요!</p>
+        <!-- 미션 3 가상 실험 섹션 -->
+        <section id="mission3-section" class="card" style="display: none; flex-direction: column; overflow-y: auto;">
+            <div id="m3-container">
+                <div class="m3-header">
+                    <h3>🔬 영양소 검출 가상 실험</h3>
+                    <p>용액을 선택한 후 첫째 칸에 아이오딘-아이오딘화 칼륨 용액, 둘째 칸에 뷰렛 용액, 셋째 칸에 수단 Ⅲ 용액을 떨어뜨리세요.<br>홈판 실험이 끝난 후 베네딕트 실험을 진행하세요.</p>
+                </div>
+
+                <div class="m3-layout">
+                    <div class="m3-left-panel">
+                        <div class="m3-panel">
+                            <div class="m3-panel-title">🧪 홈판 시약 (스포이드)</div>
+                            <div class="m3-btn-group">
+                                <button class="m3-reagent-btn" data-reagent="iodine">아이오딘-아이오딘화 칼륨</button>
+                                <button class="m3-reagent-btn" data-reagent="biuret">뷰렛 용액</button>
+                                <button class="m3-reagent-btn" data-reagent="sudan">수단 Ⅲ 용액</button>
+                            </div>
+                        </div>
+                        <div class="m3-panel">
+                            <div class="m3-panel-title">💧 반응 용액</div>
+                            <div class="m3-btn-grid">
+                                <button class="m3-solution-btn" data-solution="distilled">1. 증류수</button>
+                                <button class="m3-solution-btn" data-solution="glucose">2. 포도당</button>
+                                <button class="m3-solution-btn" data-solution="starch">3. 녹말</button>
+                                <button class="m3-solution-btn" data-solution="protein">4. 단백질</button>
+                                <button class="m3-solution-btn" data-solution="fat">5. 지방</button>
+                                <button class="m3-solution-btn" data-solution="rice">밥물</button>
+                                <button class="m3-solution-btn" data-solution="onion">양파즙</button>
+                                <button class="m3-solution-btn" data-solution="egg">달걀 흰자액</button>
+                                <button class="m3-solution-btn" data-solution="oil">식용유</button>
+                            </div>
+                        </div>
+                        <button id="m3-reset-btn" class="m3-reset-btn">🔄 실험 초기화</button>
+                    </div>
+
+                    <div class="m3-center-panel">
+                        <div class="m3-plate-title">3칸 9줄 홈판</div>
+                        <div id="m3-well-plate" class="m3-well-plate"></div>
+                        <div class="m3-bath-wrapper" style="display: flex; align-items: stretch; text-align: left; padding: 0; overflow: hidden; margin-top: 15px; background: white; border: 1px solid #dee2e6; border-radius: 8px;">
+                            <div style="width: 110px; background: #f8f9fa; border-right: 1px solid #dee2e6; padding: 10px; display: flex; flex-direction: column; justify-content: center;">
+                                <div style="font-size: 11px; font-weight: bold; color: #495057; margin-bottom: 8px; text-align: center;">👇 가열 반응 (마지막)</div>
+                                <button class="m3-reagent-btn" data-reagent="benedict" style="width: 100%; padding: 15px 5px; height: auto;">베네딕트 용액</button>
+                            </div>
+                            <div style="flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: center;">
+                                <div class="m3-bath-title" style="margin-bottom: 10px; text-align: center;">♨ 베네딕트 수조 (가열)</div>
+                                <div id="m3-water-bath" class="m3-water-bath"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="m3-right-panel">
+                        <div class="m3-panel-title">📋 실험 결과 기록표</div>
+                        <table class="m3-result-table">
+                            <thead>
+                                <tr><th>용액</th><th>베네딕트</th><th>아이오딘</th><th>뷰렛</th><th>수단Ⅲ</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 미션 3 결과 정리 영역 (드래그 앤 드롭 퀴즈) -->
+            <!-- 넓게 표시되도록 style에 width:100%와 폭 제한 속성들을 조정했습니다. -->
+            <div id="m3-final-summary" class="quiz-area" style="width: 100%; margin-top: 30px;">
+                <h2 style="color: var(--color-mint); margin-bottom: 20px; text-align: center;">▣ 결과 정리</h2>
+                
+                <!-- 뱃지 풀 (가로로 넓게 퍼지도록 max-width: 100% 설정) -->
+                <div id="m3-badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="30" style="max-width: 100%;">
+                    <div class="nutrient-badge dnd-item" data-val="포도당">포도당</div>
+                    <div class="nutrient-badge dnd-item" data-val="녹말">녹말</div>
+                    <div class="nutrient-badge dnd-item" data-val="단백질">단백질</div>
+                    <div class="nutrient-badge dnd-item" data-val="지방">지방</div>
+                    <div class="nutrient-badge dnd-item" data-val="베네딕트">베네딕트</div>
+                    <div class="nutrient-badge dnd-item" data-val="아이오딘">아이오딘</div>
+                    <div class="nutrient-badge dnd-item" data-val="뷰렛">뷰렛</div>
+                    <div class="nutrient-badge dnd-item" data-val="수단Ⅲ">수단Ⅲ</div>
+                    <div class="nutrient-badge dnd-item" data-val="푸른색">푸른색</div>
+                    <div class="nutrient-badge dnd-item" data-val="청람색">청람색</div>
+                    <div class="nutrient-badge dnd-item" data-val="선홍색">선홍색</div>
+                    <div class="nutrient-badge dnd-item" data-val="연갈색">연갈색</div>
+                    <div class="nutrient-badge dnd-item" data-val="투명색">투명색</div>
+                    <div class="nutrient-badge dnd-item" data-val="황적색">황적색</div>
+                    <div class="nutrient-badge dnd-item" data-val="보라색">보라색</div>
+                </div>
+
+                <!-- 퀴즈 테이블 -->
+                <table class="m3-result-table" style="width: 100%; text-align: center; margin-bottom: 30px;">
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>포도당</th>
+                            <th>녹말</th>
+                            <th>단백질</th>
+                            <th>지방</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: bold;">시약명</td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="베네딕트"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="아이오딘"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="뷰렛"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="수단Ⅲ"></div></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">반응색</td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="황적색"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="청람색"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="보라색"></div></td>
+                            <td><div class="answer-slot dnd-zone m3-quiz-slot" data-answer="선홍색"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- 문장 완성 퀴즈 -->
+                <div style="width: 100%; text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 20px; line-height: 2.5; font-weight: bold; color: var(--text-main);">
+                    <p>• 양파용액은 <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="베네딕트"></span> 시약일 때 
+                    <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="황적색"></span> 이(가) 나타나는 것으로 보아 
+                    <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="포도당"></span> 이(가) 들어있다.</p>
+                    
+                    <p style="margin-top: 15px;">• 달걀흰자용액은 <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="뷰렛"></span> 시약일 때 
+                    <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="보라색"></span> 이(가) 나타나는 것으로 보아 
+                    <span class="answer-slot dnd-zone m3-quiz-slot inline-slot" data-answer="단백질"></span> 이(가) 들어있다.</p>
+                </div>
+                
+                <button class="btn-primary" id="btn-check-m3-quiz" style="max-width: 200px;" onclick="verifyM3Quiz()">정답 확인</button>
+                <button class="btn-primary" id="btn-next-m4-from-m3" style="max-width: 300px; background-color: #FF9F1C; display: none; margin-top: 20px; animation: pulseBounce 1s infinite;" onclick="transitionToMission4()">Mission 4 가기 🚀</button>
+            </div>
         </section>
 
-        <!-- 사이드바 네비게이션: lg 화면에서 1칸 차지 -->
-        <aside class="card mission-sidebar lg:col-span-1 flex flex-col gap-4">
-            <div class="sidebar-title">진행 상황</div>
+        <!-- 사이드바 네비게이션 -->
+        <aside class="card mission-sidebar lg:w-max flex flex-col gap-4 items-center">
+            <div class="sidebar-title w-full text-center">진행 상황</div>
             <div id="nav-m1" class="mission-item"></div>
             <div id="nav-m2" class="mission-item"></div>
             <div id="nav-m3" class="mission-item"></div>
         </aside>
     </main>
 
-    <!-- 모달창 영역 -->
+    <!-- 모달 창들 -->
     <div id="help-modal">
         <div class="modal-box" style="max-width: 550px;">
             <div class="modal-title" style="font-size: 1.6rem; font-weight: 800; color: var(--color-coral); margin-bottom: 10px;">💡 영양소 카드 분류 방법</div>
@@ -262,11 +384,27 @@
         </div>
     </div>
 
+    <!-- 미션1 퀴즈 모달 -->
     <div id="explanation-modal">
         <div class="modal-box">
             <div class="modal-icon">❌</div>
             <div class="modal-text" id="modal-desc">해설 내용</div>
-            <button class="btn-primary" style="max-width: 150px; margin-bottom: 0;" onclick="closeModal()">확인</button>
+            
+            <div id="modal-quiz-area" style="margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 16px; border: 2px dashed var(--color-coral-light); transition: all 0.3s;">
+                <div id="modal-quiz-text" style="font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; color: var(--text-main);">질문</div>
+                
+                <div id="modal-quiz-ox" style="display: none; gap: 15px; justify-content: center;">
+                    <button class="btn-primary" style="margin:0; width: 80px; font-size: 1.5rem; background-color: var(--color-mint);" onclick="checkModalAnswer('o')">O</button>
+                    <button class="btn-primary" style="margin:0; width: 80px; font-size: 1.5rem; background-color: var(--color-error);" onclick="checkModalAnswer('x')">X</button>
+                </div>
+
+                <div id="modal-quiz-text-input" style="display: none; gap: 10px; justify-content: center; align-items: center;">
+                    <input type="text" id="modal-input-answer" class="nutrient-input" style="max-width: 150px;" placeholder="정답">
+                    <button class="btn-primary" style="margin:0; padding: 8px 20px; font-size: 1rem;" onclick="checkModalAnswer('text')">확인</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btn-modal-close-student" style="max-width: 150px; margin: 0 auto; display: none;" onclick="closeModal()">닫기</button>
         </div>
     </div>
 
@@ -278,631 +416,11 @@
         </div>
     </div>
 
-    <!-- 스크립트 연결 -->
+    <!-- 외부 스크립트 연결 -->
     <script src="js/main.js"></script>
     <script src="rewards/rewards.js"></script>
     <script src="js/dragdrop.js"></script>
+    <script src="js/quest1.js"></script>
 
-    <script>
-        function openHelp() { document.getElementById('help-modal').classList.add('visible'); }
-        function closeHelp() { document.getElementById('help-modal').classList.remove('visible'); }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('mission1-section').style.display = 'block';
-            document.getElementById('mission2-section').style.display = 'none';
-            document.getElementById('mission3-section').style.display = 'none';
-            
-            updateSidebarUI('nav-m1');
-
-            if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, 1)) {
-                const comicArea = document.querySelector('.comic-area');
-                if (!document.getElementById('btn-skip-m1')) {
-                    const skipBtn = document.createElement('button');
-                    skipBtn.id = 'btn-skip-m1';
-                    skipBtn.className = 'btn-primary';
-                    skipBtn.style.maxWidth = '350px';
-                    skipBtn.style.marginTop = '25px';
-                    skipBtn.style.backgroundColor = '#FF9F1C';
-                    skipBtn.style.animation = 'pulseBounce 2s infinite';
-                    skipBtn.innerHTML = '✅ 완료한 미션입니다. Mission 2로 이동 🚀';
-                    skipBtn.onclick = transitionToMission2;
-                    comicArea.appendChild(skipBtn);
-                }
-            }
-
-            document.getElementById('nav-m1').addEventListener('click', () => {
-                document.getElementById('mission2-section').style.display = 'none';
-                document.getElementById('mission3-section').style.display = 'none';
-                document.getElementById('mission1-section').style.display = 'block';
-                
-                const guide = document.getElementById('main-guide-text');
-                guide.innerHTML = "학생들의 대화 속에서 잘못된 점을 찾아보세요!";
-                guide.style.color = "var(--text-sub)";
-                updateSidebarUI('nav-m1');
-            });
-
-            document.getElementById('nav-m2').addEventListener('click', () => {
-                if (typeof canAccessMission === 'function' && canAccessMission(1, 2).access) {
-                    transitionToMission2();
-                } else {
-                    alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
-                }
-            });
-
-            document.getElementById('nav-m3').addEventListener('click', () => {
-                if (typeof canAccessMission === 'function' && canAccessMission(1, 3).access) {
-                    transitionToMission3();
-                } else {
-                    alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
-                }
-            });
-        });
-
-        function updateSidebarUI(activeNavId) {
-            const missionTitles = { 1: "영양소 종류 확인", 2: "기능과 특징 찾기", 3: "영양소 검출" };
-
-            [1, 2, 3].forEach(num => {
-                const id = 'nav-m' + num;
-                const el = document.getElementById(id);
-                if (!el) return;
-                
-                el.className = 'mission-item'; 
-                let icon = '';
-                
-                const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(1, num);
-                const isAccessible = typeof canAccessMission === 'function' ? canAccessMission(1, num).access : (num === 1 || isCompleted);
-                
-                if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
-                else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
-                else if (!isAccessible) { el.classList.add('locked'); icon = '🔒'; } 
-                else { el.classList.add('available'); icon = '🔓'; }
-                
-                el.innerHTML = `<span class="mission-icon">${icon}</span> Mission ${num}:${missionTitles[num]}`;
-            });
-        }
-
-        const status = { A: false, B: false, C: false };
-        const explanations = {
-            A: "우리 몸에서 에너지원으로 이용되는 영양소는 탄수화물, 단백질, 지방입니다. 바이타민은 에너지원이 아니라 적은 양으로 생명 활동을 조절하는 역할을 합니다.",
-            B: "단백질이 몸을 구성하는 성분인 것은 맞지만, 인체의 구성 성분 중 가장 많은 비중을 차지하는 것은 물입니다.",
-            C: "지방은 몸을 구성하는 성분이자 에너지원으로 이용됩니다. 세포막을 만드는데 매우 중요하고, 특히 체온을 유지하는 데 중요한 역할을 하므로 무조건 없애야 하는 적이 아닙니다."
-        };
-
-        function checkStudent(student) {
-            document.getElementById(`btn-${student.toLowerCase()}`).classList.add('checked');
-            status[student] = true;
-            document.getElementById('modal-desc').innerText = explanations[student];
-            document.getElementById('explanation-modal').classList.add('visible');
-        }
-
-        function closeModal() {
-            document.getElementById('explanation-modal').classList.remove('visible');
-            if (status.A && status.B && status.C) {
-                setTimeout(() => {
-                    document.getElementById('quiz-area').classList.add('visible');
-                    const container = document.getElementById('mission1-section');
-                    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-                }, 400);
-            }
-        }
-
-        function verifyQ1() {
-            const input = document.getElementById('q1-input');
-            const userAnswer = input.value.replace(/\s+/g, '');
-            const correctAnswer = input.dataset.answer;
-
-            if (userAnswer === correctAnswer) {
-                input.style.borderColor = 'var(--color-mint)';
-                input.style.backgroundColor = '#EFFFFD';
-                input.classList.remove('error');
-                input.disabled = true;
-
-                document.getElementById('btn-check-q1').style.display = 'none';
-                document.getElementById('q2-area').style.display = 'flex';
-
-                const container = document.getElementById('mission1-section');
-                setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
-            } else {
-                input.classList.add('error');
-                setTimeout(() => input.classList.remove('error'), 300);
-            }
-        }
-
-        function verifyQ2() {
-            const inputs = document.querySelectorAll('.q2-input');
-            let isAllCorrect = true;
-
-            inputs.forEach(input => {
-                const userAnswer = input.value.replace(/\s+/g, '');
-                if (userAnswer === input.dataset.answer) {
-                    input.style.borderColor = 'var(--color-mint)';
-                    input.style.backgroundColor = '#EFFFFD';
-                    input.classList.remove('error');
-                    input.disabled = true;
-                } else {
-                    input.classList.add('error');
-                    isAllCorrect = false;
-                    setTimeout(() => input.classList.remove('error'), 300);
-                }
-            });
-
-            if (isAllCorrect) {
-                if (window.UniversalReward) window.UniversalReward.complete(1, 1);
-                launchConfettiEffect();
-                
-                document.getElementById('btn-check-q2').style.display = 'none';
-                document.getElementById('btn-next-mission').style.display = 'block';
-                
-                updateSidebarUI('nav-m1');
-                
-                const comicArea = document.querySelector('.comic-area');
-                if (!document.getElementById('btn-skip-m1')) {
-                    const skipBtn = document.createElement('button');
-                    skipBtn.id = 'btn-skip-m1';
-                    skipBtn.className = 'btn-primary';
-                    skipBtn.style.maxWidth = '350px';
-                    skipBtn.style.marginTop = '25px';
-                    skipBtn.style.backgroundColor = '#FF9F1C';
-                    skipBtn.style.animation = 'pulseBounce 2s infinite';
-                    skipBtn.innerHTML = '✅ 완료한 미션입니다. Mission 2로 이동 🚀';
-                    skipBtn.onclick = transitionToMission2;
-                    comicArea.appendChild(skipBtn);
-                }
-                
-                const container = document.getElementById('mission1-section');
-                setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
-            }
-        }
-
-        function launchConfettiEffect() {
-            const duration = 1000; 
-            const end = Date.now() + duration;
-            (function frame() {
-                confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-                confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-                if (Date.now() < end) requestAnimationFrame(frame);
-            }());
-        }
-
-        function toggleM2Cards() {
-            const cardArea = document.getElementById('m2-card-area');
-            const btn = document.getElementById('btn-toggle-m2-cards');
-            
-            if (cardArea.style.display === 'none') {
-                cardArea.style.display = 'flex';
-                setTimeout(() => { cardArea.style.opacity = '1'; document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' }); }, 10);
-                btn.innerHTML = '카드 분류 숨기기 ⬆️';
-            } else {
-                cardArea.style.opacity = '0';
-                setTimeout(() => { cardArea.style.display = 'none'; document.getElementById('mission2-section').scrollTo({ top: 0, behavior: 'smooth' }); }, 400);
-                btn.innerHTML = '카드 분류 다시 보기 🔄';
-            }
-        }
-
-        function transitionToMission2() {
-            document.getElementById('mission1-section').style.display = 'none';
-            document.getElementById('mission3-section').style.display = 'none';
-            document.getElementById('mission2-section').style.display = 'flex'; 
-            
-            updateSidebarUI('nav-m2');
-
-            const guide = document.getElementById('main-guide-text');
-            guide.innerHTML = "카드를 <strong>드래그</strong>하거나, <strong>탭</strong>하여 알맞은 바구니에 넣으세요!";
-            guide.style.color = "var(--text-sub)";
-            
-            document.getElementById('m2-card-area').style.display = 'flex';
-            document.getElementById('m2-card-area').style.opacity = '1';
-            document.getElementById('btn-toggle-m2-cards').style.display = 'none';
-            document.getElementById('btn-toggle-m2-cards').innerHTML = '카드 분류 다시 보기 🔄';
-            document.getElementById('m2-quiz-area').classList.remove('visible');
-
-            initGame();
-
-            if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, 2)) {
-                document.getElementById('m2-card-area').style.display = 'none';
-                document.getElementById('m2-card-area').style.opacity = '0';
-                document.getElementById('btn-toggle-m2-cards').style.display = 'block';
-
-                document.getElementById('m2-quiz-area').classList.add('visible');
-                
-                document.querySelectorAll('.nutrient-badge').forEach(badge => badge.classList.add('dnd-locked'));
-                
-                if (!document.getElementById('btn-skip-m2')) {
-                    const quizArea = document.getElementById('m2-quiz-area');
-                    const skipBtn = document.createElement('button');
-                    skipBtn.id = 'btn-skip-m2';
-                    skipBtn.className = 'btn-primary';
-                    skipBtn.style.maxWidth = '300px';
-                    skipBtn.style.marginTop = '25px';
-                    skipBtn.style.backgroundColor = '#FF9F1C';
-                    skipBtn.style.animation = 'pulseBounce 2s infinite';
-                    skipBtn.innerHTML = '✅ 완료한 미션입니다. Mission 3로 이동 🚀';
-                    skipBtn.onclick = transitionToMission3;
-                    quizArea.appendChild(skipBtn);
-                }
-                
-                const checkBtn = document.getElementById('btn-check-m2-quiz');
-                if (checkBtn) checkBtn.style.display = 'none';
-                
-                guide.innerText = "이미 완료한 미션입니다!";
-                guide.style.color = "var(--color-mint)";
-            }
-        }
-
-        function transitionToMission3() {
-            document.getElementById('mission1-section').style.display = 'none';
-            document.getElementById('mission2-section').style.display = 'none';
-            document.getElementById('mission3-section').style.display = 'flex';
-            
-            updateSidebarUI('nav-m3');
-
-            const guide = document.getElementById('main-guide-text');
-            guide.innerHTML = "다음 미션을 기대해 주세요!";
-            guide.style.color = "var(--text-sub)";
-        }
-
-        const NUTRIENTS = ['탄수화물', '단백질', '지방', '바이타민', '무기염류', '물'];
-        const CARD_DATA = [
-            { id: 1, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '주로 에너지원으로 이용된다.' },
-            { id: 2, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '포도당, 엿당, 설탕, 녹말 등이 있다.' },
-            { id: 3, nutrient: '탄수화물', type: '그림', imgSrc: 'images/q1_m2_01.png', text: '밥, 국수, 빵, 감자, 고구마 등에 많이 들어 있다.' },
-            { id: 4, nutrient: '단백질', type: '특징', imgSrc: null, text: '주로 몸을 구성하고 생명활동을 조절한다.' },
-            { id: 5, nutrient: '단백질', type: '특징', imgSrc: null, text: '기아, 고강도 운동시 에너지원으로 이용된다.' },
-            { id: 6, nutrient: '단백질', type: '그림', imgSrc: 'images/q1_m2_02.png', text: '살코기, 생선, 달걀, 두부, 콩 등에 많이 들어 있다.' },
-            { id: 7, nutrient: '지방', type: '특징', imgSrc: null, text: '몸을 구성하는 성분이고, 탄수화물 부족시 에너지원으로 이용된다.' },
-            { id: 8, nutrient: '지방', type: '특징', imgSrc: null, text: '단열 효과로 체온을 유지하는 데 중요한 역할을 한다.' },
-            { id: 9, nutrient: '지방', type: '그림', imgSrc: 'images/q1_m2_03.png', text: '땅콩, 깨, 버터, 참기름 등에 많이 들어 있다.' },
-            { id: 10, nutrient: '바이타민', type: '특징', imgSrc: null, text: '몸의 구성성분은 아니나, 적은 양으로 생명 활동을 조절한다.' },
-            { id: 11, nutrient: '바이타민', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
-            { id: 12, nutrient: '바이타민', type: '그림', imgSrc: 'images/q1_m2_04.png', text: '과일, 채소 등에 많이 들어 있다.' },
-            { id: 13, nutrient: '무기염류', type: '특징', imgSrc: null, text: '뼈와 이 등 몸을 구성하거나 생명 활동을 조절한다.' },
-            { id: 14, nutrient: '무기염류', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
-            { id: 15, nutrient: '무기염류', type: '특징', imgSrc: null, text: '칼슘, 칼륨, 나트륨, 철, 마그네슘 등이 있다.' },
-            { id: 16, nutrient: '무기염류', type: '그림', imgSrc: 'images/q1_m2_05.png', text: '멸치, 다시마, 우유, 치즈, 버섯 등에 많이 들어 있다.' },
-            { id: 17, nutrient: '물', type: '특징', imgSrc: null, text: '몸의 구성 성분 중 차지하는 비율이 가장 높다.' },
-            { id: 18, nutrient: '물', type: '특징', imgSrc: null, text: '체내에서 여러 가지 물질을 운반한다.' },
-            { id: 19, nutrient: '물', type: '특징', imgSrc: null, text: '더울때 땀으로 나와 인체가 정상 체온을 유지할 수 있도록 한다.' },
-            { id: 20, nutrient: '물', type: '그림', imgSrc: 'images/q1_m2_06.png', text: '우리가 매일 마시는 액체' }
-        ];
-
-        let deck = [];
-        let activeCard = null;
-        let baskets = {};
-        let currentPhase = 'play';
-        let isCardSelected = false;
-
-        const elDeck = document.getElementById('deck');
-        const elDeckCount = document.getElementById('deck-count');
-        const elActiveZone = document.getElementById('active-zone');
-        const elBasketsContainer = document.getElementById('baskets-container');
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        function initGame() {
-            deck = [...CARD_DATA];
-            shuffle(deck);
-            elBasketsContainer.innerHTML = '';
-            
-            NUTRIENTS.forEach(nut => {
-                baskets[nut] = [];
-                const basketEl = document.createElement('div');
-                basketEl.className = 'basket';
-                basketEl.dataset.nutrient = nut;
-                basketEl.innerHTML = `<div class="basket-title">${nut}</div><div class="basket-count" id="count-${nut}">0</div>`;
-                
-                basketEl.addEventListener('click', () => {
-                    if (basketEl.classList.contains('completed')) { openCheckModal(nut); } 
-                    else if (currentPhase === 'check') { openCheckModal(nut); } 
-                    else if (currentPhase === 'play' && isCardSelected && activeCard) {
-                        const cardEl = elActiveZone.children[0];
-                        processDrop(basketEl, cardEl); 
-                    }
-                });
-                elBasketsContainer.appendChild(basketEl);
-            });
-            updateDeckUI();
-        }
-
-        elDeck.addEventListener('click', () => {
-            if (currentPhase !== 'play') return;
-            if (activeCard !== null) {
-                const activeCardEl = elActiveZone.children[0];
-                activeCardEl.style.animation = 'none'; void activeCardEl.offsetWidth; 
-                activeCardEl.style.animation = 'shake 0.3s';
-                return;
-            }
-            if (deck.length === 0) return;
-            createActiveCard(deck.pop());
-            updateDeckUI();
-        });
-
-        function updateDeckUI() {
-            elDeckCount.innerText = `(${deck.length}장)`;
-            if (deck.length === 0 && activeCard === null) {
-                elDeck.classList.add('empty'); elDeck.innerHTML = '스택 비어있음';
-                checkPhaseTransition();
-            } else {
-                elDeck.classList.remove('empty'); elDeck.innerHTML = `카드 뽑기<br><span style="font-size:1rem; margin-top:5px; font-weight:normal;">(${deck.length}장)</span>`;
-            }
-        }
-
-        function createActiveCard(data) {
-            activeCard = data; isCardSelected = false;
-            elBasketsContainer.classList.remove('wait-for-tap'); elActiveZone.innerHTML = '';
-            
-            const mediaHTML = data.imgSrc ? `<img src="${data.imgSrc}" alt="이미지" class="card-img" onerror="this.style.display='none'">` : ``;
-            const cardEl = document.createElement('div');
-            cardEl.className = 'game-card';
-            cardEl.innerHTML = `<div class="card-type">${data.type}</div>${mediaHTML}<div class="card-content">${data.text}</div>`;
-            
-            elActiveZone.appendChild(cardEl);
-            makeDraggable(cardEl);
-        }
-
-        function makeDraggable(cardEl) {
-            let isDragging = false, isMoved = false; 
-            let startX, startY, initialX, initialY;
-
-            cardEl.addEventListener('pointerdown', (e) => {
-                isDragging = true; isMoved = false; cardEl.setPointerCapture(e.pointerId);
-                const rect = cardEl.getBoundingClientRect();
-                startX = e.clientX; startY = e.clientY; initialX = rect.left; initialY = rect.top;
-            });
-
-            cardEl.addEventListener('pointermove', (e) => {
-                if (!isDragging) return;
-                const dx = e.clientX - startX, dy = e.clientY - startY;
-                if (!isMoved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
-                    isMoved = true; isCardSelected = false; cardEl.classList.remove('selected');
-                    elBasketsContainer.classList.remove('wait-for-tap');
-                    cardEl.style.position = 'fixed'; cardEl.style.left = initialX + 'px'; cardEl.style.top = initialY + 'px';
-                    cardEl.style.zIndex = 1000; cardEl.style.transform = 'scale(1.05) rotate(2deg)';
-                }
-                if (isMoved) {
-                    cardEl.style.left = initialX + dx + 'px'; cardEl.style.top = initialY + dy + 'px';
-                    cardEl.style.pointerEvents = 'none';
-                    const elBelow = document.elementFromPoint(e.clientX, e.clientY);
-                    cardEl.style.pointerEvents = 'auto';
-                    document.querySelectorAll('.basket').forEach(b => b.classList.remove('drag-over'));
-                    if (elBelow) { const basket = elBelow.closest('.basket'); if (basket) basket.classList.add('drag-over'); }
-                }
-            });
-
-            cardEl.addEventListener('pointerup', (e) => {
-                if (!isDragging) return;
-                isDragging = false; cardEl.releasePointerCapture(e.pointerId);
-                if (!isMoved) {
-                    isCardSelected = !isCardSelected;
-                    isCardSelected ? (cardEl.classList.add('selected'), elBasketsContainer.classList.add('wait-for-tap')) : (cardEl.classList.remove('selected'), elBasketsContainer.classList.remove('wait-for-tap'));
-                    return;
-                }
-                cardEl.style.pointerEvents = 'none';
-                const elBelow = document.elementFromPoint(e.clientX, e.clientY);
-                cardEl.style.pointerEvents = 'auto';
-                document.querySelectorAll('.basket').forEach(b => b.classList.remove('drag-over'));
-                processDrop(elBelow ? elBelow.closest('.basket') : null, cardEl, initialX, initialY);
-            });
-        }
-
-        function processDrop(basket, cardEl, originalX, originalY) {
-            if (basket) {
-                const targetNutrient = basket.dataset.nutrient;
-                const currentBasketCards = baskets[targetNutrient];
-                if (currentBasketCards.some(c => c.text === activeCard.text)) {
-                    alert(`이미 같은 내용의 카드가 들어있습니다.`);
-                    resetCardPosition(cardEl, originalX, originalY);
-                } else {
-                    cardEl.style.transition = 'all 0.3s ease-in';
-                    cardEl.style.transform = 'scale(0.2)'; cardEl.style.opacity = '0';
-                    if (cardEl.style.position === 'fixed') {
-                        const rect = basket.getBoundingClientRect();
-                        cardEl.style.left = (rect.left + rect.width / 2 - 75) + 'px'; 
-                        cardEl.style.top = (rect.top + rect.height / 2 - 110) + 'px';
-                    }
-                    setTimeout(() => {
-                        baskets[targetNutrient].push(activeCard);
-                        document.getElementById(`count-${targetNutrient}`).innerText = currentBasketCards.length;
-                        elBasketsContainer.classList.remove('wait-for-tap'); elActiveZone.innerHTML = '';
-                        activeCard = null; isCardSelected = false; updateDeckUI();
-                    }, 300);
-                }
-            } else { resetCardPosition(cardEl, originalX, originalY); }
-        }
-
-        function resetCardPosition(cardEl, originalX, originalY) {
-            cardEl.classList.remove('selected'); isCardSelected = false; elBasketsContainer.classList.remove('wait-for-tap');
-            if (cardEl.style.position === 'fixed' && originalX !== undefined) {
-                cardEl.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                cardEl.style.left = originalX + 'px'; cardEl.style.top = originalY + 'px'; cardEl.style.transform = 'none';
-                setTimeout(() => { cardEl.style.position = 'relative'; cardEl.style.left = '0px'; cardEl.style.top = '0px'; cardEl.style.zIndex = '1'; cardEl.style.transition = ''; }, 300);
-            } else { cardEl.style.transform = 'none'; }
-        }
-
-        function checkPhaseTransition() {
-            if (deck.length === 0 && activeCard === null) {
-                currentPhase = 'check';
-                const guide = document.getElementById('main-guide-text');
-                guide.innerText = "깜빡이는 바구니를 터치하여 오답을 점검하세요."; guide.style.color = "var(--color-coral)";
-                document.querySelectorAll('.basket').forEach(b => {
-                    if (baskets[b.dataset.nutrient].length > 0) b.classList.add('check-mode');
-                });
-            }
-        }
-
-        function openCheckModal(nutrient) {
-            const cardsInBasket = baskets[nutrient];
-            if (cardsInBasket.length === 0) return;
-            const modalCardsBox = document.getElementById('modal-cards');
-            document.getElementById('modal-title').innerText = `${nutrient} 점검`;
-            modalCardsBox.innerHTML = '';
-            
-            let isPerfect = true;
-            let targetCount = CARD_DATA.filter(c => c.nutrient === nutrient).length;
-
-            cardsInBasket.forEach((card, index) => {
-                const el = document.createElement('div'); el.className = 'modal-card';
-                
-                let isCorrect = false;
-                if (card.nutrient === nutrient) { isCorrect = true; } 
-                else if ((card.id === 11 || card.id === 14) && (nutrient === '바이타민' || nutrient === '무기염류')) { isCorrect = true; }
-
-                if (isCorrect) {
-                    el.classList.add('correct');
-                    el.innerHTML = `<div>${card.type}</div>${card.imgSrc ? `<img src="${card.imgSrc}" style="width:45px;height:45px;margin-bottom:5px;">` : ''}<div style="font-size:0.75rem">${card.text}</div>`;
-                } else {
-                    el.classList.add('wrong'); isPerfect = false;
-                    el.innerHTML = `<div style="color:var(--color-error)">오답!</div><div>${card.type}</div><div style="font-size:0.75rem">${card.text}</div>`;
-                    el.addEventListener('click', () => {
-                        baskets[nutrient].splice(index, 1);
-                        document.getElementById(`count-${nutrient}`).innerText = baskets[nutrient].length;
-                        deck.push(card); shuffle(deck); openCheckModal(nutrient); 
-                    });
-                }
-                modalCardsBox.appendChild(el);
-            });
-
-            if (isPerfect && cardsInBasket.length === targetCount) {
-                const b = document.querySelector(`.basket[data-nutrient="${nutrient}"]`);
-                b.classList.remove('check-mode'); b.classList.add('completed');
-            }
-            document.getElementById('check-modal').classList.add('visible');
-        }
-
-        document.getElementById('btn-modal-close').addEventListener('click', () => {
-            document.getElementById('check-modal').classList.remove('visible');
-            const guide = document.getElementById('main-guide-text');
-
-            if (deck.length > 0) {
-                currentPhase = 'play';
-                guide.innerHTML = "반납된 카드가 있습니다. 알맞은 곳에 넣으세요!";
-                guide.style.color = "var(--text-sub)";
-                document.querySelectorAll('.basket').forEach(b => b.classList.remove('check-mode'));
-                updateDeckUI();
-            } else {
-                const allCompleted = Array.from(document.querySelectorAll('.basket')).every(b => b.classList.contains('completed'));
-                
-                if (allCompleted) {
-                    guide.innerText = "모두 분류되었습니다! 아래의 빈칸을 채워주세요.";
-                    guide.style.color = "var(--color-mint)";
-                    
-                    const cardArea = document.getElementById('m2-card-area');
-                    cardArea.style.opacity = '0';
-                    setTimeout(() => {
-                        cardArea.style.display = 'none';
-                        document.getElementById('btn-toggle-m2-cards').style.display = 'block';
-                        
-                        const quizArea = document.getElementById('m2-quiz-area');
-                        if (!quizArea.classList.contains('visible')) {
-                            quizArea.classList.add('visible');
-                            if(window.humanBadyDnD) window.humanBadyDnD.init();
-                            const container = document.getElementById('mission2-section');
-                            container.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    }, 400);
-                }
-            }
-        });
-
-        document.addEventListener('dnd-dropped', () => {
-            const pool = document.getElementById('badge-pool');
-            if (!pool) return;
-            
-            const nutrients = ['탄수화물', '단백질', '지방', '바이타민', '무기염류', '물'];
-            
-            nutrients.forEach(nut => {
-                const badgesInPool = Array.from(pool.children).filter(el => el.dataset.nutrient === nut && el.classList.contains('dnd-item'));
-                
-                if (badgesInPool.length === 0) {
-                    const clone = document.createElement('div');
-                    clone.className = 'nutrient-badge dnd-item';
-                    clone.dataset.nutrient = nut;
-                    clone.innerText = nut;
-                    pool.appendChild(clone);
-                } else if (badgesInPool.length > 1) {
-                    for (let i = 1; i < badgesInPool.length; i++) {
-                        badgesInPool[i].remove();
-                    }
-                }
-            });
-            
-            if(window.humanBadyDnD) window.humanBadyDnD.init();
-        });
-
-        function verifyM2Quiz() {
-            const q1Zones = document.querySelectorAll('.m2-q1-zone');
-            const q1Answers = ['탄수화물', '단백질', '지방'];
-            let q1Correct = true;
-            let enteredQ1 = []; 
-
-            q1Zones.forEach(zone => {
-                const item = zone.querySelector('.dnd-item');
-                if (item) {
-                    const val = item.dataset.nutrient;
-                    if (q1Answers.includes(val) && !enteredQ1.includes(val)) {
-                        enteredQ1.push(val);
-                        zone.style.borderColor = 'var(--color-mint)';
-                        zone.classList.remove('error');
-                    } else {
-                        zone.classList.add('error'); q1Correct = false;
-                        setTimeout(() => zone.classList.remove('error'), 300);
-                    }
-                } else {
-                    zone.classList.add('error'); q1Correct = false;
-                    setTimeout(() => zone.classList.remove('error'), 300);
-                }
-            });
-
-            const q2Zones = document.querySelectorAll('.m2-q2-zone');
-            let q2Correct = true;
-
-            q2Zones.forEach(zone => {
-                const item = zone.querySelector('.dnd-item');
-                if (item) {
-                    const val = item.dataset.nutrient;
-                    if (val === zone.dataset.answer) {
-                        zone.style.borderColor = 'var(--color-mint)';
-                        zone.classList.remove('error');
-                    } else {
-                        zone.classList.add('error'); q2Correct = false;
-                        setTimeout(() => zone.classList.remove('error'), 300);
-                    }
-                } else {
-                    zone.classList.add('error'); q2Correct = false;
-                    setTimeout(() => zone.classList.remove('error'), 300);
-                }
-            });
-
-            if (q1Correct && q2Correct) {
-                if (window.UniversalReward) window.UniversalReward.complete(1, 2);
-                launchConfettiEffect();
-                
-                document.querySelectorAll('.nutrient-badge').forEach(badge => badge.classList.add('dnd-locked'));
-                document.getElementById('btn-check-m2-quiz').style.display = 'none';
-                
-                if (!document.getElementById('btn-skip-m2')) {
-                    const quizArea = document.getElementById('m2-quiz-area');
-                    const skipBtn = document.createElement('button');
-                    skipBtn.id = 'btn-skip-m2';
-                    skipBtn.className = 'btn-primary';
-                    skipBtn.style.maxWidth = '300px';
-                    skipBtn.style.marginTop = '25px';
-                    skipBtn.style.backgroundColor = '#FF9F1C';
-                    skipBtn.style.animation = 'pulseBounce 2s infinite';
-                    skipBtn.innerHTML = '✅ 완료한 미션입니다. Mission 3로 이동 🚀';
-                    skipBtn.onclick = transitionToMission3;
-                    quizArea.appendChild(skipBtn);
-                }
-
-                updateSidebarUI('nav-m2');
-                const container = document.getElementById('mission2-section');
-                setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
-            }
-        }
-    </script>
 </body>
 </html>
