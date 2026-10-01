@@ -12,8 +12,9 @@
   }
 
   function accepts(item, zone) {
-    if (typeof window.ZziritDnD?.customAccept === 'function') {
-      const customResult = window.ZziritDnD.customAccept(item, zone);
+    // 💡 참조 버그 픽스: ZziritDnD -> humanBadyDnD로 통일
+    if (typeof window.humanBadyDnD?.customAccept === 'function') {
+      const customResult = window.humanBadyDnD.customAccept(item, zone);
       if (typeof customResult === 'boolean') return customResult;
     }
     const itemGroup = item.dataset.dndGroup || 'default';
@@ -43,12 +44,10 @@
     const capacity = parseInt(zone.dataset.dndCapacity, 10) || 0;
     const isSingle = capacity === 1 || zone.classList.contains('dnd-single-slot');
     
-    // [버그 픽스] 밀려나는 기존 아이템(old)이 돌아갈 곳을 잃어 겹쳐서 사라지는 현상 방지
     if (isSingle) {
       const old = Array.from(zone.children).find(el => el !== item && el.matches(ITEM_SELECTOR));
       if (old) {
         let pool = sourcePool(old);
-        // 만약 돌아갈 풀이 현재 슬롯(zone)과 같다면 강제로 공통 풀(.dnd-pool)로 밀어냄
         if (!pool || pool === zone) pool = document.querySelector('.dnd-pool');
         if (pool && pool !== zone) {
             pool.appendChild(old);
@@ -78,7 +77,8 @@
     ghost.removeAttribute('role');
     ghost.classList.add('dnd-ghost');
     
-    // [버그 픽스] 고스트가 포인터를 가려서 정확히 겹칠 때 드롭존(Zone) 인식을 방해하는 것 차단
+    // 💡 포지션 버그 픽스: position: fixed 명시 적용
+    ghost.style.position = 'fixed';
     ghost.style.pointerEvents = 'none'; 
     ghost.style.zIndex = '9999';
     
@@ -106,10 +106,8 @@
     document.querySelectorAll('.dnd-over').forEach(el => el.classList.remove('dnd-over'));
   }
 
-  /* --- Pointer Events --- */
   function pointerDown(e) {
     if (e.button !== undefined && e.button !== 0) return;
-    // [버그 픽스] 드래그 중 다른 손가락이 닿았을 때 아이템이 영원히 투명해지는 현상(증발) 차단
     if (gesture) return; 
     
     const item = e.target.closest(ITEM_SELECTOR); 
@@ -150,7 +148,6 @@
     }
   }
 
-  /* --- Engine Initializers --- */
   function enablePointerMode() {
     activeMode = 'pointer';
     document.addEventListener('pointerdown', pointerDown);
@@ -168,7 +165,6 @@
       const item = e.target.closest(ITEM_SELECTOR);
       if (!item || isLocked(item)) { e.preventDefault(); return; }
       
-      // [버그 픽스] 순서 변동 시 잘못된 뱃지가 선택되어 사라지는 현상을 방지하는 고유 ID 부여
       if (!item.dataset.dndTempId) {
           item.dataset.dndTempId = 'dnd_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
       }
@@ -224,7 +220,6 @@
     }
   }
 
-  /* --- Click & Keyboard Fallbacks --- */
   document.addEventListener('click', e => {
     if (Date.now() < suppressClickUntil) { e.preventDefault(); return; }
     let item = e.target.closest(ITEM_SELECTOR);
@@ -232,7 +227,6 @@
     
     if (item && isLocked(item)) item = null;
 
-    // [버그 픽스 & UX 개선] 아이템을 선택한 상태에서 '다른 아이템이 들어있는 빈칸'을 탭하면, 선택이 바뀌는게 아니라 서로 교체(Swap)되도록 수정
     if (selected && item && selected !== item && zone && selected.parentElement !== zone) {
         e.preventDefault();
         if (move(selected, zone)) return;
@@ -259,7 +253,6 @@
     }
   });
 
-  /* --- Initialization --- */
   function init() {
     document.querySelectorAll(ITEM_SELECTOR).forEach(el => { 
       if(el.dataset.dndInit) return;
