@@ -1,13 +1,11 @@
 // ==========================================
-// Quest 1: 영양소 JavaScript (최종 통합본)
+// Quest 1: 영양소 JavaScript (최종 통합 완성본)
 // ==========================================
 
-function openHelp() { document.getElementById('help-modal').classList.add('visible'); }
-function closeHelp() { document.getElementById('help-modal').classList.remove('visible'); }
-
-// 미션 재방문 시 가이드 텍스트 변경
+// 미션 재방문 시 상단 가이드 텍스트 업데이트
 function updateGuideText(missionNum, defaultText) {
     const guide = document.getElementById('main-guide-text');
+    if (!guide) return;
     if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, missionNum)) {
         guide.innerText = "[완료한 미션입니다]";
         guide.style.color = "var(--text-sub)";
@@ -21,19 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('mission1-section').style.display = 'block';
     document.getElementById('mission2-section').style.display = 'none';
     document.getElementById('mission3-section').style.display = 'none';
+    const m4Sec = document.getElementById('mission4-section');
+    if (m4Sec) m4Sec.style.display = 'none';
     
     updateSidebarUI('nav-m1');
     updateGuideText(1, "학생들의 대화 속에서 잘못된 점을 찾아보세요!");
 
+    // 내비게이션 1 클릭
     document.getElementById('nav-m1').addEventListener('click', () => {
         document.getElementById('mission2-section').style.display = 'none';
         document.getElementById('mission3-section').style.display = 'none';
+        if (document.getElementById('mission4-section')) document.getElementById('mission4-section').style.display = 'none';
         document.getElementById('mission1-section').style.display = 'block';
         
         updateGuideText(1, "학생들의 대화 속에서 잘못된 점을 찾아보세요!");
         updateSidebarUI('nav-m1');
     });
 
+    // 내비게이션 2 클릭
     document.getElementById('nav-m2').addEventListener('click', () => {
         if (typeof canAccessMission === 'function' && canAccessMission(1, 2).access) {
             transitionToMission2();
@@ -42,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 내비게이션 3 클릭
     document.getElementById('nav-m3').addEventListener('click', () => {
         if (typeof canAccessMission === 'function' && canAccessMission(1, 3).access) {
             transitionToMission3();
@@ -49,12 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
         }
     });
+
+    // 내비게이션 4 클릭
+    const navM4 = document.getElementById('nav-m4');
+    if (navM4) {
+        navM4.addEventListener('click', () => {
+            if (typeof canAccessMission === 'function' && canAccessMission(1, 4).access) {
+                transitionToMission4();
+            } else {
+                alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+            }
+        });
+    }
 });
 
 function updateSidebarUI(activeNavId) {
-    const missionTitles = { 1: "영양소<br>종류", 2: "기능과<br>특징", 3: "영양소<br>검출" };
+    const missionTitles = { 1: "영양소<br>종류", 2: "기능과<br>특징", 3: "영양소<br>검출", 4: "종합<br>정리" };
 
-    [1, 2, 3].forEach(num => {
+    [1, 2, 3, 4].forEach(num => {
         const id = 'nav-m' + num;
         const el = document.getElementById(id);
         if (!el) return;
@@ -71,7 +87,7 @@ function updateSidebarUI(activeNavId) {
         else { el.classList.add('available'); icon = '🔓'; }
         
         el.innerHTML = `
-            <div class="mission-icon text-3xl mb-2">${icon}</div>
+            <div class="mission-icon text-xl mb-2">${icon}</div>
             <div class="text-sm font-bold whitespace-nowrap">Mission ${num}</div>
             <div class="text-sm leading-snug mt-1">${missionTitles[num]}</div>
         `;
@@ -97,10 +113,10 @@ const explanations = {
         answer: "물"
     },
     C: {
-        text: "지방은 몸을 구성하는 성분이자 에너지원으로 이용됩니다. 세포막을 만드는데 매우 중요하고, 특히 체온을 유지하는 데 중요한 역할을 하므로 무조건 없애야 하는 적이 아닙니다.",
-        quiz: "지방은 세포막 성분, 체온 유지에 필수이다. ( o, x )",
+        text: "지방은 몸을 구성하는 성분이자 에너지원으로 이용됩니다. 체온을 유지하는데 중요한 역할을 하고, 특히 세포막 구성성분이므로 지방이 없으면 세포자체가 형성되지 못하므로 꼭 있어야 합니다.",
+        quiz: "지방이 제로이면 가장 건강한 신체다. ( o, x )",
         type: "ox",
-        answer: "o"
+        answer: "x"
     }
 };
 
@@ -119,8 +135,10 @@ function checkStudent(student) {
     quizArea.style.backgroundColor = '#f9f9f9';
     
     const inputEl = document.getElementById('modal-input-answer');
-    inputEl.value = '';
-    inputEl.classList.remove('error');
+    if (inputEl) {
+        inputEl.value = '';
+        inputEl.classList.remove('error');
+    }
 
     if (data.type === 'ox') {
         document.getElementById('modal-quiz-ox').style.display = 'flex';
@@ -265,6 +283,7 @@ function toggleM2Cards() {
 function transitionToMission2() {
     document.getElementById('mission1-section').style.display = 'none';
     document.getElementById('mission3-section').style.display = 'none';
+    if (document.getElementById('mission4-section')) document.getElementById('mission4-section').style.display = 'none';
     document.getElementById('mission2-section').style.display = 'flex'; 
     
     updateSidebarUI('nav-m2');
@@ -272,11 +291,19 @@ function transitionToMission2() {
     if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, 2)) {
         updateGuideText(2, "완료한 미션입니다. 다시 풀어볼 수 있습니다!");
         
-        document.getElementById('m2-card-area').style.display = 'none';
-        document.getElementById('m2-card-area').style.opacity = '0';
-        document.getElementById('btn-toggle-m2-cards').style.display = 'block';
+        // 카드 영역 숨기지 않음
+        document.getElementById('m2-card-area').style.display = 'flex';
+        document.getElementById('m2-card-area').style.opacity = '1';
+        
+        const btnToggle = document.getElementById('btn-toggle-m2-cards');
+        if (btnToggle) {
+            btnToggle.style.display = 'block';
+            btnToggle.innerHTML = '카드 분류 숨기기 ⬆️';
+        }
+        
         document.getElementById('m2-quiz-area').classList.add('visible');
         
+        initGame();
         resetM2Quiz();
     } else {
         updateGuideText(2, "카드를 <strong>드래그</strong>하거나, <strong>탭</strong>하여 알맞은 바구니에 넣으세요!");
@@ -361,8 +388,16 @@ function shuffle(array) {
 function initGame() {
     deck = [...CARD_DATA];
     shuffle(deck);
+    
+    activeCard = null;
+    isCardSelected = false;
+    currentPhase = 'play';
+
     const elBasketsContainer = document.getElementById('baskets-container');
-    elBasketsContainer.innerHTML = '';
+    const elActiveZone = document.getElementById('active-zone');
+    
+    if (elBasketsContainer) elBasketsContainer.innerHTML = '';
+    if (elActiveZone) elActiveZone.innerHTML = ''; 
     
     NUTRIENTS.forEach(nut => {
         baskets[nut] = [];
@@ -375,12 +410,14 @@ function initGame() {
             if (basketEl.classList.contains('completed')) { openCheckModal(nut); } 
             else if (currentPhase === 'check') { openCheckModal(nut); } 
             else if (currentPhase === 'play' && isCardSelected && activeCard) {
-                const elActiveZone = document.getElementById('active-zone');
-                const cardEl = elActiveZone.children[0];
-                processDrop(basketEl, cardEl); 
+                const elActiveZoneInside = document.getElementById('active-zone');
+                if (elActiveZoneInside && elActiveZoneInside.children.length > 0) {
+                    const cardEl = elActiveZoneInside.children[0];
+                    processDrop(basketEl, cardEl); 
+                }
             }
         });
-        elBasketsContainer.appendChild(basketEl);
+        if (elBasketsContainer) elBasketsContainer.appendChild(basketEl);
     });
     updateDeckUI();
 }
@@ -390,11 +427,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elDeck) {
         elDeck.addEventListener('click', () => {
             if (currentPhase !== 'play') return;
+            
             const elActiveZone = document.getElementById('active-zone');
+            
             if (activeCard !== null) {
-                const activeCardEl = elActiveZone.children[0];
-                activeCardEl.style.animation = 'none'; void activeCardEl.offsetWidth; 
-                activeCardEl.style.animation = 'shake 0.3s';
+                if (elActiveZone && elActiveZone.children.length > 0) {
+                    const activeCardEl = elActiveZone.children[0];
+                    activeCardEl.style.animation = 'none'; 
+                    void activeCardEl.offsetWidth; 
+                    activeCardEl.style.animation = 'shake 0.3s';
+                }
                 return;
             }
             if (deck.length === 0) return;
@@ -411,29 +453,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (deck.length > 0) {
                 currentPhase = 'play';
-                guide.innerHTML = "반납된 카드가 있습니다. 알맞은 곳에 넣으세요!";
+                if (guide) guide.innerHTML = "반납된 카드가 있습니다. 알맞은 곳에 넣으세요!";
                 document.querySelectorAll('.basket').forEach(b => b.classList.remove('check-mode'));
                 updateDeckUI();
             } else {
                 const allCompleted = Array.from(document.querySelectorAll('.basket')).every(b => b.classList.contains('completed'));
                 
                 if (allCompleted) {
-                    guide.innerText = "모두 분류되었습니다! 아래의 빈칸을 채워주세요.";
+                    if (guide) guide.innerText = "모두 분류되었습니다! 아래의 빈칸을 채워주세요.";
                     
-                    const cardArea = document.getElementById('m2-card-area');
-                    cardArea.style.opacity = '0';
-                    setTimeout(() => {
-                        cardArea.style.display = 'none';
-                        document.getElementById('btn-toggle-m2-cards').style.display = 'block';
-                        
-                        const quizArea = document.getElementById('m2-quiz-area');
-                        if (!quizArea.classList.contains('visible')) {
-                            quizArea.classList.add('visible');
-                            resetM2Quiz();
-                            const container = document.getElementById('mission2-section');
-                            container.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    }, 400);
+                    const btnToggle = document.getElementById('btn-toggle-m2-cards');
+                    if (btnToggle) {
+                        btnToggle.style.display = 'block';
+                        btnToggle.innerHTML = '카드 분류 숨기기 ⬆️';
+                    }
+                    
+                    const quizArea = document.getElementById('m2-quiz-area');
+                    if (quizArea && !quizArea.classList.contains('visible')) {
+                        quizArea.classList.add('visible');
+                        resetM2Quiz();
+                        const container = document.getElementById('mission2-section');
+                        if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                    }
                 }
             }
         });
@@ -442,15 +483,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateDeckUI() {
     const elDeck = document.getElementById('deck');
-    const elDeckCount = document.getElementById('deck-count');
-    if(!elDeck || !elDeckCount) return;
+    if (!elDeck) return;
 
-    elDeckCount.innerText = `(${deck.length}장)`;
     if (deck.length === 0 && activeCard === null) {
-        elDeck.classList.add('empty'); elDeck.innerHTML = '스택 비어있음';
+        elDeck.classList.add('empty'); 
+        elDeck.innerHTML = '스택 비어있음';
         checkPhaseTransition();
     } else {
-        elDeck.classList.remove('empty'); elDeck.innerHTML = `카드 뽑기<br><span style="font-size:1rem; margin-top:5px; font-weight:normal;">(${deck.length}장)</span>`;
+        elDeck.classList.remove('empty'); 
+        elDeck.innerHTML = `카드 뽑기<br><span id="deck-count" style="font-size:1rem; margin-top:5px; font-weight:normal;">(${deck.length}장)</span>`;
     }
 }
 
@@ -458,15 +499,18 @@ function createActiveCard(data) {
     const elActiveZone = document.getElementById('active-zone');
     const elBasketsContainer = document.getElementById('baskets-container');
 
-    activeCard = data; isCardSelected = false;
-    elBasketsContainer.classList.remove('wait-for-tap'); elActiveZone.innerHTML = '';
+    activeCard = data; 
+    isCardSelected = false;
+    
+    if (elBasketsContainer) elBasketsContainer.classList.remove('wait-for-tap'); 
+    if (elActiveZone) elActiveZone.innerHTML = '';
     
     const mediaHTML = data.imgSrc ? `<img src="${data.imgSrc}" alt="이미지" class="card-img" onerror="this.style.display='none'">` : ``;
     const cardEl = document.createElement('div');
     cardEl.className = 'game-card';
     cardEl.innerHTML = `<div class="card-type">${data.type}</div>${mediaHTML}<div class="card-content">${data.text}</div>`;
     
-    elActiveZone.appendChild(cardEl);
+    if (elActiveZone) elActiveZone.appendChild(cardEl);
     makeDraggable(cardEl);
 }
 
@@ -486,7 +530,7 @@ function makeDraggable(cardEl) {
         const dx = e.clientX - startX, dy = e.clientY - startY;
         if (!isMoved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
             isMoved = true; isCardSelected = false; cardEl.classList.remove('selected');
-            elBasketsContainer.classList.remove('wait-for-tap');
+            if (elBasketsContainer) elBasketsContainer.classList.remove('wait-for-tap');
             cardEl.style.position = 'fixed'; cardEl.style.left = initialX + 'px'; cardEl.style.top = initialY + 'px';
             cardEl.style.zIndex = 1000; cardEl.style.transform = 'scale(1.05) rotate(2deg)';
         }
@@ -505,7 +549,13 @@ function makeDraggable(cardEl) {
         isDragging = false; cardEl.releasePointerCapture(e.pointerId);
         if (!isMoved) {
             isCardSelected = !isCardSelected;
-            isCardSelected ? (cardEl.classList.add('selected'), elBasketsContainer.classList.add('wait-for-tap')) : (cardEl.classList.remove('selected'), elBasketsContainer.classList.remove('wait-for-tap'));
+            if (isCardSelected) {
+                cardEl.classList.add('selected');
+                if (elBasketsContainer) elBasketsContainer.classList.add('wait-for-tap');
+            } else {
+                cardEl.classList.remove('selected');
+                if (elBasketsContainer) elBasketsContainer.classList.remove('wait-for-tap');
+            }
             return;
         }
         cardEl.style.pointerEvents = 'none';
@@ -523,7 +573,7 @@ function processDrop(basket, cardEl, originalX, originalY) {
     if (basket) {
         const targetNutrient = basket.dataset.nutrient;
         const currentBasketCards = baskets[targetNutrient];
-        if (currentBasketCards.some(c => c.text === activeCard.text)) {
+        if (currentBasketCards && currentBasketCards.some(c => c.text === activeCard.text)) {
             alert(`이미 같은 내용의 카드가 들어있습니다.`);
             resetCardPosition(cardEl, originalX, originalY);
         } else {
@@ -536,41 +586,64 @@ function processDrop(basket, cardEl, originalX, originalY) {
             }
             setTimeout(() => {
                 baskets[targetNutrient].push(activeCard);
-                document.getElementById(`count-${targetNutrient}`).innerText = currentBasketCards.length;
-                elBasketsContainer.classList.remove('wait-for-tap'); elActiveZone.innerHTML = '';
-                activeCard = null; isCardSelected = false; updateDeckUI();
+                const countEl = document.getElementById(`count-${targetNutrient}`);
+                if (countEl) countEl.innerText = baskets[targetNutrient].length;
+                
+                if (elBasketsContainer) elBasketsContainer.classList.remove('wait-for-tap'); 
+                if (elActiveZone) elActiveZone.innerHTML = '';
+                
+                activeCard = null; 
+                isCardSelected = false; 
+                updateDeckUI();
             }, 300);
         }
-    } else { resetCardPosition(cardEl, originalX, originalY); }
+    } else { 
+        resetCardPosition(cardEl, originalX, originalY); 
+    }
 }
 
 function resetCardPosition(cardEl, originalX, originalY) {
     const elBasketsContainer = document.getElementById('baskets-container');
-    cardEl.classList.remove('selected'); isCardSelected = false; elBasketsContainer.classList.remove('wait-for-tap');
+    cardEl.classList.remove('selected'); isCardSelected = false; 
+    if (elBasketsContainer) elBasketsContainer.classList.remove('wait-for-tap');
+    
     if (cardEl.style.position === 'fixed' && originalX !== undefined) {
         cardEl.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         cardEl.style.left = originalX + 'px'; cardEl.style.top = originalY + 'px'; cardEl.style.transform = 'none';
-        setTimeout(() => { cardEl.style.position = 'relative'; cardEl.style.left = '0px'; cardEl.style.top = '0px'; cardEl.style.zIndex = '1'; cardEl.style.transition = ''; }, 300);
-    } else { cardEl.style.transform = 'none'; }
+        setTimeout(() => { 
+            cardEl.style.position = 'relative'; 
+            cardEl.style.left = '0px'; 
+            cardEl.style.top = '0px'; 
+            cardEl.style.zIndex = '1'; 
+            cardEl.style.transition = ''; 
+        }, 300);
+    } else { 
+        cardEl.style.transform = 'none'; 
+    }
 }
 
 function checkPhaseTransition() {
     if (deck.length === 0 && activeCard === null) {
         currentPhase = 'check';
         const guide = document.getElementById('main-guide-text');
-        guide.innerText = "깜빡이는 바구니를 터치하여 오답을 점검하세요."; guide.style.color = "var(--color-coral)";
+        if (guide) {
+            guide.innerText = "깜빡이는 바구니를 터치하여 오답을 점검하세요."; 
+            guide.style.color = "var(--color-coral)";
+        }
         document.querySelectorAll('.basket').forEach(b => {
-            if (baskets[b.dataset.nutrient].length > 0) b.classList.add('check-mode');
+            if (baskets[b.dataset.nutrient] && baskets[b.dataset.nutrient].length > 0) {
+                b.classList.add('check-mode');
+            }
         });
     }
 }
 
 function openCheckModal(nutrient) {
     const cardsInBasket = baskets[nutrient];
-    if (cardsInBasket.length === 0) return;
+    if (!cardsInBasket || cardsInBasket.length === 0) return;
     const modalCardsBox = document.getElementById('modal-cards');
     document.getElementById('modal-title').innerText = `${nutrient} 점검`;
-    modalCardsBox.innerHTML = '';
+    if (modalCardsBox) modalCardsBox.innerHTML = '';
     
     let isPerfect = true;
     let targetCount = CARD_DATA.filter(c => c.nutrient === nutrient).length;
@@ -590,21 +663,28 @@ function openCheckModal(nutrient) {
             el.innerHTML = `<div style="color:var(--color-error)">오답!</div><div>${card.type}</div><div style="font-size:0.75rem">${card.text}</div>`;
             el.addEventListener('click', () => {
                 baskets[nutrient].splice(index, 1);
-                document.getElementById(`count-${nutrient}`).innerText = baskets[nutrient].length;
-                deck.push(card); shuffle(deck); openCheckModal(nutrient); 
+                const countEl = document.getElementById(`count-${nutrient}`);
+                if (countEl) countEl.innerText = baskets[nutrient].length;
+                
+                deck.push(card); 
+                shuffle(deck); 
+                openCheckModal(nutrient); 
             });
         }
-        modalCardsBox.appendChild(el);
+        if (modalCardsBox) modalCardsBox.appendChild(el);
     });
 
     if (isPerfect && cardsInBasket.length === targetCount) {
         const b = document.querySelector(`.basket[data-nutrient="${nutrient}"]`);
-        b.classList.remove('check-mode'); b.classList.add('completed');
+        if (b) {
+            b.classList.remove('check-mode'); 
+            b.classList.add('completed');
+        }
     }
     document.getElementById('check-modal').classList.add('visible');
 }
 
-// 🌟 드래그 완료 후 뱃지 무한 복사 로직 (M2/M3 통합)
+// 🌟 드래그 완료 후 뱃지 무한 복사 로직 (M2 / M3 / M4 통합)
 document.addEventListener('dnd-dropped', (e) => {
     // Mission 2 뱃지 복사
     const pool2 = document.getElementById('badge-pool');
@@ -641,8 +721,26 @@ document.addEventListener('dnd-dropped', (e) => {
             }
         });
     }
+
+    // Mission 4 뱃지 복사
+    const pool4 = document.getElementById('m4-badge-pool');
+    if (pool4) {
+        const m4Vals = ['탄수화물', '단백질', '지방', '바이타민', '무기염류', '물'];
+        m4Vals.forEach(val => {
+            const badgesInPool = Array.from(pool4.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
+            if (badgesInPool.length === 0) {
+                const clone = document.createElement('div');
+                clone.className = 'nutrient-badge dnd-item';
+                clone.dataset.val = val;
+                clone.innerText = val;
+                pool4.appendChild(clone);
+            } else if (badgesInPool.length > 1) {
+                for (let i = 1; i < badgesInPool.length; i++) badgesInPool[i].remove();
+            }
+        });
+    }
     
-    if(window.humanBadyDnD) window.humanBadyDnD.init();
+    if (window.humanBadyDnD) window.humanBadyDnD.init();
 });
 
 function verifyM2Quiz() {
@@ -705,7 +803,7 @@ function verifyM2Quiz() {
 
         updateSidebarUI('nav-m2');
         const container = document.getElementById('mission2-section');
-        setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+        if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
     }
 }
 
@@ -715,10 +813,11 @@ function verifyM2Quiz() {
 function transitionToMission3() {
     document.getElementById('mission1-section').style.display = 'none';
     document.getElementById('mission2-section').style.display = 'none';
+    if (document.getElementById('mission4-section')) document.getElementById('mission4-section').style.display = 'none';
     document.getElementById('mission3-section').style.display = 'flex';
     
     updateSidebarUI('nav-m3');
-    updateGuideText(3, "용액을 선택한 후 첫째 칸에 아이오딘-아이오딘화 칼륨 용액, 둘째 칸에 뷰렛 용액, 셋째 칸에 수단 Ⅲ 용액을 떨어뜨리세요.<br>홈판 실험이 끝난 후 베네딕트 실험을 진행하세요.");
+    updateGuideText(3, "안내에 따라 가상 실험을 진행해 보세요!"); 
 }
 
 const Mission3Lab = (function() {
@@ -736,7 +835,7 @@ const Mission3Lab = (function() {
 
     const reagentsMap = {
         benedict: { target: 'glucose', orig: '#4fc3f7', pos: '#ff9800', origText: '푸른색', posText: '황적색' },
-        iodine: { target: 'starch', orig: '#d4a373', pos: '#1a1a4b', origText: '연갈색', posText: '청람색' }, // 수정됨
+        iodine: { target: 'starch', orig: '#d4a373', pos: '#1a1a4b', origText: '연갈색', posText: '청람색' }, 
         biuret: { target: 'protein', orig: '#81d4fa', pos: '#9c27b0', origText: '푸른색', posText: '보라색' },
         sudan: { target: 'fat', orig: '#ff8a80', pos: '#d50000', origText: '붉은색', posText: '선홍색' }
     };
@@ -906,7 +1005,11 @@ const Mission3Lab = (function() {
         
         usedReagentsForCurrent.push(regKey);
 
-        const wellOffset = usedReagentsForCurrent.length - 1;
+        let wellOffset = 0;
+        if (regKey === 'iodine') wellOffset = 0;       
+        else if (regKey === 'biuret') wellOffset = 1;  
+        else if (regKey === 'sudan') wellOffset = 2;   
+
         const well = DOM.wellPlate.children[rowIndex * 3 + wellOffset];
         
         well.style.backgroundColor = finalColor;
@@ -944,14 +1047,14 @@ const Mission3Lab = (function() {
             isProcessing = false;
             alert("🎉 모든 실험이 완료되었습니다!");
             
-            // 💡 결과 요약창 자동 열기
+            // 결과 정리창 스르르 열리는 애니메이션 처리
             const summaryArea = document.getElementById('m3-final-summary');
             if (summaryArea) {
-                summaryArea.classList.add('visible');
+                summaryArea.classList.add('visible'); 
                 setTimeout(() => {
                     const container = document.getElementById('mission3-section');
-                    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-                }, 100);
+                    if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                }, 400); 
             }
 
         }, 2000); 
@@ -1012,24 +1115,28 @@ const Mission3Lab = (function() {
             cell.innerText = '';
         });
 
+        // 초기화 시 결과 요약창 닫기
         const summaryArea = document.getElementById('m3-final-summary');
         if (summaryArea) {
-            summaryArea.classList.remove('visible');
+            summaryArea.classList.remove('visible'); 
             
-            // 미션3 퀴즈 초기화
             document.querySelectorAll('.m3-quiz-slot').forEach(z => {
                 z.innerHTML = ''; z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error');
             });
-            document.getElementById('btn-check-m3-quiz').style.display = 'block';
-            document.getElementById('btn-next-m4-from-m3').style.display = 'none';
+            const checkBtn = document.getElementById('btn-check-m3-quiz');
+            if (checkBtn) checkBtn.style.display = 'block';
+            
+            const nextBtn = document.getElementById('btn-next-m4-from-m3');
+            if (nextBtn) nextBtn.style.display = 'none';
         }
     }
 
     return { init };
 })();
 
-window.addEventListener('load', () => {
-    if(document.getElementById('m3-well-plate')) {
+// DOM 로드 즉시 초기화하여 홈판 생성 지연 문제 해결
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('m3-well-plate')) {
         Mission3Lab.init();
     }
 });
@@ -1044,7 +1151,7 @@ function verifyM3Quiz() {
     slots.forEach(slot => {
         const item = slot.querySelector('.dnd-item');
         if (item) {
-            const val = item.dataset.val; // m3에서는 val을 사용
+            const val = item.dataset.val; 
             if (val === slot.dataset.answer) {
                 slot.style.borderColor = 'var(--color-mint)';
                 slot.style.backgroundColor = '#EFFFFD';
@@ -1069,16 +1176,117 @@ function verifyM3Quiz() {
             badge.classList.add('dnd-locked');
         });
         
-        document.getElementById('btn-check-m3-quiz').style.display = 'none';
-        document.getElementById('btn-next-m4-from-m3').style.display = 'block';
+        const checkBtn = document.getElementById('btn-check-m3-quiz');
+        if (checkBtn) checkBtn.style.display = 'none';
+        
+        const nextBtn = document.getElementById('btn-next-m4-from-m3');
+        if (nextBtn) nextBtn.style.display = 'block';
 
         if (typeof updateSidebarUI === 'function') updateSidebarUI('nav-m3');
         
         const container = document.getElementById('mission3-section');
-        setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+        if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
     }
 }
 
+// ==========================================
+// Mission 4: 종합 정리 및 최종 확인
+// ==========================================
 function transitionToMission4() {
-    alert("🚀 Mission 4로 이동합니다! (이후 추가 개발이 필요합니다)");
+    document.getElementById('mission1-section').style.display = 'none';
+    document.getElementById('mission2-section').style.display = 'none';
+    document.getElementById('mission3-section').style.display = 'none';
+    const m4Sec = document.getElementById('mission4-section');
+    if (m4Sec) m4Sec.style.display = 'flex';
+    
+    updateSidebarUI('nav-m4');
+    updateGuideText(4, "배운 내용을 바탕으로 영양소의 기능을 종합적으로 정리해 보세요!");
+    
+    // 뱃지 잠금 해제
+    document.querySelectorAll('#m4-badge-pool .dnd-item').forEach(badge => badge.classList.remove('dnd-locked'));
+}
+
+function verifyM4Quiz() {
+    document.querySelectorAll('.m4-q1-zone, .m4-q2-zone').forEach(z => {
+        z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error');
+    });
+
+    // 1.1 퀴즈 (에너지원: 탄수화물, 단백질, 지방)
+    const q1Zones = document.querySelectorAll('.m4-q1-zone');
+    const q1Answers = ['탄수화물', '단백질', '지방'];
+    let q1Correct = true;
+    let enteredQ1 = []; 
+
+    q1Zones.forEach(zone => {
+        const item = zone.querySelector('.dnd-item');
+        if (item) {
+            const val = item.dataset.val;
+            if (q1Answers.includes(val) && !enteredQ1.includes(val)) {
+                enteredQ1.push(val);
+                zone.style.borderColor = 'var(--color-mint)';
+                zone.style.backgroundColor = '#EFFFFD';
+            } else {
+                zone.classList.add('error'); q1Correct = false;
+                setTimeout(() => zone.classList.remove('error'), 300);
+            }
+        } else {
+            zone.classList.add('error'); q1Correct = false;
+            setTimeout(() => zone.classList.remove('error'), 300);
+        }
+    });
+
+    // 1.2 퀴즈 (인체 구성: 물, 단백질, 지방, 무기염류)
+    const q2Zones = document.querySelectorAll('.m4-q2-zone');
+    const q2Answers = ['물', '단백질', '지방', '무기염류'];
+    let q2Correct = true;
+    let enteredQ2 = [];
+
+    q2Zones.forEach(zone => {
+        const item = zone.querySelector('.dnd-item');
+        if (item) {
+            const val = item.dataset.val;
+            if (q2Answers.includes(val) && !enteredQ2.includes(val)) {
+                enteredQ2.push(val);
+                zone.style.borderColor = 'var(--color-mint)';
+                zone.style.backgroundColor = '#EFFFFD';
+            } else {
+                zone.classList.add('error'); q2Correct = false;
+                setTimeout(() => zone.classList.remove('error'), 300);
+            }
+        } else {
+            zone.classList.add('error'); q2Correct = false;
+            setTimeout(() => zone.classList.remove('error'), 300);
+        }
+    });
+
+    // 정답 처리 및 마스터 승격 화면 노출
+    if (q1Correct && q2Correct) {
+        if (window.UniversalReward) window.UniversalReward.complete(1, 4);
+        launchConfettiEffect();
+        
+        // 정답 시 뱃지 잠금
+        document.querySelectorAll('#m4-badge-pool .dnd-item, .m4-q1-zone .dnd-item, .m4-q2-zone .dnd-item').forEach(badge => {
+            badge.classList.add('dnd-locked');
+        });
+        
+        const checkBtn = document.getElementById('btn-check-m4-quiz');
+        if (checkBtn) checkBtn.style.display = 'none';
+
+        if (typeof updateSidebarUI === 'function') updateSidebarUI('nav-m4');
+        
+        const guide = document.getElementById('main-guide-text');
+        if (guide) {
+            guide.innerText = "🎉 대단해요! 동물과 에너지 모든 퀘스트를 완벽하게 클리어했습니다!";
+            guide.style.color = "var(--color-mint)";
+        }
+
+        // 최종 완료 축하 영역 표시
+        const successArea = document.getElementById('m4-success-area');
+        if (successArea) {
+            successArea.style.display = 'flex';
+        }
+
+        const container = document.getElementById('mission4-section');
+        if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+    }
 }
