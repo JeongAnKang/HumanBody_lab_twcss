@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateSidebarUI(activeNavId) {
-    const missionTitles = { 1: "영양소<br>종류", 2: "기능과<br>특징", 3: "영양소<br>검출", 4: "종합<br>정리" };
+    const missionTitles = { 1: "영양소<br>종류", 2: "기능과<br>특징", 3: "영양소<br>검출", 4: "내용<br>정리" };
 
     [1, 2, 3, 4].forEach(num => {
         const id = 'nav-m' + num;
@@ -354,9 +354,9 @@ const CARD_DATA = [
     { id: 2, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '포도당, 엿당, 설탕, 녹말 등이 있다.' },
     { id: 3, nutrient: '탄수화물', type: '그림', imgSrc: 'images/q1_m2_01.png', text: '밥, 국수, 빵, 감자, 고구마 등에 많이 들어 있다.' },
     { id: 4, nutrient: '단백질', type: '특징', imgSrc: null, text: '주로 몸을 구성하고 생명활동을 조절한다.' },
-    { id: 5, nutrient: '단백질', type: '특징', imgSrc: null, text: '기아, 고강도 운동시 에너지원으로 이용된다.' },
+    { id: 5, nutrient: '단백질', type: '특징', imgSrc: null, text: '심한 굶주림, 고강도 운동시 에너지원으로 이용된다.' },
     { id: 6, nutrient: '단백질', type: '그림', imgSrc: 'images/q1_m2_02.png', text: '살코기, 생선, 달걀, 두부, 콩 등에 많이 들어 있다.' },
-    { id: 7, nutrient: '지방', type: '특징', imgSrc: null, text: '몸을 구성하는 성분이고, 탄수화물 부족시 에너지원으로 이용된다.' },
+    { id: 7, nutrient: '지방', type: '특징', imgSrc: null, text: '몸을 구성하는 성분이고, g당 에너지 저장량이 많다.' },
     { id: 8, nutrient: '지방', type: '특징', imgSrc: null, text: '단열층을 만들어 체온을 유지하는 데 중요한 역할을 한다.' },
     { id: 9, nutrient: '지방', type: '그림', imgSrc: 'images/q1_m2_03.png', text: '땅콩, 깨, 버터, 참기름 등에 많이 들어 있다.' },
     { id: 10, nutrient: '바이타민', type: '특징', imgSrc: null, text: '몸의 구성성분은 아니나, 적은 양으로 생명 활동을 조절한다.' },
@@ -684,7 +684,7 @@ function openCheckModal(nutrient) {
     document.getElementById('check-modal').classList.add('visible');
 }
 
-// 🌟 드래그 완료 후 뱃지 무한 복사 로직 (M2 / M3 / M4 통합)
+// 🌟 드래그 완료 후 뱃지 무한 복사 로직 
 document.addEventListener('dnd-dropped', (e) => {
     // Mission 2 뱃지 복사
     const pool2 = document.getElementById('badge-pool');
@@ -707,7 +707,7 @@ document.addEventListener('dnd-dropped', (e) => {
     // Mission 3 뱃지 복사
     const pool3 = document.getElementById('m3-badge-pool');
     if (pool3) {
-        const m3Vals = ['포도당', '녹말', '단백질', '지방', '베네딕트', '아이오딘', '뷰렛', '수단Ⅲ', '푸른색', '청람색', '선홍색', '연갈색', '투명색', '황적색', '보라색'];
+        const m3Vals = ['포도당', '녹말', '단백질', '지방', '베네딕트', '아이오딘-아이오딘화칼륨', '뷰렛', '수단Ⅲ', '푸른색', '청람색', '선홍색', '연갈색', '투명색', '황적색', '보라색'];
         m3Vals.forEach(val => {
             const badgesInPool = Array.from(pool3.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
             if (badgesInPool.length === 0) {
@@ -722,10 +722,13 @@ document.addEventListener('dnd-dropped', (e) => {
         });
     }
 
-    // Mission 4 뱃지 복사
+    // 💡 Mission 4 통합 뱃지 무한 복사
     const pool4 = document.getElementById('m4-badge-pool');
     if (pool4) {
-        const m4Vals = ['탄수화물', '단백질', '지방', '바이타민', '무기염류', '물'];
+        const m4Vals = [
+            '영양소', '탄수화물', '단백질', '지방', '바이타민', '무기염류', '물', 
+            '베네딕트', '아이오딘-아이오딘화 칼륨', '뷰렛', '수단Ⅲ', '황적', '청람', '보라', '선홍'
+        ];
         m4Vals.forEach(val => {
             const badgesInPool = Array.from(pool4.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
             if (badgesInPool.length === 0) {
@@ -795,7 +798,8 @@ function verifyM2Quiz() {
         if (window.UniversalReward) window.UniversalReward.complete(1, 2);
         launchConfettiEffect();
         
-        document.querySelectorAll('.nutrient-badge').forEach(badge => badge.classList.add('dnd-locked'));
+        // 💡 올바르게 타겟팅된 잠금 처리
+        document.querySelectorAll('#badge-pool .dnd-item, .m2-q1-zone .dnd-item, .m2-q2-zone .dnd-item').forEach(badge => badge.classList.add('dnd-locked'));
         document.getElementById('btn-check-m2-quiz').style.display = 'none';
 
         const nextBtn = document.getElementById('btn-next-m3-from-m2');
@@ -806,6 +810,7 @@ function verifyM2Quiz() {
         if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
     }
 }
+
 
 // ==========================================
 // Mission 3: 가상 실험 로직 & 요약 퀴즈
@@ -818,6 +823,10 @@ function transitionToMission3() {
     
     updateSidebarUI('nav-m3');
     updateGuideText(3, "안내에 따라 가상 실험을 진행해 보세요!"); 
+    
+    // 💡 미션 3 뱃지들의 잠금을 확실하게 해제하고 드래그 기능을 다시 세팅합니다.
+    document.querySelectorAll('#m3-badge-pool .dnd-item').forEach(badge => badge.classList.remove('dnd-locked'));
+    if (window.humanBadyDnD) window.humanBadyDnD.init();
 }
 
 const Mission3Lab = (function() {
@@ -980,6 +989,22 @@ const Mission3Lab = (function() {
         });
 
         DOM.resetBtn.addEventListener('click', resetExperiment);
+        
+        const btnShowSummary = document.getElementById('btn-show-summary');
+        if (btnShowSummary) {
+            btnShowSummary.addEventListener('click', () => {
+                btnShowSummary.style.display = 'none'; // 버튼 숨기기
+                
+                const summaryArea = document.getElementById('m3-final-summary');
+                if (summaryArea) {
+                    summaryArea.classList.add('visible'); 
+                    setTimeout(() => {
+                        const container = document.getElementById('mission3-section');
+                        if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                    }, 100); 
+                }
+            });
+        }
     }
 
     function setWellSolution(rIndex, solKey) {
@@ -1044,19 +1069,16 @@ const Mission3Lab = (function() {
                 
                 updateTable(solKey, 'benedict', finalColor, finalResultText);
             }
+            
             isProcessing = false;
             alert("🎉 모든 실험이 완료되었습니다!");
             
-            // 결과 정리창 스르르 열리는 애니메이션 처리
-            const summaryArea = document.getElementById('m3-final-summary');
-            if (summaryArea) {
-                summaryArea.classList.add('visible'); 
-                setTimeout(() => {
-                    const container = document.getElementById('mission3-section');
-                    if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-                }, 400); 
+            const btnShowSummary = document.getElementById('btn-show-summary');
+            if (btnShowSummary) {
+                btnShowSummary.style.display = 'block';
+                const container = document.getElementById('mission3-section');
+                if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
             }
-
         }, 2000); 
     }
 
@@ -1115,7 +1137,6 @@ const Mission3Lab = (function() {
             cell.innerText = '';
         });
 
-        // 초기화 시 결과 요약창 닫기
         const summaryArea = document.getElementById('m3-final-summary');
         if (summaryArea) {
             summaryArea.classList.remove('visible'); 
@@ -1129,12 +1150,14 @@ const Mission3Lab = (function() {
             const nextBtn = document.getElementById('btn-next-m4-from-m3');
             if (nextBtn) nextBtn.style.display = 'none';
         }
+        
+        const btnShowSummary = document.getElementById('btn-show-summary');
+        if (btnShowSummary) btnShowSummary.style.display = 'none';
     }
 
     return { init };
 })();
 
-// DOM 로드 즉시 초기화하여 홈판 생성 지연 문제 해결
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('m3-well-plate')) {
         Mission3Lab.init();
@@ -1190,8 +1213,36 @@ function verifyM3Quiz() {
 }
 
 // ==========================================
-// Mission 4: 종합 정리 및 최종 확인
+// Mission 4: 내용 정리 뱃지 초기화 및 최종 확인
 // ==========================================
+
+// 💡 미션 4 진입 시 통합 뱃지를 무작위로 생성하여 하나의 풀에 넣는 함수
+function initM4Badges() {
+    const m4Vals = [
+        '영양소', '탄수화물', '단백질', '지방', '바이타민', '무기염류', '물', 
+        '베네딕트', '아이오딘-아이오딘화 칼륨', '뷰렛', '수단Ⅲ', '황적', '청람', '보라', '선홍'
+    ];
+
+    const pool = document.getElementById('m4-badge-pool');
+    if (!pool) return;
+    
+    pool.innerHTML = ''; // 풀 비우기
+    
+    let shuffledVals = [...m4Vals];
+    shuffle(shuffledVals); // 배열 섞기
+    
+    shuffledVals.forEach(val => {
+        const badge = document.createElement('div');
+        badge.className = 'nutrient-badge dnd-item';
+        badge.dataset.val = val;
+        badge.innerText = val;
+        pool.appendChild(badge);
+    });
+    
+    // 뱃지 재생성 후 드래그 앤 드롭 재활성화
+    if (window.humanBadyDnD) window.humanBadyDnD.init();
+}
+
 function transitionToMission4() {
     document.getElementById('mission1-section').style.display = 'none';
     document.getElementById('mission2-section').style.display = 'none';
@@ -1202,70 +1253,75 @@ function transitionToMission4() {
     updateSidebarUI('nav-m4');
     updateGuideText(4, "배운 내용을 바탕으로 영양소의 기능을 종합적으로 정리해 보세요!");
     
-    // 뱃지 잠금 해제
+    // 💡 미션 4 진입 시 통합 뱃지 생성 호출
+    initM4Badges();
     document.querySelectorAll('#m4-badge-pool .dnd-item').forEach(badge => badge.classList.remove('dnd-locked'));
 }
 
 function verifyM4Quiz() {
-    document.querySelectorAll('.m4-q1-zone, .m4-q2-zone').forEach(z => {
+    document.querySelectorAll('.m4-quiz-slot').forEach(z => {
         z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error');
     });
 
-    // 1.1 퀴즈 (에너지원: 탄수화물, 단백질, 지방)
-    const q1Zones = document.querySelectorAll('.m4-q1-zone');
-    const q1Answers = ['탄수화물', '단백질', '지방'];
-    let q1Correct = true;
-    let enteredQ1 = []; 
+    let allCorrect = true;
+    let groups = {}; 
 
-    q1Zones.forEach(zone => {
-        const item = zone.querySelector('.dnd-item');
-        if (item) {
-            const val = item.dataset.val;
-            if (q1Answers.includes(val) && !enteredQ1.includes(val)) {
-                enteredQ1.push(val);
-                zone.style.borderColor = 'var(--color-mint)';
-                zone.style.backgroundColor = '#EFFFFD';
-            } else {
-                zone.classList.add('error'); q1Correct = false;
-                setTimeout(() => zone.classList.remove('error'), 300);
-            }
+    document.querySelectorAll('.m4-quiz-slot').forEach(slot => {
+        const item = slot.querySelector('.dnd-item');
+        if (!item) {
+            slot.classList.add('error');
+            allCorrect = false;
+            setTimeout(() => slot.classList.remove('error'), 300);
+            return;
+        }
+
+        const val = item.dataset.val;
+        const expectedAnswers = slot.dataset.answer.split(',');
+        const group = slot.dataset.group;
+
+        if (group) {
+            if (!groups[group]) groups[group] = { values: [], slots: [] };
+            groups[group].values.push(val);
+            groups[group].slots.push(slot);
         } else {
-            zone.classList.add('error'); q1Correct = false;
-            setTimeout(() => zone.classList.remove('error'), 300);
+            if (expectedAnswers.includes(val)) {
+                slot.style.borderColor = 'var(--color-mint)';
+                slot.style.backgroundColor = '#EFFFFD';
+            } else {
+                slot.classList.add('error');
+                allCorrect = false;
+                setTimeout(() => slot.classList.remove('error'), 300);
+            }
         }
     });
 
-    // 1.2 퀴즈 (인체 구성: 물, 단백질, 지방, 무기염류)
-    const q2Zones = document.querySelectorAll('.m4-q2-zone');
-    const q2Answers = ['물', '단백질', '지방', '무기염류'];
-    let q2Correct = true;
-    let enteredQ2 = [];
+    for (const [groupName, data] of Object.entries(groups)) {
+        const expectedList = data.slots[0].dataset.answer.split(','); 
+        const actualValues = data.values;
+        
+        const isUnique = new Set(actualValues).size === actualValues.length;
+        const isAllValid = actualValues.every(v => expectedList.includes(v));
 
-    q2Zones.forEach(zone => {
-        const item = zone.querySelector('.dnd-item');
-        if (item) {
-            const val = item.dataset.val;
-            if (q2Answers.includes(val) && !enteredQ2.includes(val)) {
-                enteredQ2.push(val);
-                zone.style.borderColor = 'var(--color-mint)';
-                zone.style.backgroundColor = '#EFFFFD';
-            } else {
-                zone.classList.add('error'); q2Correct = false;
-                setTimeout(() => zone.classList.remove('error'), 300);
-            }
+        if (isUnique && isAllValid) {
+            data.slots.forEach(slot => {
+                slot.style.borderColor = 'var(--color-mint)';
+                slot.style.backgroundColor = '#EFFFFD';
+            });
         } else {
-            zone.classList.add('error'); q2Correct = false;
-            setTimeout(() => zone.classList.remove('error'), 300);
+            data.slots.forEach(slot => {
+                slot.classList.add('error');
+                setTimeout(() => slot.classList.remove('error'), 300);
+            });
+            allCorrect = false;
         }
-    });
+    }
 
-    // 정답 처리 및 마스터 승격 화면 노출
-    if (q1Correct && q2Correct) {
+    if (allCorrect) {
         if (window.UniversalReward) window.UniversalReward.complete(1, 4);
         launchConfettiEffect();
         
-        // 정답 시 뱃지 잠금
-        document.querySelectorAll('#m4-badge-pool .dnd-item, .m4-q1-zone .dnd-item, .m4-q2-zone .dnd-item').forEach(badge => {
+        // 정답 시 모든 그룹 풀 및 슬롯의 뱃지 잠금
+        document.querySelectorAll('#m4-badge-pool .dnd-item, .m4-quiz-slot .dnd-item').forEach(badge => {
             badge.classList.add('dnd-locked');
         });
         
@@ -1276,11 +1332,10 @@ function verifyM4Quiz() {
         
         const guide = document.getElementById('main-guide-text');
         if (guide) {
-            guide.innerText = "🎉 대단해요! 동물과 에너지 모든 퀘스트를 완벽하게 클리어했습니다!";
+            guide.innerText = "🎉 대단해요! 퀘스트 1 영양소를 완벽하게 클리어했습니다!";
             guide.style.color = "var(--color-mint)";
         }
 
-        // 최종 완료 축하 영역 표시
         const successArea = document.getElementById('m4-success-area');
         if (successArea) {
             successArea.style.display = 'flex';
@@ -1288,5 +1343,8 @@ function verifyM4Quiz() {
 
         const container = document.getElementById('mission4-section');
         if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+        
+    } else {
+        alert("아직 채우지 않은 빈칸이 있거나 잘못 연결된 뱃지가 있습니다.\n깜빡이는 빨간색 칸을 다시 확인해 보세요!");
     }
 }
