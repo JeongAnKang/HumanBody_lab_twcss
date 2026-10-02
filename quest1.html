@@ -420,8 +420,11 @@
                     아래 뱃지들을 드래그하여 배운 내용의 빈칸을 완성해 보세요!
                 </p>
     
-                <!-- 💡 뱃지 풀 통합 (모든 뱃지가 들어갈 단일 방) -->
-                <div id="m4-badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="30" style="width: 100%; max-width: none; min-height: 120px; margin-bottom: 20px;">
+                <!-- 💡 뱃지 풀 통합 (스크롤 시 화면 상단에 따라다니도록 고정) -->
+                <div style="position: sticky; top: -10px; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-bottom: 25px; backdrop-filter: blur(5px); border: 2px solid var(--color-mint);">
+                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 10px; color: var(--color-mint); text-align: center;">👇 아래로 스크롤해도 뱃지 창이 따라옵니다!</div>
+                    <div id="m4-badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="30" style="width: 100%; max-width: none; min-height: 80px; margin: 0; border: none; background: transparent; padding: 0;">
+                    </div>
                 </div>
 
                 <!-- 내용 정리 학습지 영역 -->
