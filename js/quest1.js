@@ -79,7 +79,17 @@ function updateSidebarUI(activeNavId) {
         let icon = '';
         
         const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(1, num);
-        const isAccessible = typeof canAccessMission === 'function' ? canAccessMission(1, num).access : (num === 1 || isCompleted);
+        
+        // 💡 수정된 부분: 외부 스크립트 한계를 피해, 이전 미션을 완료했으면 즉시 접근(자물쇠 해제) 처리
+        let isAccessible = false;
+        if (num === 1 || isCompleted) {
+            isAccessible = true;
+        } else if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, num - 1)) {
+            isAccessible = true; // 이전 미션(예: 미션3)을 완료하면 현재 미션(미션4) 열림
+        } else if (typeof canAccessMission === 'function') {
+            const res = canAccessMission(1, num);
+            if (res) isAccessible = res.access;
+        }
         
         if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
         else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
