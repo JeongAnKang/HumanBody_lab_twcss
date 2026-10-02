@@ -1330,10 +1330,16 @@ function verifyM4Quiz() {
         if (window.UniversalReward) window.UniversalReward.complete(1, 4);
         launchConfettiEffect();
         
-        // 정답 시 모든 그룹 풀 및 슬롯의 뱃지 잠금
-        document.querySelectorAll('#m4-badge-pool .dnd-item, .m4-quiz-slot .dnd-item').forEach(badge => {
+        // 정답 시 학습지 빈칸에 들어간 뱃지들 잠금
+        document.querySelectorAll('.m4-quiz-slot .dnd-item').forEach(badge => {
             badge.classList.add('dnd-locked');
         });
+        
+        // 💡 추가된 로직: 정답 확인 시 상단 뱃지 풀(끈적이 박스 전체) 숨기기
+        const badgePool = document.getElementById('m4-badge-pool');
+        if (badgePool && badgePool.parentElement) {
+            badgePool.parentElement.style.display = 'none';
+        }
         
         const checkBtn = document.getElementById('btn-check-m4-quiz');
         if (checkBtn) checkBtn.style.display = 'none';
