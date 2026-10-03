@@ -3,17 +3,17 @@
 // ==========================================
 const TEACHER_ACCESS = Object.freeze({
     unlockedQuest: 1,        
-    lockedQuest: 2,          
+    lockedQuest: 4,          
     explicitLocks: []        
 });
 
 const QUESTS = Object.freeze({
     1: { title: '영양소', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] }, //  4개 미션으로 quest1 완료 처리
     2: { title: '소화', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
-    3: { title: '순환', missions: [{id: 1}, {id: 2}, {id: 3}] },
-    4: { title: '호흡', missions: [{id: 1}, {id: 2}] },
-    5: { title: '배설', missions: [{id: 1}] }, 
-    6: { title: '종합', missions: [{id: 1}] }
+    3: { title: '순환', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
+    4: { title: '호흡', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
+    5: { title: '배설', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] }, 
+    6: { title: '종합', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] }
 });
 
 // ==========================================
