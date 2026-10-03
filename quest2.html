@@ -46,9 +46,9 @@
         .experiment-table th { background: var(--color-mint); color: white; font-weight: 800; }
         .experiment-table td strong { color: var(--color-coral); }
 
-        /* 소화계 구조와 기능 전용 테이블 (유연한 폭(100%) 및 파란색 테두리) */
+        /* 소화계 구조와 기능 전용 테이블 (가로폭 100% 및 파란색 테두리) */
         .digestive-table-wrapper { border: 3px solid #74C0FC; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-soft); margin: 0 auto 20px; width: 100%; }
-        .digestive-table { width: 100%; border-collapse: collapse; background: white; font-size: 1.4rem; text-align: left; }
+        .digestive-table { width: 100%; border-collapse: collapse; background: white; font-size: 1.3rem; text-align: left; }
         .digestive-table th, .digestive-table td { border: 1px solid #A5D8FF; padding: 10px 15px; word-break: keep-all; line-height: 1.4; color: var(--text-main); }
         .digestive-table th { background: #E7F5FF; color: #1864AB; font-weight: 800; border-bottom: 2px solid #74C0FC; text-align: center; }
         .digestive-table tr:first-child th { border-top: none; }
@@ -63,7 +63,7 @@
 
         /* 드롭존 빈칸 스타일 */
         .answer-slot { width: max-content; min-width: 110px; height: max-content; min-height: 46px; border: 2px dashed #ccc; border-radius: 23px; background-color: #FAFAFA; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-sizing: border-box; position: relative; overflow: hidden; }
-        .answer-slot::before { content: attr(data-hint); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #9c8989; font-size: 1.2rem; font-weight: 800; pointer-events: none; z-index: 0; white-space: nowrap; }
+        .answer-slot::before { content: attr(data-hint); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #9c8989; font-size: 1.15rem; font-weight: 800; pointer-events: none; z-index: 0; white-space: nowrap; }
         .answer-slot.dnd-over { border-color: var(--color-coral); background-color: rgba(255, 143, 171, 0.1); transform: scale(1.05); }
         .answer-slot.drop-success { border-color: var(--color-mint); background: #EFFFFD; }
         .answer-slot.error { border-color: var(--color-error); background-color: rgba(255,107,107,0.1); animation: shake 0.3s; }
@@ -96,43 +96,43 @@
         <!-- =====================================
              Mission 1: 소화기관계
              ===================================== -->
-        <section id="mission1-section" class="card" style="overflow-y: auto; display: block; padding: 15px 20px;">
-            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 10px; font-size: 1.6rem; font-weight: 900;">✨ Mission 1: 소화기관계</h2>
+        <!-- 💡 패딩을 원래 quest1.html 구조로 복구했습니다 (억지 압축 제거) -->
+        <section id="mission1-section" class="card" style="overflow-y: auto; display: block;">
+            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 20px; font-size: 1.8rem; font-weight: 900;">✨ Mission 1: 소화기관계</h2>
             
             <!-- [단계 1] 문장 완성 -->
-            <div id="m1-phase1" class="quiz-area visible" style="width: 100%; max-height: none; padding: 0; display: flex; flex-direction: column; min-height: calc(100dvh - 180px);">
+            <div id="m1-phase1" class="quiz-area visible" style="width: 100%; max-height: none; padding: 10px 0;">
                 
-                <div style="flex: 1; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px;">
-                    <img src="images/q2_m1_01_intro.png" alt="도입 일러스트" style="max-width: 85%; max-height: 30vh; height: 100%; object-fit: contain; border-radius: 16px; box-shadow: var(--shadow-soft);" onerror="this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_intro.png)'">
-                    <h3 style="color: var(--text-main); font-size: 1.3rem; font-weight: bold; margin-top: 15px; word-break: keep-all; text-align: center;">
+                <!-- 💡 높이를 vh로 제한하여 이미지 크기만 줄어들고 프레임은 무너지지 않도록 설정 -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="images/q2_m1_01_intro.png" alt="도입 일러스트" style="max-width: 100%; height: 25vh; object-fit: contain; border-radius: 16px; box-shadow: var(--shadow-soft); margin: 0 auto;" onerror="this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_intro.png)'">
+                    <h3 style="color: var(--text-main); font-size: 1.25rem; font-weight: bold; margin-top: 15px; word-break: keep-all; text-align: center;">
                         우리가 먹은 음식물 속의 영양소는 어떤 과정을 거쳐 온 몸의 세포로 공급될까?
                     </h3>
                 </div>
 
-                <div style="flex-shrink: 0;">
-                    <div id="m1-pool-phase1-wrap" style="position: relative; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 10px 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 15px; border: 2px solid var(--color-mint);">
-                        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 8px; color: var(--color-mint); text-align: center;">👇 뱃지를 드래그하여 문장을 완성하세요!</div>
-                        <div id="m1-badge-pool-1" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="20" style="margin: 0; border: none; background: transparent; padding: 0; min-height: auto; gap: 8px;">
-                            <div class="nutrient-badge dnd-item" data-val="소화계">소화계</div>
-                            <div class="nutrient-badge dnd-item" data-val="순환계">순환계</div>
-                            <div class="nutrient-badge dnd-item" data-val="호흡계">호흡계</div>
-                            <div class="nutrient-badge dnd-item" data-val="배설계">배설계</div>
-                            <div class="nutrient-badge dnd-item" data-val="신경계">신경계</div>
-                            <div class="nutrient-badge dnd-item" data-val="분해">분해</div>
-                            <div class="nutrient-badge dnd-item" data-val="합성">합성</div>
-                            <div class="nutrient-badge dnd-item" data-val="흡수">흡수</div>
-                            <div class="nutrient-badge dnd-item" data-val="방출">방출</div>
-                            <div class="nutrient-badge dnd-item" data-val="세포">세포</div>
-                        </div>
+                <div id="m1-pool-phase1-wrap" style="position: sticky; top: 10px; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-bottom: 25px; backdrop-filter: blur(5px); border: 2px solid var(--color-mint);">
+                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 10px; color: var(--color-mint); text-align: center;">👇 뱃지를 드래그하여 문장을 완성하세요!</div>
+                    <div id="m1-badge-pool-1" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="20" style="margin: 0; border: none; background: transparent; padding: 0;">
+                        <div class="nutrient-badge dnd-item" data-val="소화계">소화계</div>
+                        <div class="nutrient-badge dnd-item" data-val="순환계">순환계</div>
+                        <div class="nutrient-badge dnd-item" data-val="호흡계">호흡계</div>
+                        <div class="nutrient-badge dnd-item" data-val="배설계">배설계</div>
+                        <div class="nutrient-badge dnd-item" data-val="신경계">신경계</div>
+                        <div class="nutrient-badge dnd-item" data-val="분해">분해</div>
+                        <div class="nutrient-badge dnd-item" data-val="합성">합성</div>
+                        <div class="nutrient-badge dnd-item" data-val="흡수">흡수</div>
+                        <div class="nutrient-badge dnd-item" data-val="방출">방출</div>
+                        <div class="nutrient-badge dnd-item" data-val="세포">세포</div>
                     </div>
+                </div>
 
-                    <div style="background: #f9f9f9; padding: 15px 20px; border-radius: 12px; margin-bottom: 15px; text-align: left; line-height: 2.1; font-size: 1.4rem; color: var(--text-main); font-weight: bold;">
-                        우리가 먹은 음식물은 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="소화계" data-hint="( ㅅㅎㄱ )"></div>를 거치면서 크기가 작은 영양소로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="분해" data-hint="( ㅂㅎ )"></div>된 후 몸 안으로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="흡수" data-hint="( ㅎㅅ )"></div>되어 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="순환계" data-hint="( ㅅㅎㄱ )"></div>을(를) 통해 온몸의 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="세포" data-hint="( ㅅㅍ )"></div>로 공급된다.
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <button class="btn-primary" id="btn-check-m1-sentence" style="max-width: 250px; margin-bottom: 0;" onclick="verifyM1Sentence()">문장 확인하기 🔍</button>
-                    </div>
+                <div style="background: #f9f9f9; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: left; line-height: 2.3; font-size: 1.3rem; color: var(--text-main); font-weight: bold;">
+                    우리가 먹은 음식물은 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="소화계" data-hint="( ㅅㅎㄱ )"></div>를 거치면서 크기가 작은 영양소로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="분해" data-hint="( ㅂㅎ )"></div>된 후 몸 안으로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="흡수" data-hint="( ㅎㅅ )"></div>되어 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="순환계" data-hint="( ㅅㅎㄱ )"></div>을(를) 통해 온몸의 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="세포" data-hint="( ㅅㅍ )"></div>로 공급된다.
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-primary" id="btn-check-m1-sentence" style="max-width: 250px; margin: 0 auto;" onclick="verifyM1Sentence()">문장 확인하기 🔍</button>
                 </div>
             </div>
 
@@ -180,43 +180,43 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="입"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="입" data-hint="입"></div></td>
                                     <td>음식물을 이로 잘게 부수고 침과 골고루 섞어 탄수화물(녹말)을 소화한다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="식도"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="식도" data-hint="식도"></div></td>
                                     <td>입과 위를 연결하는 관으로, 입에서 넘어온 음식물을 위로 내려보낸다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="위"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="위" data-hint="위"></div></td>
                                     <td>주머니 모양으로 생겼으며, 위액을 분비하여 단백질을 소화한다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="소장"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="작은창자" data-hint="작은창자"></div></td>
                                     <td>길고 가는 관으로, 탄수화물, 단백질, 지방의 소화가 모두 일어나며, 최종 소화 산물이 흡수된다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="대장"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="큰창자" data-hint="큰창자"></div></td>
                                     <td>작은창자보다 굵은 관으로, 작은창자에서 흡수하고 남은 찌꺼기 속 여분의 물을 흡수한다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="항문"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="항문" data-hint="항문"></div></td>
                                     <td>작은창자와 큰창자에서 흡수되고 남은 찌꺼기를 몸 밖으로 내보낸다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="침샘"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="침샘" data-hint="침샘"></div></td>
                                     <td>침을 분비하여 입 안으로 내보낸다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="간"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="간" data-hint="간"></div></td>
                                     <td>쓸개즙을 생성하고 영양소를 저장하며, 독성 물질을 해독한다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="쓸개"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="쓸개" data-hint="쓸개"></div></td>
                                     <td>쓸개즙을 저장하고 있다가 음식물이 작은창자로 들어오면 쓸개즙을 분비한다.</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="이자"></div></td>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="이자" data-hint="이자"></div></td>
                                     <td>녹말, 단백질, 지방을 분해하는 소화효소가 들어 있는 이자액을 생성하여 분비한다.</td>
                                 </tr>
                             </tbody>
@@ -224,7 +224,7 @@
                     </div>
                 </div>
 
-                <!-- 소화계의 구성 분류 활동 (반응형 Flex 적용) -->
+                <!-- 소화계의 구성 분류 활동 -->
                 <div style="margin-top: 20px; border-top: 2px dashed #eee; padding-top: 30px;">
                     <h3 style="color: var(--color-coral); text-align: center; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold;">📝 소화계의 구성</h3>
                     <p style="text-align: center; color: var(--text-sub); font-weight: bold; margin-bottom: 15px;">소화계의 기관들을 올바른 범주에 드래그하여 완성하세요.</p>
@@ -239,8 +239,8 @@
                                 (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="입"></div>),
                                 (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="식도"></div>),
                                 (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="위"></div>),
-                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="소장"></div>),
-                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="대장"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="작은창자"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="큰창자"></div>),
                                 (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="항문"></div>)
                             </div>
                         </div>
@@ -389,7 +389,7 @@
             
             <div class="quiz-area visible" style="width: 100%; max-height: none; padding: 10px 20px;">
                 <p style="font-size: 1.1rem; font-weight: bold; color: var(--text-sub); margin-bottom: 15px; text-align: center;">
-                    최종 산물로 분해된 영양소는 소장의 융털에서 흡수됩니다. 알맞게 연결해 보세요!
+                    최종 산물로 분해된 영양소는 작은창자의 융털에서 흡수됩니다. 알맞게 연결해 보세요!
                 </p>
     
                 <div style="position: sticky; top: 10px; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-bottom: 25px; backdrop-filter: blur(5px); border: 2px solid var(--color-mint);">
@@ -410,7 +410,7 @@
                         <span style="display:inline-block; margin-left: 15px;">• 지방 ➡</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="지방산,모노글리세리드" data-group="fat_final"></span> + <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="지방산,모노글리세리드" data-group="fat_final"></span>
                     </div>
 
-                    <div style="margin-top: 15px;"><strong>3. 소장 융털에서의 영양소 흡수</strong><br>
+                    <div style="margin-top: 15px;"><strong>3. 작은창자 융털에서의 영양소 흡수</strong><br>
                         <span style="display:inline-block; margin-left: 15px;">• 융털의</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="모세혈관"></span> : 수용성 영양소 흡수<br>
                         <span style="display:inline-block; margin-left: 15px;">• 융털의</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="암죽관"></span> : 지용성 영양소 흡수
                     </div>
@@ -485,7 +485,6 @@
                 let icon = '';
                 
                 const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(2, num);
-                
                 let isAccessible = false;
                 if (num === 1 || isCompleted) {
                     isAccessible = true;
@@ -623,7 +622,7 @@
             pool.innerHTML = '';
             
             // 소화관(6개) + 부속기관(4개) = 10개 기관 뱃지
-            const organs = ['입', '식도', '위', '소장', '대장', '항문', '침샘', '간', '쓸개', '이자'];
+            const organs = ['입', '식도', '위', '작은창자', '큰창자', '항문', '침샘', '간', '쓸개', '이자'];
             organs.sort(() => Math.random() - 0.5);
             
             organs.forEach(val => {
@@ -886,7 +885,7 @@
             document.getElementById('mission3-section').style.display = 'none';
             document.getElementById('mission4-section').style.display = 'flex';
             
-            updateGuideText("소화된 영양소가 소장에서 어떻게 흡수되는지 정리해 보세요!");
+            updateGuideText("소화된 영양소가 작은창자에서 어떻게 흡수되는지 정리해 보세요!");
             updateSidebarUI('nav-m4');
             
             initM4Badges();
@@ -1021,7 +1020,7 @@
 
             const pool2 = document.getElementById('m1-badge-pool-2');
             if (pool2) {
-                const organVals = ['입', '식도', '위', '소장', '대장', '항문', '침샘', '간', '쓸개', '이자'];
+                const organVals = ['입', '식도', '위', '작은창자', '큰창자', '항문', '침샘', '간', '쓸개', '이자'];
                 organVals.forEach(val => {
                     const badgesInPool = Array.from(pool2.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
                     if (badgesInPool.length === 0) {
