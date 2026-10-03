@@ -5,28 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quest 2: 소화</title>
     
+    <!-- 공통 CSS 연결 -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Tailwind CSS 및 Confetti 스크립트 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* Mission 1 스타일 */
+        /* ==========================================
+           Quest 2 전용 CSS
+           ========================================== */
         .path-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 30px 0; align-items: center; }
-        .path-slot { width: 100px; height: 100px; border: 3px dashed var(--color-coral-light); border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: all 0.2s; }
-        .path-slot.dnd-over { border-color: var(--color-coral); background: rgba(255, 143, 171, 0.1); transform: scale(1.05); }
-        .path-slot.error { border-color: var(--color-error, #FF6B6B); animation: shake 0.3s; }
         
-        .organ-badge { width: 90px; height: 90px; background-color: white; border: 2px solid var(--color-mint); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: var(--text-main); cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* 타원형 캡슐 뱃지 스타일 */
+        .organ-badge { width: 85px; height: 46px; background-color: white; border: 2px solid var(--color-mint); border-radius: 23px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--text-main); cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1; }
         .organ-badge:active { cursor: grabbing; transform: scale(0.95); }
         .organ-badge.dnd-locked { border-color: #ddd; color: #888; background: #f9f9f9; box-shadow: none; pointer-events: none; }
         
-        .arrow { font-size: 2rem; color: var(--color-coral-light); font-weight: bold; }
-        .badge-pool { display: flex; gap: 15px; justify-content: center; padding: 20px; background: rgba(255,255,255,0.6); border-radius: 20px; min-height: 130px; flex-wrap: wrap; }
+        .nutrient-badge { background-color: white; border: 2px solid var(--color-coral-light); color: var(--text-main); padding: 8px 18px; border-radius: 20px; font-size: 1rem; font-weight: bold; cursor: grab; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); user-select: none; touch-action: none; width: fit-content; height: fit-content; white-space: nowrap; z-index: 1; }
+        .nutrient-badge:active { cursor: grabbing; transform: scale(0.95); }
+        .nutrient-badge.dnd-locked { border-color: #ddd; background: #f9f9f9; color: #aaa; box-shadow: none; pointer-events: none; }
+        
+        .badge-pool { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; background: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 16px; border: 2px dashed var(--color-coral-light); min-height: auto; margin-bottom: 15px; width: 100%; max-width: 100%; transition: background-color 0.2s; }
+        .badge-pool.dnd-over { background: rgba(130, 209, 217, 0.1); border-color: var(--color-mint); }
 
-        /* Mission 2 스타일 */
         .digestion-baskets { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; width: 100%; flex-wrap: wrap; }
         .d-basket { flex: 1; min-width: 280px; min-height: 250px; border: 4px dashed var(--color-coral-light); border-radius: 24px; background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; padding: 20px; transition: all 0.2s; }
         .d-basket.dnd-over { border-color: var(--color-coral); background: rgba(255, 143, 171, 0.1); transform: scale(1.02); }
+        .d-basket.drop-success { border-color: var(--color-mint); background: #EFFFFD; }
         .d-basket.error { border-color: var(--color-error); animation: shake 0.3s; }
         .d-basket-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee; width: 100%; text-align: center;}
         
@@ -39,67 +46,233 @@
         .experiment-table th { background: var(--color-mint); color: white; font-weight: 800; }
         .experiment-table td strong { color: var(--color-coral); }
 
+        /* 소화계 구조와 기능 전용 테이블 (유연한 폭(100%) 및 파란색 테두리) */
+        .digestive-table-wrapper { border: 3px solid #74C0FC; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-soft); margin: 0 auto 20px; width: 100%; }
+        .digestive-table { width: 100%; border-collapse: collapse; background: white; font-size: 1.4rem; text-align: left; }
+        .digestive-table th, .digestive-table td { border: 1px solid #A5D8FF; padding: 10px 15px; word-break: keep-all; line-height: 1.4; color: var(--text-main); }
+        .digestive-table th { background: #E7F5FF; color: #1864AB; font-weight: 800; border-bottom: 2px solid #74C0FC; text-align: center; }
+        .digestive-table tr:first-child th { border-top: none; }
+        .digestive-table tr:last-child td { border-bottom: none; }
+        .digestive-table tr th:first-child, .digestive-table tr td:first-child { border-left: none; }
+        .digestive-table tr th:last-child, .digestive-table tr td:last-child { border-right: none; }
+
         .input-group { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 10px 15px; border-radius: 12px; margin: 10px auto; max-width: 400px;}
         .m2-input { flex: 1; border: 2px solid #ddd; border-radius: 8px; padding: 8px; font-size: 1rem; font-weight: bold; text-align: center; outline: none; transition: border-color 0.2s; }
         .m2-input:focus { border-color: var(--color-mint); }
         .m2-input.error { border-color: var(--color-error, #FF6B6B); animation: shake 0.3s; }
 
+        /* 드롭존 빈칸 스타일 */
+        .answer-slot { width: max-content; min-width: 110px; height: max-content; min-height: 46px; border: 2px dashed #ccc; border-radius: 23px; background-color: #FAFAFA; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-sizing: border-box; position: relative; overflow: hidden; }
+        .answer-slot::before { content: attr(data-hint); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #9c8989; font-size: 1.2rem; font-weight: 800; pointer-events: none; z-index: 0; white-space: nowrap; }
+        .answer-slot.dnd-over { border-color: var(--color-coral); background-color: rgba(255, 143, 171, 0.1); transform: scale(1.05); }
+        .answer-slot.drop-success { border-color: var(--color-mint); background: #EFFFFD; }
+        .answer-slot.error { border-color: var(--color-error); background-color: rgba(255,107,107,0.1); animation: shake 0.3s; }
+        
+        .answer-slot .nutrient-badge, .answer-slot .organ-badge { position: relative; z-index: 2; margin: 0; box-shadow: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border: none; background-color: white; }
+        
+        .inline-slot { display: inline-flex; vertical-align: middle; margin: 0 5px; width: 110px; min-height: 46px; }
+
+        /* 표와 활동에 쓰일 캡슐형 드롭존 */
+        .organ-slot { width: 90px; height: 50px; min-width: 90px; border-radius: 25px; margin: 0 auto; padding: 0; display: flex; justify-content: center; align-items: center; }
+        .inline-organ-slot { width: 90px; height: 50px; min-width: 90px; border-radius: 25px; display: inline-flex; vertical-align: middle; margin: 0 5px; box-sizing: border-box; }
+
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes pulseBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header class="top-bar">
-        <div class="quest-title">✨ Quest 2: 소화</div>
-        <div class="guide-text" id="main-guide-text">
-            음식물이 이동하는 소화관의 순서를 맞게 배치하세요!
-        </div>
+        <div class="quest-title">✨ QUEST 2 소화</div>
+        <div class="guide-text" id="main-guide-text">문장을 완성하여 음식물의 이동 과정을 알아보세요!</div>
         <div class="header-buttons">
-            <button class="btn-ghost" onclick="location.href='index.html'">메인 🏠</button>
-            <button class="btn-ghost" onclick="location.reload()">초기화 ↺</button>
+            <button class="btn-ghost" style="width: 150px;" onclick="location.reload()">새로고침 ↺</button>
         </div>
     </header>
 
     <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
         
-        <!-- Mission 1: 소화관 경로 맞추기 -->
-        <section id="mission1-section" class="card" style="overflow-y: auto;">
-            <h2 style="color: var(--color-coral); text-align: center; margin-bottom: 20px;">🗺️ 소화 기관 탐험 지도</h2>
-            <p style="text-align: center; color: var(--text-sub); font-weight: bold;">아래의 기관들을 드래그하여 음식물이 지나는 올바른 순서대로 빈칸에 넣으세요.</p>
+        <!-- =====================================
+             Mission 1: 소화기관계
+             ===================================== -->
+        <section id="mission1-section" class="card" style="overflow-y: auto; display: block; padding: 15px 20px;">
+            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 10px; font-size: 1.6rem; font-weight: 900;">✨ Mission 1: 소화기관계</h2>
             
-            <div id="m1-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="5">
-                <div class="organ-badge dnd-item" data-organ="위">위</div>
-                <div class="organ-badge dnd-item" data-organ="대장">대장</div>
-                <div class="organ-badge dnd-item" data-organ="입">입</div>
-                <div class="organ-badge dnd-item" data-organ="소장">소장</div>
-                <div class="organ-badge dnd-item" data-organ="식도">식도</div>
+            <!-- [단계 1] 문장 완성 -->
+            <div id="m1-phase1" class="quiz-area visible" style="width: 100%; max-height: none; padding: 0; display: flex; flex-direction: column; min-height: calc(100dvh - 180px);">
+                
+                <div style="flex: 1; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <img src="images/q2_m1_01_intro.png" alt="도입 일러스트" style="max-width: 85%; max-height: 30vh; height: 100%; object-fit: contain; border-radius: 16px; box-shadow: var(--shadow-soft);" onerror="this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_intro.png)'">
+                    <h3 style="color: var(--text-main); font-size: 1.3rem; font-weight: bold; margin-top: 15px; word-break: keep-all; text-align: center;">
+                        우리가 먹은 음식물 속의 영양소는 어떤 과정을 거쳐 온 몸의 세포로 공급될까?
+                    </h3>
+                </div>
+
+                <div style="flex-shrink: 0;">
+                    <div id="m1-pool-phase1-wrap" style="position: relative; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 10px 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 15px; border: 2px solid var(--color-mint);">
+                        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 8px; color: var(--color-mint); text-align: center;">👇 뱃지를 드래그하여 문장을 완성하세요!</div>
+                        <div id="m1-badge-pool-1" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="20" style="margin: 0; border: none; background: transparent; padding: 0; min-height: auto; gap: 8px;">
+                            <div class="nutrient-badge dnd-item" data-val="소화계">소화계</div>
+                            <div class="nutrient-badge dnd-item" data-val="순환계">순환계</div>
+                            <div class="nutrient-badge dnd-item" data-val="호흡계">호흡계</div>
+                            <div class="nutrient-badge dnd-item" data-val="배설계">배설계</div>
+                            <div class="nutrient-badge dnd-item" data-val="신경계">신경계</div>
+                            <div class="nutrient-badge dnd-item" data-val="분해">분해</div>
+                            <div class="nutrient-badge dnd-item" data-val="합성">합성</div>
+                            <div class="nutrient-badge dnd-item" data-val="흡수">흡수</div>
+                            <div class="nutrient-badge dnd-item" data-val="방출">방출</div>
+                            <div class="nutrient-badge dnd-item" data-val="세포">세포</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f9f9f9; padding: 15px 20px; border-radius: 12px; margin-bottom: 15px; text-align: left; line-height: 2.1; font-size: 1.4rem; color: var(--text-main); font-weight: bold;">
+                        우리가 먹은 음식물은 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="소화계" data-hint="( ㅅㅎㄱ )"></div>를 거치면서 크기가 작은 영양소로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="분해" data-hint="( ㅂㅎ )"></div>된 후 몸 안으로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="흡수" data-hint="( ㅎㅅ )"></div>되어 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="순환계" data-hint="( ㅅㅎㄱ )"></div>을(를) 통해 온몸의 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="세포" data-hint="( ㅅㅍ )"></div>로 공급된다.
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn-primary" id="btn-check-m1-sentence" style="max-width: 250px; margin-bottom: 0;" onclick="verifyM1Sentence()">문장 확인하기 🔍</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="path-container">
-                <div class="path-slot dnd-zone m1-slot" data-answer="입" data-dnd-capacity="1"></div>
-                <div class="arrow">➡</div>
-                <div class="path-slot dnd-zone m1-slot" data-answer="식도" data-dnd-capacity="1"></div>
-                <div class="arrow">➡</div>
-                <div class="path-slot dnd-zone m1-slot" data-answer="위" data-dnd-capacity="1"></div>
-                <div class="arrow">➡</div>
-                <div class="path-slot dnd-zone m1-slot" data-answer="소장" data-dnd-capacity="1"></div>
-                <div class="arrow">➡</div>
-                <div class="path-slot dnd-zone m1-slot" data-answer="대장" data-dnd-capacity="1"></div>
+            <!-- [단계 2] 애니메이션 체험 -->
+            <div id="m1-phase2-animation" style="display: none; opacity: 0; transition: opacity 0.5s ease-in-out; margin-top: 30px;">
+                <div style="border-top: 2px dashed #eee; padding-top: 20px;">
+                    <h3 style="color: var(--color-coral); text-align: center; margin-bottom: 15px; font-size: 1.3rem; font-weight: bold;">🔍 애니메이션 체험: 소화계의 구조</h3>
+                    <div style="position: relative; padding-bottom: 60%; height: 0; overflow: hidden; width: 100%; border-radius: 12px; box-shadow: var(--shadow-soft);">
+                        <iframe src="https://pubvw.qmt.kr/web_document/474196/5/DigestiveSystem.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3B1YnZ3LnFtdC5rci93ZWJfZG9jdW1lbnQvNDc0MTk2LzUvRGlnZXN0aXZlU3lzdGVtLmh0bWwiLCJleHAiOjE3OTA5OTM0MTkxNTksImlhdCI6MTc5MDk4OTgxOTE1OSwicGF0aCI6IndlYl9kb2N1bWVudCJ9.7-r3G0FSZ7JE2yHftaj3VPiwZMqzeg_Wtc6wrGgEoT4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen></iframe>
+                    </div>
+                    <div style="text-align: right; font-size: 0.85rem; color: #7f8c8d; font-weight: bold; margin-top: 8px; padding-right: 5px;">
+                        ※ 자료 출처: 미래엔 교과서
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn-primary" id="btn-show-table" style="max-width: 250px;" onclick="showM1Table()">확인</button>
+                </div>
             </div>
 
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn-primary" id="btn-check-m1" style="max-width: 250px;" onclick="verifyM1()">경로 확인하기 🔍</button>
-                <button class="btn-primary" id="btn-next-m1" style="max-width: 250px; background-color: #FF9F1C; display: none; margin: 0 auto;" onclick="transitionToMission2()">Mission 2 가기 🚀</button>
+            <!-- [단계 3] 표 완성 및 구성 분류 -->
+            <div id="m1-phase3-table" style="display: none; opacity: 0; transition: opacity 0.5s ease-in-out; margin-top: 30px;">
+                
+                <div id="m1-pool-phase2-wrap" style="position: sticky; top: 10px; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-top: 30px; margin-bottom: 25px; backdrop-filter: blur(5px); border: 2px solid var(--color-mint);">
+                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 10px; color: var(--color-mint); text-align: center;">👇 뱃지를 드래그하여 표와 아래 빈칸을 완성하세요!</div>
+                    <div id="m1-badge-pool-2" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="30" style="margin: 0; border: none; background: transparent; padding: 0;">
+                    </div>
+                </div>
+
+                <!-- 소화계의 구조와 기능 표 -->
+                <div style="margin-top: 30px; padding-bottom: 20px;">
+                    <h3 style="color: var(--color-coral); text-align: center; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold;">📋 소화계의 구조와 기능</h3>
+                    <p style="text-align: center; color: var(--text-sub); font-weight: bold; margin-bottom: 15px;">설명에 맞는 소화 기관 뱃지를 빈칸에 채워 넣으세요.</p>
+                    
+                    <div class="digestive-table-wrapper">
+                        <table class="digestive-table">
+                            <colgroup>
+                                <col style="width: 120px;">
+                                <col>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>기관</th>
+                                    <th>구조와 기능</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="입"></div></td>
+                                    <td>음식물을 이로 잘게 부수고 침과 골고루 섞어 탄수화물(녹말)을 소화한다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="식도"></div></td>
+                                    <td>입과 위를 연결하는 관으로, 입에서 넘어온 음식물을 위로 내려보낸다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="위"></div></td>
+                                    <td>주머니 모양으로 생겼으며, 위액을 분비하여 단백질을 소화한다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="소장"></div></td>
+                                    <td>길고 가는 관으로, 탄수화물, 단백질, 지방의 소화가 모두 일어나며, 최종 소화 산물이 흡수된다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="대장"></div></td>
+                                    <td>작은창자보다 굵은 관으로, 작은창자에서 흡수하고 남은 찌꺼기 속 여분의 물을 흡수한다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="항문"></div></td>
+                                    <td>작은창자와 큰창자에서 흡수되고 남은 찌꺼기를 몸 밖으로 내보낸다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="침샘"></div></td>
+                                    <td>침을 분비하여 입 안으로 내보낸다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="간"></div></td>
+                                    <td>쓸개즙을 생성하고 영양소를 저장하며, 독성 물질을 해독한다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="쓸개"></div></td>
+                                    <td>쓸개즙을 저장하고 있다가 음식물이 작은창자로 들어오면 쓸개즙을 분비한다.</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="answer-slot organ-slot dnd-zone m1-phase2-slot" data-answer="이자"></div></td>
+                                    <td>녹말, 단백질, 지방을 분해하는 소화효소가 들어 있는 이자액을 생성하여 분비한다.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 소화계의 구성 분류 활동 (반응형 Flex 적용) -->
+                <div style="margin-top: 20px; border-top: 2px dashed #eee; padding-top: 30px;">
+                    <h3 style="color: var(--color-coral); text-align: center; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold;">📝 소화계의 구성</h3>
+                    <p style="text-align: center; color: var(--text-sub); font-weight: bold; margin-bottom: 15px;">소화계의 기관들을 올바른 범주에 드래그하여 완성하세요.</p>
+                    
+                    <div style="background: #f9f9f9; padding: 25px; border-radius: 12px; margin: 0 auto 20px; width: 100%; text-align: left; line-height: 2.2; font-size: 1.15rem; color: var(--text-main); font-weight: bold;">
+                        
+                        <!-- 소화관 -->
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px;">
+                            <span style="color: var(--color-coral); white-space: nowrap;">• 소화관 :</span> 
+                            <span style="white-space: nowrap;">음식물이 직접 지나가는 통로 ➡</span>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="입"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="식도"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="위"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="소장"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="대장"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="항문"></div>)
+                            </div>
+                        </div>
+
+                        <!-- 그 외 부속기관 -->
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                            <span style="color: var(--color-coral); white-space: nowrap;">• 소화와 관련된 그 외 기관 :</span>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="침샘,간,쓸개,이자" data-group="accessory"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="침샘,간,쓸개,이자" data-group="accessory"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="침샘,간,쓸개,이자" data-group="accessory"></div>),
+                                (<div class="answer-slot organ-slot inline-organ-slot dnd-zone m1-phase2-slot" data-answer="침샘,간,쓸개,이자" data-group="accessory"></div>)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+                    <button class="btn-primary" id="btn-check-m1-phase2" style="max-width: 250px;" onclick="verifyM1Phase2()">확인</button>
+                    <button class="btn-primary" id="btn-next-m1" style="max-width: 250px; background-color: #FF9F1C; display: none; margin: 0 auto; animation: pulseBounce 1s infinite;" onclick="transitionToMission2()">Mission 2 가기 🚀</button>
+                </div>
             </div>
         </section>
 
-        <!-- Mission 2: 소화의 종류 및 침의 작용 실험 -->
+        <!-- =====================================
+             Mission 2: 소화의 종류 및 침의 작용
+             ===================================== -->
         <section id="mission2-section" class="card" style="display: none; overflow-y: auto;">
+            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 20px; font-size: 1.8rem; font-weight: 900;">✨ Mission 2: 소화의 종류와 침의 작용</h2>
             
-            <!-- Part 1: 기계적/화학적 소화 분류 -->
-            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 10px;">⚙️ 기계적 소화 vs 화학적 소화 🧪</h2>
             <p style="text-align: center; color: var(--text-sub); font-weight: bold; margin-bottom: 20px;">카드를 알맞은 소화 방법 바구니로 드래그하세요.</p>
-            
             <div id="m2-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="6" style="margin-bottom: 20px;">
                 <div class="action-card dnd-item" data-type="mech">🦷 이로 음식물을 잘게 부수기 (씹는 운동)</div>
                 <div class="action-card dnd-item" data-type="chem">💧 침 속 효소가 녹말을 분해하기</div>
@@ -111,32 +284,29 @@
             <div class="digestion-baskets">
                 <div class="d-basket dnd-zone m2-basket" data-answer="mech" data-dnd-capacity="5">
                     <div class="d-basket-title">⚙️ 기계적 소화</div>
-                    <!-- 기계적 소화 카드들이 들어갈 곳 -->
                 </div>
                 <div class="d-basket dnd-zone m2-basket" data-answer="chem" data-dnd-capacity="5">
                     <div class="d-basket-title">🧪 화학적 소화 (효소 작용)</div>
-                    <!-- 화학적 소화 카드들이 들어갈 곳 -->
                 </div>
             </div>
 
-            <!-- Part 2: 침의 작용 실험 -->
             <div style="border-top: 2px dashed #eee; padding-top: 30px; margin-top: 10px;">
-                <h2 style="color: var(--color-coral); text-align: center; margin-bottom: 15px;">🔬 침의 작용 실험 (35~40℃ 유지)</h2>
+                <h3 style="color: var(--color-coral); text-align: center; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold;">🔬 침의 작용 실험 (35~40℃ 유지)</h3>
                 
                 <table class="experiment-table">
                     <thead>
                         <tr>
                             <th>시험관</th>
                             <th>넣은 물질</th>
-                            <th>아이오딘 반응 (녹말 검출)</th>
-                            <th>베네딕트 반응 (당분 검출)</th>
+                            <th>아이오딘 반응 (녹말)</th>
+                            <th>베네딕트 반응 (당분)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>A</strong></td>
                             <td>녹말 용액 + <strong>물</strong></td>
-                            <td>청남색 (녹말 있음)</td>
+                            <td>청람색 (녹말 있음)</td>
                             <td>색 변화 없음</td>
                         </tr>
                         <tr>
@@ -150,12 +320,12 @@
 
                 <div style="text-align: center; margin-bottom: 25px;">
                     <p style="font-weight: bold; color: var(--text-main); margin-bottom: 10px;">
-                        Q1. 시험관 B에서 베네딕트 반응이 일어난 이유는 녹말이 무엇으로 분해되었기 때문일까요?
+                        <span style="color: var(--color-mint); font-size: 1.2rem;">Q1.</span> 시험관 B에서 베네딕트 반응이 일어난 이유는 녹말이 무엇으로 분해되었기 때문일까요?
                     </p>
                     <div class="input-group"><input type="text" id="m2-q1-input" class="m2-input" placeholder="정답 입력" data-answer="엿당"></div>
                     
                     <p style="font-weight: bold; color: var(--text-main); margin-bottom: 10px; margin-top: 20px;">
-                        Q2. 침 속에 들어있어 녹말을 분해하는 <strong>소화 효소</strong>의 이름은 무엇일까요?
+                        <span style="color: var(--color-mint); font-size: 1.2rem;">Q2.</span> 침 속에 들어있어 녹말을 분해하는 <strong>소화 효소</strong>의 이름은 무엇일까요?
                     </p>
                     <div class="input-group"><input type="text" id="m2-q2-input" class="m2-input" placeholder="정답 입력" data-answer="아밀레이스"></div>
                 </div>
@@ -163,55 +333,226 @@
 
             <div style="text-align: center;">
                 <button class="btn-primary" id="btn-check-m2" style="max-width: 250px;" onclick="verifyM2()">정답 확인하기 ✔️</button>
-                <button class="btn-primary" id="btn-next-m2" style="max-width: 250px; background-color: #FF9F1C; display: none; margin: 0 auto;" onclick="transitionToMission3()">Mission 3 가기 🚀</button>
+                <button class="btn-primary" id="btn-next-m2" style="max-width: 250px; background-color: #FF9F1C; display: none; margin: 0 auto; animation: pulseBounce 1s infinite;" onclick="transitionToMission3()">Mission 3 가기 🚀</button>
             </div>
         </section>
 
-        <!-- Mission 3 섹션 (예비) -->
-        <section id="mission3-section" class="card" style="display: none;">
-            <h2 style="color: var(--color-mint); text-align: center;">영양소 분해 (준비중)</h2>
+        <!-- =====================================
+             Mission 3: 3대 영양소의 소화 과정 (분해)
+             ===================================== -->
+        <section id="mission3-section" class="card" style="display: none; overflow-y: auto;">
+            <h2 style="color: var(--color-mint); text-align: center; margin-bottom: 20px; font-size: 1.8rem; font-weight: 900;">✨ Mission 3: 3대 영양소의 소화 과정</h2>
+            <p style="text-align: center; color: var(--text-sub); font-weight: bold; margin-bottom: 20px;">각 영양소가 소화 효소를 거쳐 최종적으로 분해되는 산물을 짝지어 보세요!</p>
+            
+            <div id="m3-badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="10">
+                <div class="nutrient-badge dnd-item" data-val="포도당">포도당</div>
+                <div class="nutrient-badge dnd-item" data-val="아미노산">아미노산</div>
+                <div class="nutrient-badge dnd-item" data-val="지방산">지방산</div>
+                <div class="nutrient-badge dnd-item" data-val="모노글리세리드">모노글리세리드</div>
+            </div>
+
+            <div style="width: 100%; max-width: 600px; margin: 0 auto 30px; background: #f9f9f9; padding: 20px; border-radius: 12px; font-size: 1.1rem; line-height: 2.5; font-weight: bold; color: var(--text-main);">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <div style="width: 80px; color: var(--color-coral);">탄수화물</div> 
+                    <div> ➡ (아밀레이스 등) ➡ </div>
+                    <div class="answer-slot dnd-zone m3-quiz-slot" data-answer="포도당" style="margin-left: 10px;"></div>
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <div style="width: 80px; color: var(--color-coral);">단백질</div> 
+                    <div> ➡ (펩신, 트립신 등) ➡ </div>
+                    <div class="answer-slot dnd-zone m3-quiz-slot" data-answer="아미노산" style="margin-left: 10px;"></div>
+                </div>
+                
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 80px; color: var(--color-coral);">지방</div> 
+                    <div> ➡ (라이페이스) ➡ </div>
+                    <div style="display: flex; gap: 10px; margin-left: 10px;">
+                        <div class="answer-slot dnd-zone m3-quiz-slot" data-answer="지방산,모노글리세리드"></div>
+                        <div> + </div>
+                        <div class="answer-slot dnd-zone m3-quiz-slot" data-answer="지방산,모노글리세리드"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn-primary" id="btn-check-m3" style="max-width: 250px; margin: 0 auto;" onclick="verifyM3()">정답 확인</button>
+                <button class="btn-primary" id="btn-next-m3" style="max-width: 250px; background-color: #FF9F1C; display: none; margin: 0 auto; animation: pulseBounce 1s infinite;" onclick="transitionToMission4()">Mission 4 가기 🚀</button>
+            </div>
         </section>
 
-        <!-- 제시해주신 제목에 맞춰 사이드바 텍스트 변경 -->
+        <!-- =====================================
+             Mission 4: 영양소의 흡수와 최종 정리
+             ===================================== -->
+        <section id="mission4-section" class="card" style="display: none; flex-direction: column; overflow-y: auto;">
+            <h2 style="color: var(--color-mint); margin-bottom: 20px; text-align: center; font-size: 1.8rem; font-weight: 900;">🏆 Mission 4: 영양소 흡수와 정리</h2>
+            
+            <div class="quiz-area visible" style="width: 100%; max-height: none; padding: 10px 20px;">
+                <p style="font-size: 1.1rem; font-weight: bold; color: var(--text-sub); margin-bottom: 15px; text-align: center;">
+                    최종 산물로 분해된 영양소는 소장의 융털에서 흡수됩니다. 알맞게 연결해 보세요!
+                </p>
+    
+                <div style="position: sticky; top: 10px; z-index: 100; background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-bottom: 25px; backdrop-filter: blur(5px); border: 2px solid var(--color-mint);">
+                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 10px; color: var(--color-mint); text-align: center;">👇 뱃지를 드래그하여 빈칸을 완성하세요!</div>
+                    <div id="m4-badge-pool" class="badge-pool dnd-zone dnd-pool" data-dnd-capacity="30" style="margin: 0; border: none; background: transparent; padding: 0;">
+                    </div>
+                </div>
+
+                <div style="background: #f9f9f9; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: left; line-height: 2.2; font-size: 1.05rem; color: var(--text-main);">
+                    <div><strong>1. 소화의 종류</strong><br>
+                        <span style="display:inline-block; margin-left: 15px;">•</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="기계적"></span> 소화: 씹는 운동, 꿈틀 운동, 분절 운동 등<br>
+                        <span style="display:inline-block; margin-left: 15px;">•</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="화학적"></span> 소화: 소화 효소가 작게 분해하는 과정
+                    </div>
+
+                    <div style="margin-top: 15px;"><strong>2. 3대 영양소의 최종 소화 산물</strong><br>
+                        <span style="display:inline-block; margin-left: 15px;">• 탄수화물 ➡</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="포도당"></span><br>
+                        <span style="display:inline-block; margin-left: 15px;">• 단백질 ➡</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="아미노산"></span><br>
+                        <span style="display:inline-block; margin-left: 15px;">• 지방 ➡</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="지방산,모노글리세리드" data-group="fat_final"></span> + <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="지방산,모노글리세리드" data-group="fat_final"></span>
+                    </div>
+
+                    <div style="margin-top: 15px;"><strong>3. 소장 융털에서의 영양소 흡수</strong><br>
+                        <span style="display:inline-block; margin-left: 15px;">• 융털의</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="모세혈관"></span> : 수용성 영양소 흡수<br>
+                        <span style="display:inline-block; margin-left: 15px;">• 융털의</span> <span class="answer-slot dnd-zone m4-quiz-slot inline-slot" data-answer="암죽관"></span> : 지용성 영양소 흡수
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn-primary" id="btn-check-m4" style="max-width: 200px; margin: 0 auto;" onclick="verifyM4()">최종 확인</button>
+                </div>
+
+                <!-- 최종 완료 축하 영역 -->
+                <div id="m4-success-area" style="display: none; flex-direction: column; align-items: center; justify-content: center; margin-top: 40px; padding: 60px 20px; width: 100%; box-sizing: border-box; min-height: 500px; border-radius: 20px; background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url('images/HB_q2_final.png') no-repeat center center / cover; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: fadeIn 1.5s; border: 3px solid var(--color-mint);">
+                    <div style="font-size: 1.8rem; font-weight: 900; color: #ffffff; text-align: center; line-height: 1.5; margin-bottom: 20px; text-shadow: 2px 2px 5px rgba(0,0,0,0.9);">
+                        🎉 축하합니다! 🎉<br>소화와 흡수 마스터로 승격하셨습니다.
+                    </div>
+                    <div style="background: #FF9F1C; color: white; padding: 10px 30px; border-radius: 30px; font-weight: bold; font-size: 1.3rem; margin-bottom: 30px; animation: pulseBounce 2s infinite; box-shadow: 0 4px 15px rgba(255, 159, 28, 0.6); border: 2px solid #fff;">
+                        🎁 보상 가산 완료!
+                    </div>
+                    <button class="btn-primary" onclick="location.href='quest3.html'" style="max-width: 300px; background-color: var(--color-mint); color: #fff; font-size: 1.3rem; padding: 15px 40px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); border: 2px solid #fff; transition: transform 0.2s;">
+                        QUEST 3 가기 🚀
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 사이드바 네비게이션 -->
         <aside class="card mission-sidebar lg:w-max flex flex-col gap-4 items-center">
-            <div class="sidebar-title w-full text-center">진행 상황</div>
-            <div id="nav-m1" class="mission-item active"><div class="mission-icon text-3xl mb-2">💓</div><div class="text-sm font-bold">Mission 1</div><div class="text-sm mt-1 text-center">1. 소화기관<br>탐험</div></div>
-            <div id="nav-m2" class="mission-item available"><div class="mission-icon text-3xl mb-2">🔒</div><div class="text-sm font-bold">Mission 2</div><div class="text-sm mt-1 text-center">2. 소화의<br>종류</div></div>
-            <div id="nav-m3" class="mission-item available"><div class="mission-icon text-3xl mb-2">🔒</div><div class="text-sm font-bold">Mission 3</div><div class="text-sm mt-1 text-center">3. 영양소<br>분해</div></div>
-            <div id="nav-m4" class="mission-item available"><div class="mission-icon text-3xl mb-2">🔒</div><div class="text-sm font-bold">Mission 4</div><div class="text-sm mt-1 text-center">4. 영양소<br>흡수</div></div>
+            <button class="w-full" style="background-color: #E2F0CB; color: var(--text-main); border: 2px solid #C5E1A5; padding: 12px 10px; font-size: 0.95rem; font-weight: 700; line-height: 1.4; border-radius: 16px; margin-bottom: 5px; cursor: pointer;" onclick="location.href='index.html'">
+                   인체탐험지도로<br>돌아가기 🏠
+            </button> 
+            <div id="nav-m1" class="mission-item"></div>
+            <div id="nav-m2" class="mission-item"></div>
+            <div id="nav-m3" class="mission-item"></div>
+            <div id="nav-m4" class="mission-item"></div>
         </aside>
+
     </main>
 
+    <!-- 외부 스크립트 연결 -->
     <script src="js/main.js"></script>
     <script src="rewards/rewards.js"></script>
     <script src="js/dragdrop.js"></script>
 
+    <!-- JS 로직 -->
     <script>
         function launchConfettiEffect() {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
+            const duration = 1000; 
+            const end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
+                confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
         }
 
-        function updateSidebar(activeId) {
-            document.querySelectorAll('.mission-item').forEach(item => {
-                if(item.classList.contains('active')) {
-                    item.classList.remove('active');
-                    item.classList.add('completed');
-                    item.querySelector('.mission-icon').innerText = '✅';
-                }
-            });
-            const activeEl = document.getElementById(activeId);
-            if(activeEl) {
-                activeEl.classList.remove('available', 'locked', 'completed');
-                activeEl.classList.add('active');
-                activeEl.querySelector('.mission-icon').innerText = '💓';
+        function updateGuideText(defaultText) {
+            const guide = document.getElementById('main-guide-text');
+            if (guide) {
+                guide.innerHTML = defaultText;
+                guide.style.color = "var(--text-main)";
             }
         }
 
+        function updateSidebarUI(activeNavId) {
+            const missionTitles = { 1: "소화기관계", 2: "소화의<br>종류", 3: "영양소<br>분해", 4: "영양소<br>흡수" };
+
+            [1, 2, 3, 4].forEach(num => {
+                const id = 'nav-m' + num;
+                const el = document.getElementById(id);
+                if (!el) return;
+                
+                el.className = 'mission-item'; 
+                let icon = '';
+                
+                const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(2, num);
+                
+                let isAccessible = false;
+                if (num === 1 || isCompleted) {
+                    isAccessible = true;
+                } else if (typeof isMissionCompleted === 'function' && isMissionCompleted(2, num - 1)) {
+                    isAccessible = true;
+                } else if (typeof canAccessMission === 'function') {
+                    const res = canAccessMission(2, num);
+                    if (res) isAccessible = res.access;
+                }
+                
+                if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
+                else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
+                else if (!isAccessible) { el.classList.add('locked'); icon = '🔒'; } 
+                else { el.classList.add('available'); icon = '🔓'; }
+                
+                el.innerHTML = `
+                    <div class="mission-icon text-xl mb-2">${icon}</div>
+                    <div class="text-sm font-bold whitespace-nowrap">Mission ${num}</div>
+                    <div class="text-sm leading-snug mt-1">${missionTitles[num]}</div>
+                `;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSidebarUI('nav-m1');
+            updateGuideText("문장을 완성하여 음식물의 이동 과정을 알아보세요!");
+
+            document.getElementById('nav-m1').addEventListener('click', () => {
+                document.getElementById('mission2-section').style.display = 'none';
+                document.getElementById('mission3-section').style.display = 'none';
+                document.getElementById('mission4-section').style.display = 'none';
+                document.getElementById('mission1-section').style.display = 'block';
+                
+                if (document.getElementById('m1-phase3-table').style.display === 'block') {
+                    updateGuideText("정확합니다! 소화기관계의 구조와 경로를 완벽히 이해했습니다.");
+                } else if (document.getElementById('m1-phase2-animation').style.display === 'block') {
+                    updateGuideText("정답입니다. 애니메이션을 체험해 보세요!");
+                } else {
+                    updateGuideText("문장을 완성하여 음식물의 이동 과정을 알아보세요!");
+                }
+                updateSidebarUI('nav-m1');
+            });
+
+            document.getElementById('nav-m2').addEventListener('click', () => {
+                if (typeof canAccessMission === 'function' && canAccessMission(2, 2).access) {
+                    transitionToMission2();
+                } else alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+            });
+
+            document.getElementById('nav-m3').addEventListener('click', () => {
+                if (typeof canAccessMission === 'function' && canAccessMission(2, 3).access) {
+                    transitionToMission3();
+                } else alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+            });
+
+            document.getElementById('nav-m4').addEventListener('click', () => {
+                if (typeof canAccessMission === 'function' && canAccessMission(2, 4).access) {
+                    transitionToMission4();
+                } else alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+            });
+        });
+
         // =====================================
-        // Mission 1 로직
+        // Mission 1: 1단계 문장 확인
         // =====================================
-        function verifyM1() {
-            const slots = document.querySelectorAll('.m1-slot');
+        function verifyM1Sentence() {
+            const slots = document.querySelectorAll('.m1-sentence-slot');
             let isAllCorrect = true;
             let filledCount = 0;
 
@@ -219,7 +560,7 @@
                 const item = slot.querySelector('.dnd-item');
                 if (item) {
                     filledCount++;
-                    if (item.dataset.organ === slot.dataset.answer) {
+                    if (item.dataset.val === slot.dataset.answer) {
                         slot.style.borderColor = 'var(--color-mint)';
                         slot.style.background = '#EFFFFD';
                         item.classList.add('dnd-locked');
@@ -236,38 +577,174 @@
             });
 
             if (filledCount < 5) {
-                alert("모든 빈칸에 소화 기관을 배치해주세요!");
+                alert("5개의 빈칸에 알맞은 단어를 모두 넣어주세요!");
                 return;
             }
 
-            if (isAllCorrect) {
+            if (!isAllCorrect) {
+                alert("빈칸에 알맞은 단어를 다시 확인해 보세요!");
+                return;
+            }
+
+            // 정답 처리 -> 2단계 애니메이션 오픈
+            document.getElementById('btn-check-m1-sentence').style.display = 'none';
+            updateGuideText("정답입니다. 애니메이션 체험을 해보세요!");
+            
+            const pool1Wrap = document.getElementById('m1-pool-phase1-wrap');
+            if (pool1Wrap) pool1Wrap.style.display = 'none';
+
+            const phase2 = document.getElementById('m1-phase2-animation');
+            phase2.style.display = 'block';
+            setTimeout(() => { 
+                phase2.style.opacity = '1';
+                phase2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+
+        // =====================================
+        // Mission 1: 2단계 애니메이션 확인 -> 3단계 표 오픈
+        // =====================================
+        function showM1Table() {
+            document.getElementById('btn-show-table').style.display = 'none';
+            
+            initM1Phase2Badges(); 
+            
+            const phase3 = document.getElementById('m1-phase3-table');
+            phase3.style.display = 'block';
+            setTimeout(() => { 
+                phase3.style.opacity = '1';
+                phase3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+
+        function initM1Phase2Badges() {
+            const pool = document.getElementById('m1-badge-pool-2');
+            if (!pool) return;
+            pool.innerHTML = '';
+            
+            // 소화관(6개) + 부속기관(4개) = 10개 기관 뱃지
+            const organs = ['입', '식도', '위', '소장', '대장', '항문', '침샘', '간', '쓸개', '이자'];
+            organs.sort(() => Math.random() - 0.5);
+            
+            organs.forEach(val => {
+                const badge = document.createElement('div');
+                badge.className = 'organ-badge dnd-item';
+                badge.dataset.val = val;
+                badge.innerText = val;
+                pool.appendChild(badge);
+            });
+            
+            if (window.humanBadyDnD) window.humanBadyDnD.init();
+        }
+
+        // =====================================
+        // Mission 1: 3단계 최종 확인
+        // =====================================
+        function verifyM1Phase2() {
+            document.querySelectorAll('.m1-phase2-slot').forEach(z => {
+                z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error');
+            });
+
+            let allCorrect = true;
+            let filledCount = 0;
+            let groups = {}; 
+
+            const slots = document.querySelectorAll('.m1-phase2-slot');
+            
+            slots.forEach(slot => {
+                const item = slot.querySelector('.dnd-item');
+                if (item) {
+                    filledCount++;
+                    const val = item.dataset.val;
+                    const expectedAnswers = slot.dataset.answer.split(',');
+                    const group = slot.dataset.group;
+
+                    if (group) {
+                        if (!groups[group]) groups[group] = { values: [], slots: [] };
+                        groups[group].values.push(val);
+                        groups[group].slots.push(slot);
+                    } else {
+                        if (expectedAnswers.includes(val)) {
+                            slot.style.borderColor = 'var(--color-mint)';
+                            slot.style.backgroundColor = '#EFFFFD';
+                            item.classList.add('dnd-locked');
+                        } else {
+                            slot.classList.add('error');
+                            allCorrect = false;
+                            setTimeout(() => slot.classList.remove('error'), 300);
+                        }
+                    }
+                } else {
+                    slot.classList.add('error');
+                    allCorrect = false;
+                    setTimeout(() => slot.classList.remove('error'), 300);
+                }
+            });
+
+            // 표 10칸 + 소화계 구성 10칸 = 20칸 확인
+            if (filledCount < 20) {
+                alert("표와 아래 빈칸에 모든 소화 기관을 배치해주세요!");
+                return;
+            }
+
+            for (const [groupName, data] of Object.entries(groups)) {
+                const expectedList = data.slots[0].dataset.answer.split(','); 
+                const actualValues = data.values;
+                const isUnique = new Set(actualValues).size === actualValues.length;
+                const isAllValid = actualValues.every(v => expectedList.includes(v));
+
+                if (isUnique && isAllValid) {
+                    data.slots.forEach(slot => {
+                        slot.style.borderColor = 'var(--color-mint)';
+                        slot.style.backgroundColor = '#EFFFFD';
+                        slot.querySelector('.dnd-item').classList.add('dnd-locked');
+                    });
+                } else {
+                    data.slots.forEach(slot => {
+                        slot.classList.add('error');
+                        setTimeout(() => slot.classList.remove('error'), 300);
+                    });
+                    allCorrect = false;
+                }
+            }
+
+            if (!allCorrect) {
+                alert("잘못 연결된 뱃지가 있습니다. 깜빡이는 빨간색 칸을 다시 확인해 보세요!");
+                return;
+            }
+
+            if (allCorrect) {
                 if (window.UniversalReward) window.UniversalReward.complete(2, 1);
                 launchConfettiEffect();
                 
-                document.getElementById('btn-check-m1').style.display = 'none';
+                const pool2Wrap = document.getElementById('m1-pool-phase2-wrap');
+                if (pool2Wrap) pool2Wrap.style.display = 'none';
+
+                document.getElementById('btn-check-m1-phase2').style.display = 'none';
                 document.getElementById('btn-next-m1').style.display = 'block';
-                document.getElementById('main-guide-text').innerText = "정확합니다! 입에서 대장까지의 경로를 완벽히 찾았습니다.";
+                updateGuideText("완벽합니다! 소화기관계의 구조와 구성을 정확히 파악했습니다.");
+                updateSidebarUI('nav-m1');
             }
         }
 
+        // Mission 2 이동
         function transitionToMission2() {
             document.getElementById('mission1-section').style.display = 'none';
+            document.getElementById('mission3-section').style.display = 'none';
+            document.getElementById('mission4-section').style.display = 'none';
             document.getElementById('mission2-section').style.display = 'block';
-            document.getElementById('main-guide-text').innerText = "물리적인 소화와 화학적인 소화를 구분해봅시다!";
             
-            updateSidebar('nav-m2');
+            updateGuideText("물리적인 소화와 화학적인 소화를 구분해봅시다!");
+            updateSidebarUI('nav-m2');
             
-            // dragdrop.js 다시 초기화 (새로 보이는 영역 인식용)
             if(window.humanBadyDnD) window.humanBadyDnD.init();
         }
 
         // =====================================
-        // Mission 2 로직
+        // Mission 2: 소화의 종류 및 침의 작용
         // =====================================
         function verifyM2() {
             let isAllCorrect = true;
-
-            // 1. 드래그 앤 드롭 검증
             const baskets = document.querySelectorAll('.m2-basket');
             let totalCardsInBaskets = 0;
 
@@ -279,6 +756,7 @@
                 cards.forEach(card => {
                     if (card.dataset.type === answerType) {
                         card.classList.add('dnd-locked');
+                        basket.classList.add('drop-success');
                     } else {
                         isAllCorrect = false;
                         basket.classList.add('error');
@@ -292,10 +770,9 @@
                 return;
             }
 
-            // 2. 실험 퀴즈 빈칸 검증
             const inputs = [document.getElementById('m2-q1-input'), document.getElementById('m2-q2-input')];
             inputs.forEach(input => {
-                const userAnswer = input.value.replace(/\s+/g, ''); // 공백 제거 후 비교
+                const userAnswer = input.value.replace(/\s+/g, ''); 
                 if (userAnswer === input.dataset.answer) {
                     input.style.borderColor = 'var(--color-mint)';
                     input.style.backgroundColor = '#EFFFFD';
@@ -313,22 +790,287 @@
                 
                 document.getElementById('btn-check-m2').style.display = 'none';
                 document.getElementById('btn-next-m2').style.display = 'block';
-                document.getElementById('main-guide-text').innerText = "완벽합니다! 소화의 종류와 침의 작용을 잘 이해했네요.";
+                updateGuideText("완벽합니다! 소화의 종류와 침의 작용을 잘 이해했네요.");
+                updateSidebarUI('nav-m2');
                 
-                // 스크롤 맨 아래로 이동
                 const container = document.getElementById('mission2-section');
                 setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
             }
         }
 
         function transitionToMission3() {
+            document.getElementById('mission1-section').style.display = 'none';
             document.getElementById('mission2-section').style.display = 'none';
+            document.getElementById('mission4-section').style.display = 'none';
             document.getElementById('mission3-section').style.display = 'block';
-            document.getElementById('main-guide-text').innerText = "소화액과 효소의 역할을 짝지어 보세요!";
             
-            updateSidebar('nav-m3');
+            updateGuideText("각 영양소가 최종적으로 분해되는 산물을 연결하세요!");
+            updateSidebarUI('nav-m3');
+            
+            if(window.humanBadyDnD) window.humanBadyDnD.init();
         }
 
+        // =====================================
+        // Mission 3: 영양소 분해 로직
+        // =====================================
+        function verifyM3() {
+            const slots = document.querySelectorAll('.m3-quiz-slot');
+            let allCorrect = true;
+            let groupM3 = {}; 
+
+            slots.forEach(slot => {
+                const item = slot.querySelector('.dnd-item');
+                if (!item) {
+                    slot.classList.add('error');
+                    allCorrect = false;
+                    setTimeout(() => slot.classList.remove('error'), 300);
+                    return;
+                }
+
+                const val = item.dataset.val;
+                const expectedAnswers = slot.dataset.answer.split(',');
+
+                if (expectedAnswers.length > 1) { 
+                    if (!groupM3['fat']) groupM3['fat'] = { values: [], slots: [] };
+                    groupM3['fat'].values.push(val);
+                    groupM3['fat'].slots.push(slot);
+                } else {
+                    if (expectedAnswers.includes(val)) {
+                        slot.style.borderColor = 'var(--color-mint)';
+                        slot.style.backgroundColor = '#EFFFFD';
+                        item.classList.add('dnd-locked');
+                    } else {
+                        slot.classList.add('error');
+                        allCorrect = false;
+                        setTimeout(() => slot.classList.remove('error'), 300);
+                    }
+                }
+            });
+
+            if (groupM3['fat']) {
+                const expectedList = ['지방산', '모노글리세리드'];
+                const actualValues = groupM3['fat'].values;
+                const isUnique = new Set(actualValues).size === actualValues.length;
+                const isAllValid = actualValues.every(v => expectedList.includes(v));
+
+                if (isUnique && isAllValid) {
+                    groupM3['fat'].slots.forEach(slot => {
+                        slot.style.borderColor = 'var(--color-mint)';
+                        slot.style.backgroundColor = '#EFFFFD';
+                        slot.querySelector('.dnd-item').classList.add('dnd-locked');
+                    });
+                } else {
+                    groupM3['fat'].slots.forEach(slot => {
+                        slot.classList.add('error');
+                        setTimeout(() => slot.classList.remove('error'), 300);
+                    });
+                    allCorrect = false;
+                }
+            }
+
+            if (allCorrect) {
+                if (window.UniversalReward) window.UniversalReward.complete(2, 3);
+                launchConfettiEffect();
+                
+                document.getElementById('btn-check-m3').style.display = 'none';
+                document.getElementById('btn-next-m3').style.display = 'block';
+                updateGuideText("정확합니다! 3대 영양소의 소화 산물을 잘 기억하고 있네요.");
+                updateSidebarUI('nav-m3');
+            }
+        }
+
+        // Mission 4 이동
+        function transitionToMission4() {
+            document.getElementById('mission1-section').style.display = 'none';
+            document.getElementById('mission2-section').style.display = 'none';
+            document.getElementById('mission3-section').style.display = 'none';
+            document.getElementById('mission4-section').style.display = 'flex';
+            
+            updateGuideText("소화된 영양소가 소장에서 어떻게 흡수되는지 정리해 보세요!");
+            updateSidebarUI('nav-m4');
+            
+            initM4Badges();
+        }
+
+        // =====================================
+        // Mission 4: 내용 정리 뱃지 및 로직
+        // =====================================
+        function initM4Badges() {
+            const m4Vals = ['기계적', '화학적', '포도당', '아미노산', '지방산', '모노글리세리드', '모세혈관', '암죽관'];
+            const pool = document.getElementById('m4-badge-pool');
+            if (!pool) return;
+            
+            pool.innerHTML = ''; 
+            let shuffledVals = [...m4Vals];
+            for (let i = shuffledVals.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledVals[i], shuffledVals[j]] = [shuffledVals[j], shuffledVals[i]];
+            }
+            
+            shuffledVals.forEach(val => {
+                const badge = document.createElement('div');
+                badge.className = 'nutrient-badge dnd-item';
+                badge.dataset.val = val;
+                badge.innerText = val;
+                pool.appendChild(badge);
+            });
+            
+            if (window.humanBadyDnD) window.humanBadyDnD.init();
+        }
+
+        function verifyM4() {
+            document.querySelectorAll('.m4-quiz-slot').forEach(z => {
+                z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error');
+            });
+
+            let allCorrect = true;
+            let groups = {}; 
+
+            document.querySelectorAll('.m4-quiz-slot').forEach(slot => {
+                const item = slot.querySelector('.dnd-item');
+                if (!item) {
+                    slot.classList.add('error');
+                    allCorrect = false;
+                    setTimeout(() => slot.classList.remove('error'), 300);
+                    return;
+                }
+
+                const val = item.dataset.val;
+                const expectedAnswers = slot.dataset.answer.split(',');
+                const group = slot.dataset.group;
+
+                if (group) {
+                    if (!groups[group]) groups[group] = { values: [], slots: [] };
+                    groups[group].values.push(val);
+                    groups[group].slots.push(slot);
+                } else {
+                    if (expectedAnswers.includes(val)) {
+                        slot.style.borderColor = 'var(--color-mint)';
+                        slot.style.backgroundColor = '#EFFFFD';
+                    } else {
+                        slot.classList.add('error');
+                        allCorrect = false;
+                        setTimeout(() => slot.classList.remove('error'), 300);
+                    }
+                }
+            });
+
+            for (const [groupName, data] of Object.entries(groups)) {
+                const expectedList = data.slots[0].dataset.answer.split(','); 
+                const actualValues = data.values;
+                const isUnique = new Set(actualValues).size === actualValues.length;
+                const isAllValid = actualValues.every(v => expectedList.includes(v));
+
+                if (isUnique && isAllValid) {
+                    data.slots.forEach(slot => {
+                        slot.style.borderColor = 'var(--color-mint)';
+                        slot.style.backgroundColor = '#EFFFFD';
+                    });
+                } else {
+                    data.slots.forEach(slot => {
+                        slot.classList.add('error');
+                        setTimeout(() => slot.classList.remove('error'), 300);
+                    });
+                    allCorrect = false;
+                }
+            }
+
+            if (allCorrect) {
+                if (window.UniversalReward) window.UniversalReward.complete(2, 4);
+                launchConfettiEffect();
+                
+                document.querySelectorAll('.m4-quiz-slot .dnd-item').forEach(badge => badge.classList.add('dnd-locked'));
+                
+                const badgePool = document.getElementById('m4-badge-pool');
+                if (badgePool && badgePool.parentElement) badgePool.parentElement.style.display = 'none';
+                
+                document.getElementById('btn-check-m4').style.display = 'none';
+                updateSidebarUI('nav-m4');
+                updateGuideText("🎉 대단해요! Quest 2 소화를 완벽하게 클리어했습니다!");
+
+                const successArea = document.getElementById('m4-success-area');
+                if (successArea) successArea.style.display = 'flex';
+                
+                const container = document.getElementById('mission4-section');
+                if (container) setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+            } else {
+                alert("아직 채우지 않은 빈칸이 있거나 잘못 연결된 뱃지가 있습니다.\n깜빡이는 빨간색 칸을 다시 확인해 보세요!");
+            }
+        }
+
+        // =====================================
+        // 🌟 뱃지 무한 복사 통합 로직
+        // =====================================
+        document.addEventListener('dnd-dropped', (e) => {
+            const pool1 = document.getElementById('m1-badge-pool-1');
+            if (pool1) {
+                const textVals = ['소화계', '순환계', '호흡계', '배설계', '신경계', '분해', '합성', '흡수', '방출', '세포'];
+                textVals.forEach(val => {
+                    const badgesInPool = Array.from(pool1.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
+                    if (badgesInPool.length === 0) {
+                        const clone = document.createElement('div');
+                        clone.className = 'nutrient-badge dnd-item';
+                        clone.dataset.val = val;
+                        clone.innerText = val;
+                        pool1.appendChild(clone);
+                    } else if (badgesInPool.length > 1) {
+                        for (let i = 1; i < badgesInPool.length; i++) badgesInPool[i].remove();
+                    }
+                });
+            }
+
+            const pool2 = document.getElementById('m1-badge-pool-2');
+            if (pool2) {
+                const organVals = ['입', '식도', '위', '소장', '대장', '항문', '침샘', '간', '쓸개', '이자'];
+                organVals.forEach(val => {
+                    const badgesInPool = Array.from(pool2.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
+                    if (badgesInPool.length === 0) {
+                        const clone = document.createElement('div');
+                        clone.className = 'organ-badge dnd-item';
+                        clone.dataset.val = val;
+                        clone.innerText = val;
+                        pool2.appendChild(clone);
+                    } else if (badgesInPool.length > 1) {
+                        for (let i = 1; i < badgesInPool.length; i++) badgesInPool[i].remove();
+                    }
+                });
+            }
+
+            const pool3 = document.getElementById('m3-badge-pool');
+            if (pool3) {
+                const m3Vals = ['포도당', '아미노산', '지방산', '모노글리세리드'];
+                m3Vals.forEach(val => {
+                    const badgesInPool = Array.from(pool3.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
+                    if (badgesInPool.length === 0) {
+                        const clone = document.createElement('div');
+                        clone.className = 'nutrient-badge dnd-item';
+                        clone.dataset.val = val;
+                        clone.innerText = val;
+                        pool3.appendChild(clone);
+                    } else if (badgesInPool.length > 1) {
+                        for (let i = 1; i < badgesInPool.length; i++) badgesInPool[i].remove();
+                    }
+                });
+            }
+
+            const pool4 = document.getElementById('m4-badge-pool');
+            if (pool4) {
+                const m4Vals = ['기계적', '화학적', '포도당', '아미노산', '지방산', '모노글리세리드', '모세혈관', '암죽관'];
+                m4Vals.forEach(val => {
+                    const badgesInPool = Array.from(pool4.children).filter(el => el.dataset.val === val && el.classList.contains('dnd-item'));
+                    if (badgesInPool.length === 0) {
+                        const clone = document.createElement('div');
+                        clone.className = 'nutrient-badge dnd-item';
+                        clone.dataset.val = val;
+                        clone.innerText = val;
+                        pool4.appendChild(clone);
+                    } else if (badgesInPool.length > 1) {
+                        for (let i = 1; i < badgesInPool.length; i++) badgesInPool[i].remove();
+                    }
+                });
+            }
+            if (window.humanBadyDnD) window.humanBadyDnD.init();
+        });
     </script>
 </body>
 </html>
