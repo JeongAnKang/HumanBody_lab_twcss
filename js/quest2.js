@@ -134,7 +134,6 @@ function verifyM1Sentence() {
     const pool1Wrap = document.getElementById('m1-pool-phase1-wrap');
     if (pool1Wrap) pool1Wrap.style.display = 'none';
 
-    // [최적화 반영] 무한 로딩 방지: 정답 맞췄을 때 외부 애니메이션 로딩
     const iframe = document.getElementById('m1-animation-iframe');
     if (iframe && iframe.dataset.src) {
         iframe.src = iframe.dataset.src;
@@ -391,7 +390,7 @@ function applyReagent(id) {
             document.getElementById('td-color-' + id).innerHTML = '<span style="color:#add8e6;font-weight:bold;">연한 푸른색</span>';
             document.getElementById('ans-slot-' + id).dataset.answer = "엿당 없음"; 
         } else {
-            liq.style.backgroundColor = '#ff8c00'; // 귤색 반영
+            liq.style.backgroundColor = '#ff8c00'; 
             document.getElementById('td-color-' + id).innerHTML = '<span style="color:#ff8c00;font-weight:bold;">황적색</span>';
             document.getElementById('ans-slot-' + id).dataset.answer = "엿당 있음"; 
         }
@@ -679,7 +678,204 @@ function verifyM3S3() {
 }
 
 // =====================================
-// Drag & Drop 이벤트 (최적화 반영)
+// Mission 4 로직
+// =====================================
+function transitionToMission4() {
+    document.getElementById('mission1-section').style.display = 'none'; 
+    document.getElementById('mission2-section').style.display = 'none'; 
+    document.getElementById('mission3-section').style.display = 'none';
+    document.getElementById('mission4-section').style.display = 'flex';
+    
+    if(window.updateGuideText) updateGuideText("작은창자에서 영양소가 어떻게 흡수되고 이동하는지 알아봅시다.");
+    if(window.updateSidebarUI) updateSidebarUI('nav-m4');
+    
+    initM4S1Badges();
+}
+
+function replenishM4Pool(poolId, vals) {
+    const pool = document.getElementById(poolId);
+    if (!pool) return;
+    
+    const stepId = poolId.split('-')[1]; 
+    const lockedVals = Array.from(document.querySelectorAll(`.m4-${stepId}-slot .dnd-locked`)).map(el => el.dataset.val);
+    
+    lockedVals.forEach(v => {
+        const idx = vals.indexOf(v);
+        if(idx > -1) vals.splice(idx, 1);
+    });
+
+    pool.innerHTML = ''; 
+    for (let i = vals.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [vals[i], vals[j]] = [vals[j], vals[i]]; 
+    }
+    vals.forEach(val => {
+        const badge = document.createElement('div'); 
+        badge.className = 'nutrient-badge dnd-item';
+        badge.dataset.val = val; 
+        badge.innerText = val; 
+        pool.appendChild(badge);
+    });
+    if (window.humanBadyDnD) window.humanBadyDnD.init();
+}
+
+function verifyStep(slotClass, poolId, nextSectionId, btnId, minCount) {
+    const slots = document.querySelectorAll(`.${slotClass}`);
+    slots.forEach(z => { z.style.borderColor = ''; z.style.backgroundColor = ''; z.classList.remove('error'); });
+    
+    let allCorrect = true; 
+    let filledCount = 0;
+    let groups = {}; 
+
+    slots.forEach(slot => {
+        const item = slot.querySelector('.dnd-item');
+        if (!item) { 
+            slot.classList.add('error'); 
+            allCorrect = false; 
+            setTimeout(() => slot.classList.remove('error'), 300); 
+            return; 
+        }
+        filledCount++;
+        const val = item.dataset.val; 
+        const expectedAnswers = slot.dataset.answer.split(','); 
+        const group = slot.dataset.group;
+        
+        if (group) {
+            if (!groups[group]) groups[group] = { values: [], slots: [] };
+            groups[group].values.push(val); 
+            groups[group].slots.push(slot);
+        } else {
+            if (expectedAnswers.includes(val)) { 
+                slot.style.borderColor = 'var(--color-mint)'; 
+                slot.style.backgroundColor = '#EFFFFD'; 
+            } else { 
+                slot.classList.add('error'); 
+                allCorrect = false; 
+                setTimeout(() => slot.classList.remove('error'), 300); 
+            }
+        }
+    });
+
+    for (const [groupName, data] of Object.entries(groups)) {
+        const expectedList = data.slots[0].dataset.answer.split(','); 
+        const actualValues = data.values;
+        const isUnique = new Set(actualValues).size === actualValues.length;
+        const isAllValid = actualValues.every(v => expectedList.includes(v));
+        
+        if (isUnique && isAllValid) { 
+            data.slots.forEach(slot => { 
+                slot.style.borderColor = 'var(--color-mint)'; 
+                slot.style.backgroundColor = '#EFFFFD'; 
+            }); 
+        } else { 
+            data.slots.forEach(slot => { 
+                slot.classList.add('error'); 
+                setTimeout(() => slot.classList.remove('error'), 300); 
+            }); 
+            allCorrect = false; 
+        }
+    }
+
+    if (filledCount < minCount) {
+        alert("모든 빈칸을 채워주세요!");
+        return false;
+    }
+
+    if (allCorrect) {
+        document.querySelectorAll(`.${slotClass} .dnd-item`).forEach(b => b.classList.add('dnd-locked'));
+        if (btnId) document.getElementById(btnId).style.display = 'none';
+        
+        if (poolId) {
+            const poolWrap = document.getElementById(poolId).parentElement;
+            if(poolWrap) poolWrap.style.display = 'none';
+        }
+
+        if (nextSectionId) {
+            const nextSec = document.getElementById(nextSectionId);
+            nextSec.classList.remove('hidden');
+            setTimeout(() => { 
+                nextSec.classList.remove('opacity-0'); 
+                nextSec.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+            }, 100);
+        }
+        return true;
+    } else { 
+        alert("잘못 연결된 뱃지가 있습니다. 깜빡이는 빨간색 칸을 다시 확인해 보세요!"); 
+        return false;
+    }
+}
+
+// ------------------ Step 1 ------------------
+function initM4S1Badges() {
+    replenishM4Pool('m4-s1-pool', ['포도당', '아미노산', '지방산', '모노글리세라이드']);
+}
+function verifyM4S1() {
+    if(verifyStep('m4-s1-slot', 'm4-s1-pool', 'm4-step2-section', 'btn-check-m4-s1', 4)) {
+        initM4S2Badges();
+    }
+}
+
+// ------------------ Step 2 ------------------
+function initM4S2Badges() {
+    replenishM4Pool('m4-s2-pool', ['주름', '융털', '모세혈관', '암죽관']);
+}
+function verifyM4S2() {
+    const q1Input = document.getElementById('m4-q1-input');
+    const q1Value = q1Input.value.replace(/\s+/g, '');
+    const expectedAnswer = "영양소와닿는표면적을넓게하여";
+    
+    if (q1Value !== expectedAnswer) {
+        q1Input.style.borderColor = '#ff4757';
+        q1Input.classList.add('error');
+        setTimeout(() => q1Input.classList.remove('error'), 300);
+        alert("Q1의 빈칸에 희미한 글씨를 똑같이 따라 적어주세요!");
+        return; 
+    }
+
+    const isDndCorrect = verifyStep('m4-s2-slot', 'm4-s2-pool', 'm4-step3-section', 'btn-check-m4-s2', 4);
+
+    if (isDndCorrect) {
+        q1Input.style.borderColor = 'var(--color-mint)';
+        q1Input.style.backgroundColor = '#EFFFFD';
+        q1Input.disabled = true; 
+        initM4S3Badges(); 
+    }
+}
+
+// ------------------ Step 3 ------------------
+function initM4S3Badges() {
+    replenishM4Pool('m4-s3-pool', ['모세혈관', '암죽관', '포도당', '아미노산', '무기염류', '지방', '물', '지방산', '모노글리세라이드']);
+}
+function verifyM4S3() {
+    if(verifyStep('m4-s3-slot', 'm4-s3-pool', 'm4-step4-section', 'btn-check-m4-s3', 11)) {
+        initM4S4Badges();
+    }
+}
+
+// ------------------ Step 4 ------------------
+function initM4S4Badges() {
+    replenishM4Pool('m4-s4-pool', ['간', '소장', '심장', '혈액','간을 거쳐', '간을거치지 않고']);
+}
+function verifyM4S4() {
+    if(verifyStep('m4-s4-slot', 'm4-s4-pool', null, 'btn-check-m4-s4', 8)) {
+        if (window.completeMissionAction) window.completeMissionAction(2, 4); 
+        launchConfettiEffect();
+        
+        if(window.updateGuideText) updateGuideText("🎉 대단해요! Quest 2 소화를 완벽하게 클리어했습니다!");
+        if(window.updateSidebarUI) updateSidebarUI('nav-m4');
+        
+        const successArea = document.getElementById('m4-success-area'); 
+        if (successArea) { 
+            successArea.classList.remove('hidden'); 
+            successArea.classList.add('flex');
+            successArea.classList.add('animate-[fadeIn_1.5s]');
+            setTimeout(() => { successArea.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 150);
+        }
+    }
+}
+
+// =====================================
+// Drag & Drop 이벤트
 // =====================================
 document.addEventListener('dragstart', (e) => {
     if (e.target.classList && e.target.classList.contains('dnd-item')) { setTimeout(() => { e.target.style.opacity = '0.01'; }, 0); }
@@ -754,9 +950,7 @@ document.addEventListener('dnd-dropped', (e) => {
         }
     };
 
-    // =========================================================
-    // [성능 최적화] 화면에 현재 보이는 미션 영역만 뱃지를 리필
-    // =========================================================
+    // 화면에 보이는 미션 영역 뱃지 리필 관리 (미션 4 포함)
     const m1Sec = document.getElementById('mission1-section');
     const m2Sec = document.getElementById('mission2-section');
     const m3Sec = document.getElementById('mission3-section');
@@ -777,14 +971,12 @@ document.addEventListener('dnd-dropped', (e) => {
     else if (m3Sec && m3Sec.style.display !== 'none') {
         if (document.getElementById('m3-s1-pool') && document.getElementById('m3-s1-pool').parentElement.style.display !== 'none') {
             replenishPool('m3-s1-pool', 'nutrient-badge', ['아밀레이스', '펩신', '트립신', '라이페이스', '간', '쓸개', '작은창자', '이자액']);
-            
             document.querySelectorAll('#m3-s1-pool .dnd-item').forEach(el => {
                 if (['아밀레이스', '펩신', '트립신', '라이페이스'].includes(el.dataset.val)) {
                     el.classList.add('border-[#1864AB]', 'text-[#1864AB]');
                 }
             });
         }
-        
         replenishPool('m3-s2-pool', 'nutrient-badge', ['포도당', '아미노산', '지방산', '모노글리세라이드', '아밀레이스', '펩신', '트립신', '라이페이스']);
         replenishPool('m3-s3-pool', 'enzyme-text-badge', [
             '침에 들어 있음', '이자액에 들어 있음', '위액에 들어 있음', 
@@ -793,12 +985,12 @@ document.addEventListener('dnd-dropped', (e) => {
             '침샘에서 만듦', '이자에서 만듦'
         ]);
     }
-    // 미션4 뱃지 리필 방어 로직 (html 내 인라인 스크립트와 충돌 없도록 처리)
+    // 미션 4 통합된 리필 호출 로직
     else if (m4Sec && m4Sec.style.display !== 'none') {
-        if (typeof initM4S1Badges === 'function' && document.getElementById('m4-s1-pool') && document.getElementById('m4-s1-pool').parentElement.style.display !== 'none') initM4S1Badges();
-        if (typeof initM4S2Badges === 'function' && document.getElementById('m4-s2-pool') && document.getElementById('m4-s2-pool').parentElement.style.display !== 'none') initM4S2Badges();
-        if (typeof initM4S3Badges === 'function' && document.getElementById('m4-s3-pool') && document.getElementById('m4-s3-pool').parentElement.style.display !== 'none') initM4S3Badges();
-        if (typeof initM4S4Badges === 'function' && document.getElementById('m4-s4-pool') && document.getElementById('m4-s4-pool').parentElement.style.display !== 'none') initM4S4Badges();
+        if (document.getElementById('m4-s1-pool') && document.getElementById('m4-s1-pool').parentElement.style.display !== 'none') initM4S1Badges();
+        if (document.getElementById('m4-s2-pool') && document.getElementById('m4-s2-pool').parentElement.style.display !== 'none') initM4S2Badges();
+        if (document.getElementById('m4-s3-pool') && document.getElementById('m4-s3-pool').parentElement.style.display !== 'none') initM4S3Badges();
+        if (document.getElementById('m4-s4-pool') && document.getElementById('m4-s4-pool').parentElement.style.display !== 'none') initM4S4Badges();
     }
     
     if (window.humanBadyDnD) window.humanBadyDnD.init();
@@ -823,7 +1015,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function floatBadges() {
-        // [성능 최적화] 미션 2가 안 보일 때는 애니메이션 연산 완전 차단
         const m2Sec = document.getElementById('mission2-section');
         if (m2Sec && m2Sec.style.display === 'none') {
             requestAnimationFrame(floatBadges);
@@ -862,7 +1053,6 @@ document.addEventListener('click', (e) => {
     const badge = e.target;
     if (!badge.classList.contains('dnd-item') || badge.classList.contains('dnd-locked')) return;
 
-    // 뱃지가 아래쪽 대기열(dnd-pool)에 있는 것이 아니라, 문제(슬롯/바구니 등)에 들어간 상태라면 삭제
     if (!badge.closest('.dnd-pool')) {
         badge.remove();
     }
