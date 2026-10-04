@@ -1,1 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quest 6: 인체 에너지</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Quest 6 전용 CSS 공간 */
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="quest-title">✨ QUEST 6 인체 에너지</div>
+        <div class="guide-text" id="main-guide-text">세포 호흡과 기관계의 통합적 작용을 알아보세요!</div>
+        <div class="header-buttons">
+            <button class="btn-ghost" style="width: 150px;" onclick="location.reload()">새로고침 ↺</button>
+        </div>
+    </header>
 
+    <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
+        
+        <!-- Mission 1: 세포호흡 -->
+        <section id="mission1-section" class="card block overflow-y-auto px-5 py-4" style="display: block;">
+            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 1: 세포호흡</h2>
+            <div class="text-center mt-20 text-gray-400 font-bold">에너지를 생성하는 세포 호흡의 원리 콘텐츠를 여기에 작성하세요.</div>
+        </section>
+
+        <!-- Mission 2: 기관계의 통합적 작용 -->
+        <section id="mission2-section" class="card overflow-y-auto px-5 py-4 flex-col" style="display: none;">
+            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">🏆 Mission 2: 기관계의 통합적 작용</h2>
+            <div class="text-center mt-20 text-gray-400 font-bold">소화, 순환, 호흡, 배설계의 유기적 연결망 콘텐츠를 여기에 작성하세요.</div>
+            
+            <!-- 최종 엔딩 버튼 -->
+            <div class="text-center mt-10">
+                <button class="btn-primary max-w-[300px] bg-[#FF9F1C] text-white text-[1.3rem] px-10 py-4 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-2 border-white transition-transform duration-200" onclick="location.href='index.html'">
+                    🎉 인체 에너지 추적 완성!
+                </button>
+            </div>
+        </section>
+
+        <!-- 사이드바 네비게이션 -->
+        <aside class="card mission-sidebar lg:w-max flex flex-col gap-4 items-center min-w-[140px]">
+            <button class="w-full bg-[#E2F0CB] text-[var(--text-main)] border-2 border-[#C5E1A5] py-3 px-2.5 text-[0.95rem] font-bold leading-[1.4] rounded-2xl mb-1 cursor-pointer" onclick="location.href='index.html'">
+                   인체탐험지도로<br>돌아가기 🏠
+            </button> 
+            <div id="nav-m1" class="mission-item" onclick="switchMission(1)">
+                <div class="mission-icon text-xl mb-2">💓</div><div class="text-sm font-bold">Mission 1</div><div class="text-sm mt-1">세포호흡</div>
+            </div>
+            <div id="nav-m2" class="mission-item" onclick="switchMission(2)">
+                <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 2</div><div class="text-sm mt-1">통합적 작용</div>
+            </div>
+        </aside>
+
+    </main>
+
+    <script>
+        function switchMission(num) {
+            for(let i=1; i<=2; i++) {
+                const sec = document.getElementById('mission' + i + '-section');
+                if(sec) sec.style.display = (i === num) ? 'block' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>
