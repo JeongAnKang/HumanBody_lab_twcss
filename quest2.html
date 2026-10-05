@@ -121,6 +121,16 @@
         .enzyme-text-badge { background-color: white; border: 2px solid var(--color-mint); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: grab; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); user-select: none; text-align: center; word-break: keep-all; }
         .enzyme-text-badge:active { cursor: grabbing; transform: scale(0.95); }
         .enzyme-drop-zone .enzyme-text-badge { margin: 0; width: 100%; box-shadow: none; border-color: var(--color-coral-light); font-size: 0.85rem; padding: 6px; }
+
+        /* ==========================================
+           융털 영양소 흡수 게임 전용 CSS (Mission 4, Step 3)
+           ========================================== */
+        .flow-line { animation: dash-flow 1.5s linear infinite; }
+        @keyframes dash-flow { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+        .drop-zone-svg { cursor: pointer; transition: stroke-opacity 0.2s, stroke-width 0.2s; }
+        .drop-zone-svg.drag-over { stroke-opacity: 0.5 !important; stroke: #82D1D9 !important; filter: drop-shadow(0 0 10px rgba(130,209,217,0.8)); }
+        .bounce-back { animation: shake 0.4s; }
+        .shake-animation { animation: shake 0.4s; }
        
         @keyframes boil { 0% { transform: translateY(0); } 100% { transform: translateY(-4px); } }
         @keyframes pulseBounceX { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
@@ -330,7 +340,7 @@
                     <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mt-6">
                         <div class="flex flex-col items-center relative">
                             <div class="flex justify-between w-full px-6 mb-2 z-10 gap-4">
-                                <button id="btn-iodine" class="reagent-btn btn-iodine text-[0.8rem] py-1.5 px-3 whitespace-nowrap text-center" onclick="selectReagent('iodine', this)">3. 아이오딘-아이오딘화 칼륨<br>⬇️ (A, B)</button>
+                                <button id="btn-iodine" class="reagent-btn btn-iodine text-[0.8rem] py-1.5 px-3 whitespace-nowrap text-center" onclick="selectReagent('iodine', this)">3. 아이오딘-아이오딘화 칼륨<br>⬇️️ (A, B)</button>
                                 <button id="btn-benedict" class="reagent-btn btn-benedict text-[0.8rem] py-1.5 px-3 whitespace-nowrap text-center" onclick="selectReagent('benedict', this)">3. 베네딕트 용액<br>⬇️ (C, D)</button>
                             </div>
                             
@@ -712,7 +722,6 @@
                     </div>
                 </div>
 
-                <!-- [최적화] 뱃지풀을 표 아래로 이동 (sticky 제거) -->
                 <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto max-w-[700px]">
                     <div id="m4-s1-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="10"></div>
                 </div>
@@ -751,7 +760,6 @@
                         </div>
                     </div>
 
-                    <!-- [최적화] 뱃지풀을 4칸 그리드 아래, Q1 문장 위로 이동 -->
                     <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
                         <div id="m4-s2-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
@@ -770,30 +778,93 @@
                 </div>
             </div>
 
-            <!-- [Step 3] 영양소의 흡수 -->
+            <!-- [Step 3] 영양소의 흡수 (게임 영역) -->
             <div id="m4-step3-section" class="hidden opacity-0 w-full transition-opacity duration-500 ease-in-out border-t-2 border-dashed border-[#eee] pt-8 mt-8">
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 3. 영양소의 흡수</h3>
                 
                 <div class="max-w-[1000px] mx-auto mb-6">
-                    <div class="m4-img-box mb-4 max-w-[600px] mx-auto p-5">
-                        <div class="font-black text-[#333] mb-3 text-[1.1rem] text-center">🔍 융털의 흡수 관 맞추기</div>
-                        <img src="images/q2_m4_02_villus.png" alt="융털 구조" class="w-full max-h-[300px] object-contain rounded-lg mb-6 mx-auto" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=이미지+준비중+(q2_m4_02_villus.png)'">
+                    <!-- 게임 컨테이너 -->
+                    <div class="m4-img-box mb-6 w-full mx-auto p-4 relative overflow-hidden bg-white" id="villus-game-wrapper">
+
+                        <div class="font-black text-[var(--color-mint)] mb-4 text-[1.3rem] text-center">🔍 융털 영양소 흡수 시뮬레이션</div>
                         
-                        <div class="grid grid-cols-2 gap-4 w-full">
-                            <div class="flex flex-col items-center justify-center text-center">
-                                <span class="font-bold text-[#e74c3c] text-[0.95rem] mb-2 break-keep">붉고 푸른 그물망<br>(수용성 흡수)</span>
-                                <div class="answer-slot dnd-zone m4-s3-slot mx-auto !m-0" data-answer="모세혈관" data-dnd-capacity="1"></div>
+                        <div class="relative w-full max-w-[800px] mx-auto rounded-xl border-2 border-[#ddd] bg-[#fdfbf7] p-2 shadow-inner min-h-[500px]">
+                            
+                            <!-- SVG 인터랙티브 영역 -->
+                            <svg id="villus-svg" viewBox="0 0 800 520" class="w-full h-auto relative z-0">
+                                <defs>
+                                    <path id="anim-capillary" d="M 230,250 L 230,120 Q 300,70 370,120 L 370,420 L 450,420 L 570,420 L 660,420 L 660,260" />
+                                    <path id="anim-lacteal" d="M 300,250 L 300,160 Q 300,140 320,160 L 320,480 L 600,480 L 600,220 L 640,220" />
+                                </defs>
+
+                                <!-- 1. Heart -->
+                                <path d="M 700,180 C 700,130 630,130 630,180 C 630,230 700,280 700,280 C 700,280 770,230 770,180 C 770,130 700,130 700,180 Z" fill="#ff8fab" stroke="#c2255c" stroke-width="4"/>
+                                <text x="700" y="200" text-anchor="middle" font-weight="bold" fill="white" font-size="20">심장</text>
+
+                                <!-- 2. Villus outline -->
+                                <path d="M 180,500 L 180,100 Q 300,-10 420,100 L 420,500" fill="#fff0f5" stroke="#ffb3c6" stroke-width="6"/>
+
+                                <!-- 3. Lacteal (암죽관) - 간 아래로 우회 -->
+                                <path d="M 280,500 L 280,160 Q 300,130 320,160 L 320,480 L 600,480 L 600,220 L 640,220" fill="none" stroke="#ffe066" stroke-width="30"/>
+                                <path d="M 280,500 L 280,160 Q 300,130 320,160 L 320,480 L 600,480 L 600,220 L 640,220" fill="none" stroke="#f59f00" stroke-width="6" stroke-dasharray="10 10" class="flow-line"/>
+                                <circle cx="640" cy="220" r="10" fill="#f59f00"/> <!-- 연결점 -->
+
+                                <!-- 4. Capillary (모세혈관) - 간 뒤로 배치 -->
+                                <path d="M 230,500 L 230,120 Q 300,70 370,120 L 370,420 L 660,420 L 660,260" fill="none" stroke="#ff8787" stroke-width="16"/>
+                                <path d="M 230,500 L 230,120 Q 300,70 370,120 L 370,420 L 660,420 L 660,260" fill="none" stroke="#c92a2a" stroke-width="4" stroke-dasharray="8 8" class="flow-line"/>
+                                <circle cx="660" cy="260" r="8" fill="#c92a2a"/> <!-- 연결점 -->
+
+                                <!-- 5. Liver (모세혈관을 가리도록 나중에 그림) -->
+                                <rect x="450" y="380" width="120" height="80" rx="15" fill="#c49a7a" stroke="#8d6e63" stroke-width="4"/>
+                                <text x="510" y="425" text-anchor="middle" font-weight="bold" fill="white" font-size="20">간</text>
+
+                                <!-- 6. Texts -->
+                                <text x="300" y="300" text-anchor="middle" font-size="18" font-weight="900" fill="#e67700" transform="rotate(-90 300,300)">암죽관</text>
+                                <text x="230" y="300" text-anchor="middle" font-size="18" font-weight="900" fill="#c92a2a" transform="rotate(-90 230,300)">모세혈관</text>
+
+                                <!-- Invisible Drop Targets -->
+                                <path id="dropzone-capillary" class="drop-zone-svg" d="M 230,400 L 230,120 Q 300,70 370,120 L 370,420" fill="none" stroke="transparent" stroke-width="50" pointer-events="stroke"/>
+                                <path id="dropzone-lacteal" class="drop-zone-svg" d="M 280,400 L 280,160 Q 300,130 320,160 L 320,480" fill="none" stroke="transparent" stroke-width="50" pointer-events="stroke"/>
+                            </svg>
+
+                            <!-- Nutrient Pool for Game (1 of each type - 컴팩트 디자인 - 무한생성) -->
+                            <div id="game-nutrient-pool" class="absolute top-4 left-4 flex flex-col gap-1.5 bg-white/95 p-2 rounded-xl shadow border-2 border-dashed border-[#A5D8FF] z-10 w-[85px]">
+                                <div class="text-center font-bold text-[#1864AB] text-[0.75rem] mb-0.5">👇 드래그!</div>
+                                <div class="game-draggable bg-blue-100 border border-blue-400 text-blue-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="water" data-name="포도당" id="drag-glucose">포도당</div>
+                                <div class="game-draggable bg-green-100 border border-green-400 text-green-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="water" data-name="아미노산" id="drag-amino">아미노산</div>
+                                <div class="game-draggable bg-orange-100 border border-orange-400 text-orange-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="fat" data-name="지방" id="drag-fat">지방</div>
                             </div>
                             
-                            <div class="flex flex-col items-center justify-center text-center">
-                                <span class="font-bold text-[#f39c12] text-[0.95rem] mb-2 break-keep">가운데 굵은 관<br>(지용성 흡수)</span>
-                                <div class="answer-slot dnd-zone m4-s3-slot mx-auto !m-0" data-answer="암죽관" data-dnd-capacity="1"></div>
+                            <!-- Success Overlay -->
+                            <div id="game-success-overlay" class="absolute inset-0 bg-white/90 hidden flex-col items-center justify-center z-20 rounded-xl">
+                                <div class="text-[2rem] font-black text-[var(--color-mint)] mb-3 animate-bounce">🎉 완벽합니다! 🎉</div>
+                                <div class="text-[1.1rem] font-bold text-[#333]">모든 영양소가 완벽하게 흡수되었습니다.</div>
+                                <button class="mt-4 px-6 py-2 bg-[var(--color-mint)] text-white font-bold rounded-xl shadow-md hover:scale-105 transition-transform" onclick="document.getElementById('game-success-overlay').classList.add('hidden'); document.getElementById('m4-s3-pool').scrollIntoView({behavior:'smooth', block:'center'});">아래 문장 완성하기 ⬇</button>
                             </div>
                         </div>
+
+                        <!-- UI Control: 하단 배치 (상태, 현황판 넓게, 초기화 버튼 폭 축소) -->
+                        <div class="flex flex-col w-full max-w-[800px] mx-auto mt-4 bg-[#f8f9fa] rounded-xl p-3 border-2 border-[#eee] shadow-sm">
+                            <div id="game-status-msg" class="w-full text-center font-bold text-[#e74c3c] text-[1rem] min-h-[24px] mb-3 pb-2 border-b border-[#ddd]">
+                                영양소를 알맞은 흡수관으로 드래그 하세요!
+                            </div>
+                            <div class="flex flex-row justify-between items-center w-full gap-4">
+                                <div id="game-progress" class="flex-[3] flex justify-around text-[0.95rem] font-bold text-gray-700 gap-2 whitespace-nowrap">
+                                    <span class="bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg w-full text-center">포도당: <span id="cnt-glucose">0</span>/5</span>
+                                    <span class="bg-green-100 border border-green-200 px-3 py-1.5 rounded-lg w-full text-center">아미노산: <span id="cnt-amino">0</span>/5</span>
+                                    <span class="bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg w-full text-center">지방: <span id="cnt-fat">0</span>/5</span>
+                                </div>
+                                <button id="btn-reset-game" class="btn-primary !m-0 !py-1.5 !px-3 !text-[0.9rem] flex-1 max-w-[120px] bg-[#95a5a6] border-[#7f8c8d] shadow-md hover:bg-[#7f8c8d] transition-colors whitespace-nowrap shrink-0">
+                                    초기화 ↺
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- [최적화] 뱃지풀을 그림 아래, 문장 위로 이동 -->
+                    <!-- 기존 뱃지풀 및 텍스트 문장 채우기 (복습용) -->
                     <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
+                        <div class="text-center font-bold text-[var(--color-mint)] text-[0.95rem] mb-2">게임에서 배운 내용을 떠올리며 문장을 완성해보세요!</div>
                         <div id="m4-s3-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
 
@@ -852,7 +923,6 @@
                         </div>
                     </div>     
 
-                    <!-- [최적화] 뱃지풀을 이동경로 아래, 문장 위로 이동 -->
                     <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
                         <div id="m4-s4-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
