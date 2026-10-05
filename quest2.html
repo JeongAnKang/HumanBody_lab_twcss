@@ -16,16 +16,7 @@
         /* ==========================================
            Quest 2 전용 CSS
            ========================================== */
-           /* 모바일/태블릿 환경 뱃지풀 상단 고정(Sticky) 풀림 현상 해결 */
-        @media (max-width: 1024px) {
-            section.card {
-                overflow-y: visible !important;
-            }
-        }
-        .sticky {
-            position: -webkit-sticky !important;
-            position: sticky !important;
-        }
+        
         .path-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 30px 0; align-items: center; }
         
         .organ-badge { width: 85px; height: 46px; background-color: white; border: 2px solid var(--color-mint); border-radius: 23px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--text-main); cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1; }
@@ -155,7 +146,6 @@
             <h2 class="text-center mb-2.5 text-[1.6rem] font-black text-[var(--color-mint)]">✨ Mission 1: 소화기관계</h2>
             
             <div id="m1-phase1" class="quiz-area visible flex flex-col w-full min-h-[calc(100dvh-180px)] p-0">
-                
                 <div class="flex-1 min-h-[150px] flex flex-col items-center justify-center mb-4">
                     <img src="images/q2_m1_01_intro.png" alt="도입 일러스트" class="max-w-full max-h-[60vh] h-full object-contain rounded-2xl shadow-[var(--shadow-soft)]" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_01_intro.png)'">
                     <h3 class="text-[var(--text-main)] text-[1.3rem] font-bold mt-4 text-center break-keep">
@@ -164,7 +154,7 @@
                 </div>
 
                 <div class="shrink-0">
-                    <div id="m1-pool-phase1-wrap" class="relative z-[100] bg-white/95 px-4 py-2.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.1)] mb-4 border-2 border-[var(--color-mint)]">
+                    <div id="m1-pool-phase1-wrap" class="relative z-[100] bg-white/95 px-4 py-2.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.1)] mb-4 border-2 border-[var(--color-mint)] mx-auto max-w-[850px]">
                         <div class="font-extrabold text-[0.95rem] mb-[4%] text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 문장을 완성하세요!</div>
                         <div id="m1-badge-pool-1" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0 min-h-auto gap-2" data-dnd-capacity="20">
                             <div class="nutrient-badge dnd-item" data-val="소화계">소화계</div>
@@ -175,7 +165,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-[#f9f9f9] px-[5%] py-5 rounded-xl mx-auto mb-2.5 w-full max-w-[850px] text-left leading-[2.6] text-[1.1rem] text-[var(--text-main)] font-bold break-keep">
+                    <div class="bg-[#f9f9f9] px-[5%] py-5 rounded-xl mx-auto mb-2.5 w-full max-w-[850px] text-left leading-[2.6] text-[1.1rem] text-[var(--text-main)] font-bold break-keep shadow-sm">
                         우리가 먹은 음식물은 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="소화계" data-hint="( ㅅㅎㄱ )" data-dnd-capacity="1"></div>를 거치면서 
                         크기가 작은 영양소로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="분해" data-hint="( ㅂㅎ )" data-dnd-capacity="1"></div>된 후, <br>  몸 안으로 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="흡수" data-hint="( ㅎㅅ )" data-dnd-capacity="1"></div>되어 
                         <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="순환계" data-hint="( ㅅㅎㄱ )" data-dnd-capacity="1"></div>을(를) 통해 온몸의 <div class="answer-slot dnd-zone m1-sentence-slot inline-slot" data-answer="세포" data-hint="( ㅅㅍ )" data-dnd-capacity="1"></div>로 공급된다.<br>
@@ -204,12 +194,6 @@
             </div>
 
             <div id="m1-phase3-table" class="hidden opacity-0 transition-opacity duration-500 ease-in-out mt-7">
-                <div id="m1-pool-phase2-wrap" class="sticky top-2.5 z-[100] bg-white/95 p-4 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mt-7 mb-6 backdrop-blur-sm border-2 border-[var(--color-mint)]">
-                    <div class="font-extrabold text-[1rem] mb-2.5 text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 표와 아래 빈칸을 완성하세요!</div>
-                    <div id="m1-badge-pool-2" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="30">
-                    </div>
-                </div>
-
                 <div class="mt-7 pb-5">
                     <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">📋 소화계의 구조와 기능</h3>
                     <p class="text-center text-[var(--text-sub)] font-bold mb-4">설명에 맞는 소화 기관 뱃지를 빈칸에 채워 넣으세요.</p>
@@ -233,11 +217,17 @@
                     </div>
                 </div>
 
+                <div id="m1-pool-phase2-wrap" class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full !max-w-[900px]">
+                    <div class="font-extrabold text-[1rem] mb-2.5 text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 표와 아래 빈칸을 완성하세요!</div>
+                    <div id="m1-badge-pool-2" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="30">
+                    </div>
+                </div>
+
                 <div class="mt-5 border-t-2 border-dashed border-[#eee] pt-7">
                     <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">📝 소화계의 구성</h3>
                     <p class="text-center text-[var(--text-sub)] font-bold mb-4">소화계의 기관들을 올바른 범주에 드래그하여 완성하세요.</p>
                     
-                    <div class="bg-[#f9f9f9] p-6 rounded-xl mx-auto mb-5 w-full max-w-[900px] text-left leading-[2.2] text-[1.15rem] text-[var(--text-main)] font-bold">
+                    <div class="bg-[#f9f9f9] p-6 rounded-xl mx-auto mb-5 w-full max-w-[900px] text-left leading-[2.2] text-[1.15rem] text-[var(--text-main)] font-bold shadow-sm">
                         <div class="flex flex-wrap items-center gap-2.5 mb-5">
                             <span class="text-[var(--color-coral)] whitespace-nowrap">• 소화관 :</span> 
                             <span class="whitespace-nowrap">음식물이 직접 지나가는 통로 ➡</span>
@@ -307,7 +297,9 @@
                 </div>
 
                 <div id="m2-summary-section" class="hidden">
-                    <div class="bg-[#f9f9f9] px-[5%] py-6 rounded-xl mt-5 font-bold leading-[2.2] text-[var(--text-main)] text-left">
+                    <div id="m2-s1-pool" class="badge-pool dnd-zone dnd-pool relative z-[100] mt-5 mb-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-[var(--color-mint)] mx-auto max-w-[700px]" data-dnd-capacity="10"></div>
+                    
+                    <div class="bg-[#f9f9f9] px-[5%] py-6 rounded-xl font-bold leading-[2.2] text-[var(--text-main)] text-left shadow-sm mx-auto max-w-[700px]">
                         <div class="flex items-center flex-wrap mb-2.5">
                             • 포도당은 크기가 작아서 세포 안으로 (<div class="answer-slot dnd-zone m2-slot inline-slot" data-answer="들어감" data-dnd-capacity="1"></div>)
                         </div>
@@ -318,7 +310,6 @@
                             • (<div class="answer-slot dnd-zone m2-slot inline-slot" data-answer="소화" data-dnd-capacity="1"></div>) : 크기가 큰 영양소를 세포막을 통과할 수 있도록 작은 크기의 영양소로 분해하는 과정
                         </div>
                     </div>
-                    <div id="m2-s1-pool" class="badge-pool dnd-zone dnd-pool mt-4" data-dnd-capacity="10"></div>
                     
                     <div class="text-center mt-5">
                         <button class="btn-primary max-w-[250px]" id="btn-check-m2-step1" onclick="verifyM2Step1()">확인</button>
@@ -336,17 +327,13 @@
 
                 <div class="lab-container max-w-[850px] p-5 mx-auto">
                     
-                    <!-- 비커(좌/중앙)와 버튼(우측) 배치 -->
                     <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mt-6">
-                        <!-- 좌/중앙: 비커 및 위쪽 확인 시약 영역 -->
                         <div class="flex flex-col items-center relative">
-                            <!-- 위쪽 버튼 (확인 시약) -->
                             <div class="flex justify-between w-full px-6 mb-2 z-10 gap-4">
                                 <button id="btn-iodine" class="reagent-btn btn-iodine text-[0.8rem] py-1.5 px-3 whitespace-nowrap text-center" onclick="selectReagent('iodine', this)">3. 아이오딘-아이오딘화 칼륨<br>⬇️ (A, B)</button>
                                 <button id="btn-benedict" class="reagent-btn btn-benedict text-[0.8rem] py-1.5 px-3 whitespace-nowrap text-center" onclick="selectReagent('benedict', this)">3. 베네딕트 용액<br>⬇️ (C, D)</button>
                             </div>
                             
-                            <!-- 비커 및 시험관 모형 -->
                             <div class="beaker !mt-0 !mb-0">
                                 <div class="water-level">🌡 따뜻한 물 (35~40℃) 유지</div>
                                 <div class="tube-wrapper-v2">
@@ -362,7 +349,6 @@
                             </div>
                         </div>
 
-                        <!-- 우측 기본 용액 투척 영역 -->
                         <div class="flex flex-col gap-3 min-w-[200px]">
                             <button class="reagent-btn btn-starch !py-3" onclick="selectReagent('starch', this)">🍚 1. 녹말 용액 (전체)</button>
                             
@@ -376,24 +362,11 @@
                         </div>
                     </div>
                     
-                    <!-- 안내 메시지 -->
                     <div id="lab-result-msg" class="font-extrabold text-[1.05rem] text-[var(--color-mint)] min-h-[28px] p-2.5 bg-[rgba(130,209,217,0.1)] rounded-lg text-center mt-6 mb-5">
                         우측의 [녹말 용액]을 클릭하여 시험관 전체에 담아주세요.
                     </div>
 
-                    <!-- 표 결과 해석용 뱃지 풀 -->
-                    <div id="m2-step2-table-badge-wrap" class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[20px] border-2 border-[var(--color-mint)] mt-8">
-                        <div class="font-extrabold text-[0.95rem] mb-2.5 text-[var(--color-mint)] text-center">👇 실험을 진행한 후, 결과에 맞게 뱃지를 표에 채워 넣으세요.</div>
-                        <div id="m2-step2-table-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-2" data-dnd-capacity="10">
-                            <div class="nutrient-badge dnd-item" data-val="녹말 있음">녹말 있음</div>
-                            <div class="nutrient-badge dnd-item" data-val="녹말 없음">녹말 없음</div>
-                            <div class="nutrient-badge dnd-item" data-val="엿당 있음">엿당 있음</div>
-                            <div class="nutrient-badge dnd-item" data-val="엿당 없음">엿당 없음</div>
-                        </div>
-                    </div>
-
-                    <!-- 결과 표 -->
-                    <table class="lab-table">
+                    <table class="lab-table mb-6">
                         <thead>
                             <tr>
                                 <th>시험관</th>
@@ -426,6 +399,16 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <div id="m2-step2-table-badge-wrap" class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mt-4">
+                        <div class="font-extrabold text-[0.95rem] mb-2.5 text-[var(--color-mint)] text-center">👇 실험을 진행한 후, 결과에 맞게 뱃지를 표에 채워 넣으세요.</div>
+                        <div id="m2-step2-table-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-2" data-dnd-capacity="10">
+                            <div class="nutrient-badge dnd-item" data-val="녹말 있음">녹말 있음</div>
+                            <div class="nutrient-badge dnd-item" data-val="녹말 없음">녹말 없음</div>
+                            <div class="nutrient-badge dnd-item" data-val="엿당 있음">엿당 있음</div>
+                            <div class="nutrient-badge dnd-item" data-val="엿당 없음">엿당 없음</div>
+                        </div>
+                    </div>
                     
                     <div class="text-center mt-6 mb-8">
                         <button class="btn-primary max-w-[250px] mx-auto" id="btn-check-m2-table" onclick="verifyM2Step2Table()">표 결과 확인 🔍</button>
@@ -433,14 +416,14 @@
                 </div>
 
                 <div id="m2-step2-summary-section" class="hidden transition-opacity duration-500 ease-in-out">
-                    <div class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[20px] border-2 border-[var(--color-mint)]">
+                    <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mx-auto max-w-[800px]">
                         <div class="font-extrabold text-[0.95rem] mb-2.5 text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 아래 내용 정리를 완성하세요.</div>
                         <div id="m2-step2-summary-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent p-2 min-h-[60px] gap-2" data-dnd-capacity="20">
                             <div class="nutrient-badge dnd-item" data-val="녹말">녹말</div>
                             <div class="nutrient-badge dnd-item" data-val="엿당">엿당</div>
                             <div class="nutrient-badge dnd-item" data-val="소화효소">소화효소</div>
                         </div>
-                      </div>
+                    </div>
   
                     <div class="bg-[#f9f9f9] p-[20px] rounded-xl text-left leading-[2.4] font-bold text-[1.05rem] text-[var(--text-main)] w-full max-w-[800px] mx-auto break-keep shadow-sm">
                         <div>• 녹말 용액에 증류수를 넣으면 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="녹말" data-dnd-capacity="1"></div>은(는) 있지만 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="엿당" data-dnd-capacity="1"></div>은(는) 없다.</div>
@@ -490,18 +473,16 @@
         </section>
 
         <!-- Mission 3: 영양소의 분해 -->
-        <section id="mission3-section" class="card overflow-y-auto px-5 py-4" style="display: none;">
-            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 3: 영양소의 분해</h2>
+        <section id="mission3-section" class="card overflow-y-auto px-5 py-3" style="display: none;">
+            <h2 class="text-center mb-2 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 3: 영양소의 분해</h2>
             
             <!-- [Step 1] 영양소의 소화과정 레이어 모식도 + 표 -->
             <div id="m3-step1-section">
-                <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 1. 영양소의 소화과정</h3>
-                <p class="text-center text-[var(--text-sub)] font-bold mb-4">아래 버튼을 눌러 소화액이 작용하는 과정을 확인하고, 표를 완성하세요!</p>
+                <h3 class="text-[var(--color-coral)] text-center mb-1.5 text-[1.4rem] font-bold">Step 1. 영양소의 소화과정</h3>
+                <p class="text-center text-[var(--text-sub)] font-bold mb-3 text-[0.95rem]">아래 버튼을 눌러 소화액이 작용하는 과정을 확인하고, 표를 완성하세요!</p>
                 
-                <!-- 레이어드 이미지 영역 -->
-                <div class="relative w-full max-w-[700px] mx-auto mb-4 border border-[#eee] rounded-xl overflow-hidden shadow-sm bg-white">
-                    <!-- 높이를 max-h-[420px]로 제한하여 한 화면에 버튼까지 들어오게 최적화 -->
-                    <img src="images/q2_m3_02_digestion_base.png" class="w-full max-h-[420px] object-contain relative z-0 mx-auto" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
+                <div class="relative w-full max-w-[800px] mx-auto mb-3 border border-[#eee] rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="images/q2_m3_02_digestion_base.png" class="w-full max-h-[600px] object-contain relative z-0 mx-auto" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
                     
                     <img src="images/q2_m3_02_digestion_saliva.png" id="layer-saliva" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="침">
                     <img src="images/q2_m3_02_digestion_pepsin.png" id="layer-pepsin" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="위액">
@@ -509,22 +490,16 @@
                     <img src="images/q2_m3_02_digestion_pancreas.png" id="layer-pancreas" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="이자액">
                     <img src="images/q2_m3_02_digestion_elements.png" id="layer-elements" class="absolute top-0 left-0 w-full h-full object-contain z-20 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="최종분해산물">
        
-                    <!-- 최종분해산물 확인 버튼 (중앙 하단 배치) -->
                     <div class="absolute bottom-3 left-0 w-full flex justify-center z-[60]">
                         <button class="bg-gray-400 text-white font-bold py-1.5 px-4 text-[0.9rem] rounded-xl shadow-md transition-all duration-300 cursor-not-allowed opacity-80" id="btn-layer-elements" onclick="toggleFinalLayer()" disabled>최종분해산물</button>
-                    </div> 
+                    </div>
                 </div>
 
-                <!-- 소화액 클릭 버튼 (크기와 여백을 살짝 줄여 공간 확보) -->
-                <div class="flex justify-center flex-wrap gap-2.5 mb-6 max-w-[700px] mx-auto">
+                <div class="flex justify-center flex-wrap gap-2.5 mb-5 max-w-[800px] mx-auto">
                     <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-saliva" onclick="toggleLayer('saliva')">💧 침</button>
                     <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-pepsin" onclick="toggleLayer('pepsin')">🦠 위액</button>
                     <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-bile" onclick="toggleLayer('bile')">🟢 쓸개즙</button>
                     <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-pancreas" onclick="toggleLayer('pancreas')">🧈 이자액</button>
-                </div>
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[20px] border-2 border-[var(--color-mint)]">
-                    <div id="m3-s1-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-3" data-dnd-capacity="10">
-                    </div>
                 </div>
 
                 <div class="digestive-table-wrapper mx-auto max-w-[800px] mb-6">
@@ -575,17 +550,24 @@
                     </table>
                 </div>
 
+                <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mx-auto max-w-[800px]">
+                    <div id="m3-s1-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-3" data-dnd-capacity="10"></div>
+                </div>
+
                 <div class="bg-[#f9f9f9] p-6 rounded-xl mx-auto max-w-[800px] mb-6 text-left leading-[2.4] text-[1.05rem] font-bold text-[var(--text-main)] shadow-sm">
                     <div class="mb-3">
-                        <span class="mr-1">👌</span> 아밀레이스는 침샘과 이자 2곳에서 생성되고 녹말을 엿당으로 분해해요.
+                        <span class="mr-1">👌</span> 아밀레이스는 침샘과 이자액 2곳에서 생성돼요.
                     </div>
                     <div class="mb-3 flex flex-wrap items-center">
                         <span class="mr-1">👌</span> 쓸개즙은 (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="간" data-dnd-capacity="1"></div>)에서 만들어져 
                         (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="쓸개" data-dnd-capacity="1"></div>)에 저장되었다가 
-                        (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="작은창자" data-dnd-capacity="1"></div>)에 분비되어 작용해요. 소화 효소는 없고 지방의 소화를 작용을 도와요.
+                        (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="작은창자" data-dnd-capacity="1"></div>)에 분비되어 작용해요.
+                    </div>
+                    <div class="flex flex-wrap items-center mb-3">
+                        <span class="mr-1">👌</span> (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="이자액" data-dnd-capacity="1"></div>)은(는) 녹말, 단백질, 지방을 분해하는 소화효소가 모두 들어 있어요.
                     </div>
                     <div class="flex flex-wrap items-center">
-                        <span class="mr-1">👌</span> (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="이자액" data-dnd-capacity="1"></div>)은(는) 녹말, 단백질, 지방을 분해하는 소화효소가 모두 들어 있어요.
+                        <span class="mr-1">👌</span> 펩신은 (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="염산" data-dnd-capacity="1"></div>)의 도움을 받아서 활성화 돼요. 그래서 위속은 극한 산성 상태예요.
                     </div>
                 </div>
 
@@ -599,12 +581,7 @@
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 2. 영양소 기본 단위</h3>
                 <p class="text-center text-[var(--text-sub)] font-bold mb-5">각 영양소가 소화효소의 작용으로 최종적으로 분해되어 나오는 물질을 짝지어 보세요!</p>
                 
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[20px] border-2 border-[var(--color-mint)]">
-                    <div id="m3-s2-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-3" data-dnd-capacity="10">
-                    </div>
-                </div>
-
-                <div class="w-full max-w-[800px] mx-auto mb-7 bg-[#f9f9f9] p-5 rounded-xl text-[1.1rem] leading-[2.5] font-bold text-[var(--text-main)] shadow-sm">
+                <div class="w-full max-w-[800px] mx-auto mb-5 bg-[#f9f9f9] p-5 rounded-xl text-[1.1rem] leading-[2.5] font-bold text-[var(--text-main)] shadow-sm">
                     <div class="grid grid-cols-[1fr_2fr_2fr] gap-4 text-center border-b-2 border-[#ddd] pb-2 mb-4">
                         <div class="text-[1.15rem]">영양소</div>
                         <div class="text-[var(--color-coral)] text-[1.15rem]">최종분해산물</div>
@@ -638,7 +615,11 @@
                     </div>
                 </div>
 
-                <div class="text-center">
+                <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mx-auto max-w-[800px]">
+                    <div id="m3-s2-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-3" data-dnd-capacity="10"></div>
+                </div>
+
+                <div class="text-center mt-6">
                     <button class="btn-primary max-w-[250px] mx-auto" id="btn-check-m3-s2" onclick="verifyM3S2()">확인</button>
                 </div>
             </div>
@@ -660,7 +641,7 @@
                     "우리는 소화효소 4총사야! 특징에 맞는 뱃지를 우리 아래의 빈칸에 모두 모아줘!"
                 </div>
                 
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[25px] border-2 border-[#FF9F1C]">
+                <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[25px] border-2 border-[#FF9F1C]">
                     <div class="font-extrabold text-[0.9rem] mb-2 text-[#FF9F1C] text-center">👇 드래그하면 뱃지가 복사됩니다. 알맞은 효소 칸에 모두 넣어주세요!</div>
                     <div id="m3-s3-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-2" data-dnd-capacity="50">
                         <!-- JS에서 동적 생성됨 -->
@@ -709,11 +690,7 @@
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 1. 3대 영양소 소화의 최종 산물</h3>
                 <p class="text-center text-[0.95rem] font-bold mb-4">소장에서 최종적으로 분해된 3대 영양소의 형태를 뱃지로 채워 복습해 보세요!</p>
 
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-4 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-6 border-2 border-[var(--color-mint)]">
-                    <div id="m4-s1-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="10"></div>
-                </div>
-
-                <div class="bg-[#f9f9f9] p-6 rounded-xl mb-6 mx-auto max-w-[700px] shadow-sm">
+                <div class="bg-[#f9f9f9] p-6 rounded-xl mb-4 mx-auto max-w-[700px] shadow-sm">
                     <div class="grid grid-cols-[1fr_auto_2fr] gap-4 items-center mb-4 pb-4 border-b-2 border-dashed border-[#ddd]">
                         <div class="font-bold text-[1.2rem] text-center bg-[#E7F5FF] text-[#1864AB] py-2 rounded-lg">탄수화물</div>
                         <div class="text-[1.5rem] text-gray-400 font-black">➡</div>
@@ -735,6 +712,11 @@
                     </div>
                 </div>
 
+                <!-- [최적화] 뱃지풀을 표 아래로 이동 (sticky 제거) -->
+                <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto max-w-[700px]">
+                    <div id="m4-s1-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="10"></div>
+                </div>
+
                 <div class="text-center">
                     <button class="btn-primary max-w-[200px] mx-auto" id="btn-check-m4-s1" onclick="verifyM4S1()">확인 🔍</button>
                 </div>
@@ -744,17 +726,13 @@
             <div id="m4-step2-section" class="hidden opacity-0 w-full transition-opacity duration-500 ease-in-out border-t-2 border-dashed border-[#eee] pt-8 mt-8">
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 2. 작은창자 안쪽 벽의 구조</h3>
                 
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-4 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-6 border-2 border-[var(--color-mint)]">
-                    <div id="m4-s2-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
-                </div>
-
                 <div class="max-w-[900px] mx-auto mb-6">
                     <div class="m4-img-box w-full mb-6 p-5">
                         <div class="font-black text-[#333] mb-4 text-[1.2rem]">🔍 내벽 구조 명칭 맞추기</div>
                         <img src="images/q2_m4_01_smallintestine.png" alt="작은창자 안쪽 벽" class="w-full max-h-[450px] object-contain rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x400?text=이미지+준비중+(q2_m4_01_smallintestine.png)'">
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="bg-white border-2 border-[#ddd] p-3 rounded-xl flex items-center justify-between shadow-sm hover:border-[var(--color-mint)] transition-colors">
                             <span class="font-bold text-[#555] text-[0.95rem] break-keep pr-2">수많은 굴곡 구조</span>
                             <div class="answer-slot dnd-zone m4-s2-slot !min-w-[90px] !h-[42px]" data-answer="주름" data-dnd-capacity="1"></div>
@@ -771,6 +749,11 @@
                             <span class="font-bold text-[#555] text-[0.95rem] break-keep pr-2">융털 가운데의 굵은 관</span>
                             <div class="answer-slot dnd-zone m4-s2-slot !min-w-[90px] !h-[42px]" data-answer="암죽관" data-dnd-capacity="1"></div>
                         </div>
+                    </div>
+
+                    <!-- [최적화] 뱃지풀을 4칸 그리드 아래, Q1 문장 위로 이동 -->
+                    <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
+                        <div id="m4-s2-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
 
                     <div class="bg-[#f9f9f9] p-6 rounded-xl shadow-sm flex flex-col justify-center leading-[2.2] text-[1.05rem] font-bold text-[var(--text-main)] w-full">
@@ -791,12 +774,8 @@
             <div id="m4-step3-section" class="hidden opacity-0 w-full transition-opacity duration-500 ease-in-out border-t-2 border-dashed border-[#eee] pt-8 mt-8">
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 3. 영양소의 흡수</h3>
                 
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-4 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-6 border-2 border-[var(--color-mint)]">
-                    <div id="m4-s3-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
-                </div>
-
                 <div class="max-w-[1000px] mx-auto mb-6">
-                    <div class="m4-img-box mb-6 max-w-[600px] mx-auto p-5">
+                    <div class="m4-img-box mb-4 max-w-[600px] mx-auto p-5">
                         <div class="font-black text-[#333] mb-3 text-[1.1rem] text-center">🔍 융털의 흡수 관 맞추기</div>
                         <img src="images/q2_m4_02_villus.png" alt="융털 구조" class="w-full max-h-[300px] object-contain rounded-lg mb-6 mx-auto" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=이미지+준비중+(q2_m4_02_villus.png)'">
                         
@@ -811,6 +790,11 @@
                                 <div class="answer-slot dnd-zone m4-s3-slot mx-auto !m-0" data-answer="암죽관" data-dnd-capacity="1"></div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- [최적화] 뱃지풀을 그림 아래, 문장 위로 이동 -->
+                    <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
+                        <div id="m4-s3-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
 
                     <div class="bg-[#f9f9f9] p-6 rounded-xl shadow-sm leading-[2.4] text-[1.05rem] font-bold text-[var(--text-main)]">
@@ -843,13 +827,9 @@
             <!-- [Step 4] 영양소의 이동 -->
             <div id="m4-step4-section" class="hidden opacity-0 w-full transition-opacity duration-500 ease-in-out border-t-2 border-dashed border-[#eee] pt-8 mt-8">
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 4. 영양소의 이동</h3>
-                
-                <div class="sticky top-2.5 z-[100] bg-white/95 p-4 rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-6 border-2 border-[var(--color-mint)]">
-                    <div id="m4-s4-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
-                </div>
 
                 <div class="max-w-[950px] mx-auto mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-6 mb-4">
                         <div class="m4-img-box flex flex-col justify-center h-full !mb-0 p-4">
                             <div class="font-black text-[#333] mb-3 text-[1.1rem]">🔍 영양소 이동 경로</div>
                             <img src="images/q2_m4_03_pathway.png" alt="영양소 이동 경로" class="w-full max-h-[370px] object-contain rounded-lg" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x370?text=이미지+준비중+(q2_m4_03_pathway.png)'">
@@ -871,7 +851,12 @@
                             </div>
                         </div>
                     </div>     
-                    <!-- 하단 문장 완성 영역 -->
+
+                    <!-- [최적화] 뱃지풀을 이동경로 아래, 문장 위로 이동 -->
+                    <div class="relative z-[100] bg-white p-4 rounded-2xl shadow-sm mb-6 border-2 border-[var(--color-mint)] mx-auto w-full">
+                        <div id="m4-s4-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
+                    </div>
+
                     <div class="bg-[#f9f9f9] p-6 rounded-xl shadow-sm leading-[2.4] text-[1.05rem] font-bold text-[var(--text-main)]">
                         <div class="mb-3">
                             • 모세혈관으로 흡수된 영양소는 
