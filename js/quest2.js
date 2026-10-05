@@ -521,7 +521,7 @@ function initM3S1Badges() {
     const pool = document.getElementById('m3-s1-pool'); if (!pool) return;
     
     const lockedVals = Array.from(document.querySelectorAll('.m3-s1-slot .dnd-locked')).map(el => el.dataset.val);
-    let vals = ['아밀레이스', '펩신', '트립신', '라이페이스', '간', '쓸개', '작은창자', '이자액'];
+    let vals = ['아밀레이스', '펩신', '트립신', '라이페이스', '간', '쓸개', '작은창자', '이자액', '염산'];
     lockedVals.forEach(v => { const idx = vals.indexOf(v); if(idx > -1) vals.splice(idx, 1); });
 
     pool.innerHTML = '';
@@ -549,7 +549,7 @@ function verifyM3S1() {
         } else { slot.classList.add('error'); allCorrect = false; setTimeout(() => slot.classList.remove('error'), 300); }
     });
 
-    if (filledCount < 9) { alert("모든 빈칸에 알맞은 뱃지를 배치해 주세요!"); return; }
+    if (filledCount < 10) { alert("모든 빈칸에 알맞은 뱃지를 배치해 주세요!"); return; }
     if (allCorrect) {
         document.getElementById('btn-check-m3-s1').style.display = 'none';
         const s2 = document.getElementById('m3-step2-section'); s2.classList.remove('hidden');
@@ -854,7 +854,7 @@ function verifyM4S3() {
 
 // ------------------ Step 4 ------------------
 function initM4S4Badges() {
-    replenishM4Pool('m4-s4-pool', ['간', '소장', '심장', '혈액','간을 거쳐', '간을거치지 않고']);
+    replenishM4Pool('m4-s4-pool', ['간', '소장', '심장', '혈액', '간을 거쳐', '간을 거치지 않고']);
 }
 function verifyM4S4() {
     if(verifyStep('m4-s4-slot', 'm4-s4-pool', null, 'btn-check-m4-s4', 8)) {
@@ -875,7 +875,7 @@ function verifyM4S4() {
 }
 
 // =====================================
-// Drag & Drop 이벤트
+// Drag & Drop 이벤트 관리
 // =====================================
 document.addEventListener('dragstart', (e) => {
     if (e.target.classList && e.target.classList.contains('dnd-item')) { setTimeout(() => { e.target.style.opacity = '0.01'; }, 0); }
@@ -950,7 +950,7 @@ document.addEventListener('dnd-dropped', (e) => {
         }
     };
 
-    // 화면에 보이는 미션 영역 뱃지 리필 관리 (미션 4 포함)
+    // 화면에 보이는 영역의 뱃지만 무한 리필하도록 렌더링 최적화
     const m1Sec = document.getElementById('mission1-section');
     const m2Sec = document.getElementById('mission2-section');
     const m3Sec = document.getElementById('mission3-section');
@@ -970,7 +970,7 @@ document.addEventListener('dnd-dropped', (e) => {
     } 
     else if (m3Sec && m3Sec.style.display !== 'none') {
         if (document.getElementById('m3-s1-pool') && document.getElementById('m3-s1-pool').parentElement.style.display !== 'none') {
-            replenishPool('m3-s1-pool', 'nutrient-badge', ['아밀레이스', '펩신', '트립신', '라이페이스', '간', '쓸개', '작은창자', '이자액']);
+            replenishPool('m3-s1-pool', 'nutrient-badge', ['아밀레이스', '펩신', '트립신', '라이페이스', '간', '쓸개', '작은창자', '이자액', '염산']);
             document.querySelectorAll('#m3-s1-pool .dnd-item').forEach(el => {
                 if (['아밀레이스', '펩신', '트립신', '라이페이스'].includes(el.dataset.val)) {
                     el.classList.add('border-[#1864AB]', 'text-[#1864AB]');
@@ -985,12 +985,11 @@ document.addEventListener('dnd-dropped', (e) => {
             '침샘에서 만듦', '이자에서 만듦'
         ]);
     }
-    // 미션 4 통합된 리필 호출 로직
     else if (m4Sec && m4Sec.style.display !== 'none') {
-        if (document.getElementById('m4-s1-pool') && document.getElementById('m4-s1-pool').parentElement.style.display !== 'none') initM4S1Badges();
-        if (document.getElementById('m4-s2-pool') && document.getElementById('m4-s2-pool').parentElement.style.display !== 'none') initM4S2Badges();
-        if (document.getElementById('m4-s3-pool') && document.getElementById('m4-s3-pool').parentElement.style.display !== 'none') initM4S3Badges();
-        if (document.getElementById('m4-s4-pool') && document.getElementById('m4-s4-pool').parentElement.style.display !== 'none') initM4S4Badges();
+        if (typeof initM4S1Badges === 'function' && document.getElementById('m4-s1-pool') && document.getElementById('m4-s1-pool').parentElement.style.display !== 'none') initM4S1Badges();
+        if (typeof initM4S2Badges === 'function' && document.getElementById('m4-s2-pool') && document.getElementById('m4-s2-pool').parentElement.style.display !== 'none') initM4S2Badges();
+        if (typeof initM4S3Badges === 'function' && document.getElementById('m4-s3-pool') && document.getElementById('m4-s3-pool').parentElement.style.display !== 'none') initM4S3Badges();
+        if (typeof initM4S4Badges === 'function' && document.getElementById('m4-s4-pool') && document.getElementById('m4-s4-pool').parentElement.style.display !== 'none') initM4S4Badges();
     }
     
     if (window.humanBadyDnD) window.humanBadyDnD.init();
@@ -1047,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =====================================
-// 클릭 시 잘못 넣은 뱃지 제거(원위치) 기능
+// 잘못된 곳에 떨어진 뱃지 원위치(제거) 기능
 // =====================================
 document.addEventListener('click', (e) => {
     const badge = e.target;
