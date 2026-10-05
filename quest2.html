@@ -488,28 +488,30 @@
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 1. 영양소의 소화과정</h3>
                 <p class="text-center text-[var(--text-sub)] font-bold mb-4">아래 버튼을 눌러 소화액이 작용하는 과정을 확인하고, 표를 완성하세요!</p>
                 
-                <div class="relative w-full max-w-[800px] mx-auto mb-4 border border-[#eee] rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="images/q2_m3_02_digestion_base.png" class="w-full h-auto object-contain relative z-0" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
-                    <img src="images/q2_m3_02_digestion_saliva.png" id="layer-saliva" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none" alt="침">
-                    <img src="images/q2_m3_02_digestion_pepsin.png" id="layer-pepsin" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none" alt="위액">
-                    <img src="images/q2_m3_02_digestion_bile.png" id="layer-bile" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none" alt="쓸개즙">
-                    <img src="images/q2_m3_02_digestion_pancreas.png" id="layer-pancreas" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none" alt="이자액">
-                    <img src="images/q2_m3_02_digestion_elements.png" id="layer-elements" class="absolute top-0 left-0 w-full h-full object-contain z-20 opacity-0 transition-opacity duration-500 pointer-events-none" alt="최종분해산물">
+                <!-- 레이어드 이미지 영역 -->
+                <div class="relative w-full max-w-[700px] mx-auto mb-4 border border-[#eee] rounded-xl overflow-hidden shadow-sm bg-white">
+                    <!-- 높이를 max-h-[420px]로 제한하여 한 화면에 버튼까지 들어오게 최적화 -->
+                    <img src="images/q2_m3_02_digestion_base.png" class="w-full max-h-[420px] object-contain relative z-0 mx-auto" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
+                    
+                    <img src="images/q2_m3_02_digestion_saliva.png" id="layer-saliva" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="침">
+                    <img src="images/q2_m3_02_digestion_pepsin.png" id="layer-pepsin" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="위액">
+                    <img src="images/q2_m3_02_digestion_bile.png" id="layer-bile" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="쓸개즙">
+                    <img src="images/q2_m3_02_digestion_pancreas.png" id="layer-pancreas" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="이자액">
+                    <img src="images/q2_m3_02_digestion_elements.png" id="layer-elements" class="absolute top-0 left-0 w-full h-full object-contain z-20 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="최종분해산물">
        
-                    <div class="absolute bottom-4 left-0 w-1/2 flex justify-center z-[60]">
-                        <div class="scale-90 translate-x-full">
-                            <button class="bg-gray-400 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition-all duration-300 cursor-not-allowed opacity-80" id="btn-layer-elements" onclick="toggleFinalLayer()" disabled>최종분해산물 🔍</button>
-                        </div>
+                    <!-- 최종분해산물 확인 버튼 (중앙 하단 배치로 변경) -->
+                    <div class="absolute bottom-3 left-0 w-full flex justify-center z-[60]">
+                        <button class="bg-gray-400 text-white font-bold py-2 px-5 text-[0.95rem] rounded-xl shadow-md transition-all duration-300 cursor-not-allowed opacity-80" id="btn-layer-elements" onclick="toggleFinalLayer()" disabled>최종분해산물 🔍</button>
                     </div>
                 </div>
 
-                <div class="flex justify-center flex-wrap gap-3 mb-6 max-w-[800px] mx-auto">
-                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-2 px-6 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors" id="btn-layer-saliva" onclick="toggleLayer('saliva')">💧 침</button>
-                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-2 px-6 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors" id="btn-layer-pepsin" onclick="toggleLayer('pepsin')">🦠 위액</button>
-                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-2 px-6 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors" id="btn-layer-bile" onclick="toggleLayer('bile')">🟢 쓸개즙</button>
-                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-2 px-6 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors" id="btn-layer-pancreas" onclick="toggleLayer('pancreas')">🧈 이자액</button>
+                <!-- 소화액 클릭 버튼 (크기와 여백을 살짝 줄여 공간 확보) -->
+                <div class="flex justify-center flex-wrap gap-2.5 mb-6 max-w-[700px] mx-auto">
+                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-saliva" onclick="toggleLayer('saliva')">💧 침</button>
+                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-pepsin" onclick="toggleLayer('pepsin')">🦠 위액</button>
+                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-bile" onclick="toggleLayer('bile')">🟢 쓸개즙</button>
+                    <button class="bg-white border-2 border-[var(--color-mint)] text-[var(--color-mint)] font-bold py-1.5 px-5 rounded-full shadow-sm hover:bg-[var(--color-mint)] hover:text-white transition-colors text-[0.95rem]" id="btn-layer-pancreas" onclick="toggleLayer('pancreas')">🧈 이자액</button>
                 </div>
-
                 <div class="sticky top-2.5 z-[100] bg-white/95 p-[15px] rounded-2xl shadow-[0_8px_25px_rgba(0,0,0,0.15)] mb-[20px] border-2 border-[var(--color-mint)]">
                     <div id="m3-s1-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent !p-0 gap-3" data-dnd-capacity="10">
                     </div>
@@ -565,12 +567,12 @@
 
                 <div class="bg-[#f9f9f9] p-6 rounded-xl mx-auto max-w-[800px] mb-6 text-left leading-[2.4] text-[1.05rem] font-bold text-[var(--text-main)] shadow-sm">
                     <div class="mb-3">
-                        <span class="mr-1">👌</span> 아밀레이스는 침샘과 이자액 2곳에서 생성돼요.
+                        <span class="mr-1">👌</span> 아밀레이스는 침샘과 이자액 2곳에서 생성되고 녹말을 엿당으로 분해해요.
                     </div>
                     <div class="mb-3 flex flex-wrap items-center">
                         <span class="mr-1">👌</span> 쓸개즙은 (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="간" data-dnd-capacity="1"></div>)에서 만들어져 
                         (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="쓸개" data-dnd-capacity="1"></div>)에 저장되었다가 
-                        (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="작은창자" data-dnd-capacity="1"></div>)에 분비되어 작용해요.
+                        (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="작은창자" data-dnd-capacity="1"></div>)에 분비되어 작용해요. 소화 효소는 없어요. 라이페이스의 작용을 도와요.
                     </div>
                     <div class="flex flex-wrap items-center">
                         <span class="mr-1">👌</span> (<div class="answer-slot dnd-zone m3-s1-slot inline-slot" data-answer="이자액" data-dnd-capacity="1"></div>)은(는) 녹말, 단백질, 지방을 분해하는 소화효소가 모두 들어 있어요.
