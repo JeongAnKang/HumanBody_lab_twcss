@@ -839,6 +839,9 @@ function verifyM4S2() {
         q1Input.style.backgroundColor = '#EFFFFD';
         q1Input.disabled = true; 
         initM4S3Badges(); 
+        
+        // 🚀 Mission 4 Step 3 화면이 나타날 때 시뮬레이션 게임 로직을 초기화합니다.
+        setTimeout(initVillusGame, 100); 
     }
 }
 
@@ -847,7 +850,8 @@ function initM4S3Badges() {
     replenishM4Pool('m4-s3-pool', ['모세혈관', '암죽관', '포도당', '아미노산', '무기염류', '지방', '물', '지방산', '모노글리세라이드']);
 }
 function verifyM4S3() {
-    if(verifyStep('m4-s3-slot', 'm4-s3-pool', 'm4-step4-section', 'btn-check-m4-s3', 11)) {
+    // 💡 버그 수정: HTML 구조상 m4-s3-slot은 총 9개입니다. 11개가 아닌 9개로 확인해야 정상 작동합니다.
+    if(verifyStep('m4-s3-slot', 'm4-s3-pool', 'm4-step4-section', 'btn-check-m4-s3', 9)) {
         initM4S4Badges();
     }
 }
@@ -950,7 +954,6 @@ document.addEventListener('dnd-dropped', (e) => {
         }
     };
 
-    // 화면에 보이는 영역의 뱃지만 무한 리필하도록 렌더링 최적화
     const m1Sec = document.getElementById('mission1-section');
     const m2Sec = document.getElementById('mission2-section');
     const m3Sec = document.getElementById('mission3-section');
@@ -1056,3 +1059,214 @@ document.addEventListener('click', (e) => {
         badge.remove();
     }
 });
+
+// =====================================
+// 융털 영양소 흡수 시뮬레이션 (Mission 4, Step 3 전용)
+// =====================================
+function initVillusGame() {
+    const container = document.getElementById('villus-game-wrapper');
+    if(!container || container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+
+    const draggables = document.querySelectorAll('.game-draggable');
+    const capZone = document.getElementById('dropzone-capillary');
+    const lacZone = document.getElementById('dropzone-lacteal');
+    
+    // UI Elements
+    const progressTextGlucose = document.getElementById('cnt-glucose');
+    const progressTextAmino = document.getElementById('cnt-amino');
+    const progressTextFat = document.getElementById('cnt-fat');
+    const statusMsg = document.getElementById('game-status-msg');
+    const resetBtn = document.getElementById('btn-reset-game');
+    
+    // 개별 영양소 최대 재생성 횟수 설정 (5개)
+    const MAX_NUTRIENT = 5;
+    let counts = { '포도당': 0, '아미노산': 0, '지방': 0 };
+
+    function updateProgressUI() {
+        progressTextGlucose.innerText = counts['포도당'];
+        progressTextAmino.innerText = counts['아미노산'];
+        progressTextFat.innerText = counts['지방'];
+    }
+
+    function showStatusMessage(msg, isError) {
+        statusMsg.innerText = msg;
+        statusMsg.style.color = isError ? '#e74c3c' : '#2ecc71';
+        if (isError) {
+            statusMsg.classList.remove('shake-animation');
+            void statusMsg.offsetWidth; // trigger reflow
+            statusMsg.classList.add('shake-animation');
+        }
+    }
+
+    // 초기화 버튼 이벤트
+    resetBtn.addEventListener('click', () => {
+        counts = { '포도당': 0, '아미노산': 0, '지방': 0 };
+        updateProgressUI();
+        
+        showStatusMessage("영양소를 알맞은 흡수관으로 드래그 하세요!", false);
+        statusMsg.style.color = '#e74c3c'; // 기본 컬러
+        
+        // SVG 애니메이션 원 제거
+        const svg = document.getElementById('villus-svg');
+        const animatedCircles = svg.querySelectorAll('.absorbed-nutrient');
+        animatedCircles.forEach(c => c.remove());
+
+        // 드래그 아이템 원위치 (재생성)
+        draggables.forEach(el => {
+            el.style.display = 'block';
+            el.style.transition = 'none';
+            el.style.transform = 'translate(0px, 0px) scale(1)';
+            el.dataset.currentX = 0;
+            el.dataset.currentY = 0;
+        });
+
+        const successOverlay = document.getElementById('game-success-overlay');
+        successOverlay.classList.add('hidden');
+        successOverlay.classList.remove('flex');
+    });
+
+    draggables.forEach(el => {
+        let startX = 0, startY = 0;
+        el.dataset.currentX = 0;
+        el.dataset.currentY = 0;
+        
+        const onMove = (e) => {
+            e.preventDefault(); 
+            const point = e.type.includes('touch') ? e.touches[0] : e;
+            
+            let curX = parseFloat(el.dataset.currentX) + (point.clientX - startX);
+            let curY = parseFloat(el.dataset.currentY) + (point.clientY - startY);
+            
+            startX = point.clientX;
+            startY = point.clientY;
+            
+            el.dataset.currentX = curX;
+            el.dataset.currentY = curY;
+            
+            el.style.transform = `translate(${curX}px, ${curY}px) scale(1.05)`;
+            
+            // Highlight zones
+            capZone.classList.remove('drag-over');
+            lacZone.classList.remove('drag-over');
+            
+            el.style.visibility = 'hidden';
+            const target = document.elementFromPoint(point.clientX, point.clientY);
+            el.style.visibility = 'visible';
+            
+            if(target === capZone) capZone.classList.add('drag-over');
+            if(target === lacZone) lacZone.classList.add('drag-over');
+        };
+
+        const onEnd = (e) => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchend', onEnd);
+            
+            const point = e.type.includes('touch') ? e.changedTouches[0] : e;
+            
+            el.style.visibility = 'hidden';
+            const target = document.elementFromPoint(point.clientX, point.clientY);
+            el.style.visibility = 'visible';
+            
+            capZone.classList.remove('drag-over');
+            lacZone.classList.remove('drag-over');
+
+            const isCap = target === capZone;
+            const isLac = target === lacZone;
+            const isWater = el.dataset.type === 'water';
+            const nutrientName = el.dataset.name;
+
+            if (isCap || isLac) {
+                if ((isCap && isWater) || (isLac && !isWater)) {
+                    // 성공: 영양소 흡수
+                    counts[nutrientName]++;
+                    updateProgressUI();
+                    
+                    let targetName = isCap ? '모세혈관' : '암죽관';
+                    showStatusMessage(`${nutrientName}이(가) ${targetName}으로 흡수 되었습니다.`, false);
+                    
+                    animateSVGPath(isWater ? 'anim-capillary' : 'anim-lacteal', isWater ? '#1864AB' : '#E67700');
+                    
+                    // 목표 개수 달성 시 숨김, 아니면 제자리 리스폰
+                    if (counts[nutrientName] >= MAX_NUTRIENT) {
+                        el.style.display = 'none';
+                    } else {
+                        // 즉시 원위치 (재생성 효과)
+                        el.style.transition = 'none';
+                        el.style.transform = `translate(0px, 0px) scale(1)`;
+                        el.dataset.currentX = 0;
+                        el.dataset.currentY = 0;
+                    }
+                    
+                    // 모든 분자(5개씩) 완료 조건 확인
+                    if (counts['포도당'] === MAX_NUTRIENT && counts['아미노산'] === MAX_NUTRIENT && counts['지방'] === MAX_NUTRIENT) {
+                        showStatusMessage("더이상 흡수할 영양소가 없습니다!", false);
+                        setTimeout(() => {
+                            document.getElementById('game-success-overlay').classList.remove('hidden');
+                            document.getElementById('game-success-overlay').classList.add('flex');
+                        }, 2800);
+                    }
+                } else {
+                    // 실패: 불흡수
+                    let targetName = isCap ? '모세혈관' : '암죽관';
+                    showStatusMessage(`${nutrientName}은(는) ${targetName}으로 흡수되지 않습니다.`, true);
+                    
+                    el.style.transition = 'transform 0.3s ease';
+                    el.style.transform = `translate(0px, 0px) scale(1)`;
+                    el.dataset.currentX = 0;
+                    el.dataset.currentY = 0;
+                    el.classList.add('bounce-back');
+                    setTimeout(() => {
+                        el.style.transition = 'none';
+                        el.classList.remove('bounce-back');
+                    }, 400);
+                }
+            } else {
+                // 바깥에 드롭한 경우 원위치
+                el.style.transition = 'transform 0.3s ease';
+                el.style.transform = `translate(0px, 0px) scale(1)`;
+                el.dataset.currentX = 0;
+                el.dataset.currentY = 0;
+            }
+        };
+
+        const onStart = (e) => {
+            const point = e.type.includes('touch') ? e.touches[0] : e;
+            startX = point.clientX;
+            startY = point.clientY;
+            el.style.transition = 'none';
+            el.style.zIndex = '1000';
+            
+            document.addEventListener('mousemove', onMove, {passive: false});
+            document.addEventListener('touchmove', onMove, {passive: false});
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchend', onEnd);
+        };
+
+        el.addEventListener('mousedown', onStart);
+        el.addEventListener('touchstart', onStart, {passive: false});
+    });
+
+    // 정답 시 SVG 경로를 따라 움직이는 애니메이션 생성
+    function animateSVGPath(pathId, color) {
+        const svg = document.getElementById('villus-svg');
+        const shape = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        shape.setAttribute('r', '12');
+        shape.setAttribute('fill', color);
+        shape.classList.add('absorbed-nutrient'); // 초기화 시 삭제하기 위한 식별자
+        
+        const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+        anim.setAttribute('dur', '3s');
+        anim.setAttribute('repeatCount', '1');
+        anim.setAttribute('fill', 'freeze');
+        
+        const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+        mpath.setAttribute('href', '#' + pathId);
+        
+        anim.appendChild(mpath);
+        shape.appendChild(anim);
+        svg.appendChild(shape);
+    }
+}
