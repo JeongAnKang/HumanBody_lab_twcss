@@ -16,6 +16,16 @@
         /* ==========================================
            Quest 2 전용 CSS
            ========================================== */
+        /* 모바일/태블릿 환경 뱃지풀 상단 고정(Sticky) 풀림 현상 해결 */
+        @media (max-width: 1024px) {
+            section.card {
+                overflow-y: visible !important;
+            }
+        }
+        .sticky {
+            position: -webkit-sticky !important;
+            position: sticky !important;
+        }
         .path-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 30px 0; align-items: center; }
         
         .organ-badge { width: 85px; height: 46px; background-color: white; border: 2px solid var(--color-mint); border-radius: 23px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--text-main); cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1; }
