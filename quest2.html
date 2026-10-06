@@ -473,27 +473,32 @@
                     </div>
                 </div>
 
-                <div id="m2-step2-summary-section" class="hidden transition-opacity duration-500 ease-in-out">
-                    <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mx-auto max-w-[800px]">
-                        <div class="font-extrabold text-[0.95rem] mb-2.5 text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 아래 내용 정리를 완성하세요.</div>
-                        <div id="m2-step2-summary-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent p-2 min-h-[60px] gap-2" data-dnd-capacity="20">
-                            <div class="nutrient-badge dnd-item" data-val="녹말">녹말</div>
-                            <div class="nutrient-badge dnd-item" data-val="엿당">엿당</div>
-                            <div class="nutrient-badge dnd-item" data-val="소화효소">소화효소</div>
+                    <div id="m2-step2-summary-section" class="hidden transition-opacity duration-500 ease-in-out">
+                        <div class="relative z-[100] bg-white p-[15px] rounded-2xl shadow-sm mb-[20px] border-2 border-[var(--color-mint)] mx-auto max-w-[800px]">
+                            <div class="font-extrabold text-[0.95rem] mb-2.5 text-[var(--color-mint)] text-center">👇 뱃지를 드래그하여 아래 내용 정리를 완성하세요.</div>
+                            <div id="m2-step2-summary-pool" class="badge-pool dnd-zone dnd-pool !m-0 !border-none !bg-transparent p-2 min-h-[60px] gap-2" data-dnd-capacity="20">
+                                <!-- 뱃지 랜덤 생성(수동 혼합 배치) -->
+                                <div class="nutrient-badge dnd-item" data-val="있다">있다</div>
+                                <div class="nutrient-badge dnd-item" data-val="녹말">녹말</div>
+                                <div class="nutrient-badge dnd-item" data-val="없다">없다</div>
+                                <div class="nutrient-badge dnd-item" data-val="소화효소">소화효소</div>
+                                <div class="nutrient-badge dnd-item" data-val="엿당">엿당</div>
+                                <div class="nutrient-badge dnd-item" data-val="없다">없다</div>
+                                <div class="nutrient-badge dnd-item" data-val="있다">있다</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#f9f9f9] p-[20px] rounded-xl text-left leading-[2.4] font-bold text-[1.05rem] text-[var(--text-main)] w-full max-w-[800px] mx-auto break-keep shadow-sm">
+                            <div>• 녹말 용액에 증류수를 넣고 시간이 지나면 녹말은 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="있다" data-dnd-capacity="1"></div>, 엿당은 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="없다" data-dnd-capacity="1"></div></div>
+                            <div class="mt-2">• 녹말 용액에 침을 넣고 시간이 지나면 녹말은 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="없다" data-dnd-capacity="1"></div>, 엿당은 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="있다" data-dnd-capacity="1"></div></div>
+                            <div class="mt-2">• 침에는 크기가 큰 영양소인 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="녹말" data-dnd-capacity="1"></div>을(를) 크기가 작은 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="엿당" data-dnd-capacity="1"></div>(으)로 바꾸어 주는 물질이 있다.</div>
+                            <div class="mt-2">• <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="소화효소" data-dnd-capacity="1"></div> : 크기가 큰 영양소를 크기가 작은 영양소로 분해하는 것을 촉진하는 물질</div>
+                        </div>
+
+                        <div class="text-center mt-8">
+                            <button class="btn-primary max-w-[250px] mx-auto" id="btn-check-m2-summary" onclick="verifyM2Step2Summary()">내용 정리 확인 🔍</button>
                         </div>
                     </div>
-  
-                    <div class="bg-[#f9f9f9] p-[20px] rounded-xl text-left leading-[2.4] font-bold text-[1.05rem] text-[var(--text-main)] w-full max-w-[800px] mx-auto break-keep shadow-sm">
-                        <div>• 녹말 용액에 증류수를 넣으면 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="녹말" data-dnd-capacity="1"></div>은(는) 있지만 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="엿당" data-dnd-capacity="1"></div>은(는) 없다.</div>
-                        <div class="mt-2">• 녹말 용액에 침 용액을 넣으면 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="녹말" data-dnd-capacity="1"></div>은(는) 없지만 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="엿당" data-dnd-capacity="1"></div>은(는) 있다.</div>
-                        <div class="mt-2">• 침에는 <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="녹말" data-dnd-capacity="1"></div>을(를) <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="엿당" data-dnd-capacity="1"></div>(으)로 바꾸어 주는 물질이 있다.</div>
-                        <div class="mt-2">• <div class="answer-slot dnd-zone m2-step2-summary-slot inline-slot" data-answer="소화효소" data-dnd-capacity="1"></div> : 크기가 큰 영양소를 크기가 작은 영양소로 분해하는 것을 촉진하는 물질</div>
-                    </div>
-
-                    <div class="text-center mt-8">
-                        <button class="btn-primary max-w-[250px] mx-auto" id="btn-check-m2-summary" onclick="verifyM2Step2Summary()">내용 정리 확인 🔍</button>
-                    </div>
-                </div>
             </div>
 
             <!-- [Step 3] 기계적/화학적 소화의 종류 -->
@@ -709,22 +714,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#A5D8FF] flex flex-col items-center">
                         <img src="images/q2_m2_05_amylase.png" alt="아밀레이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=아밀레이스'">
-                        <div class="text-center font-black text-[1.1rem] text-[#1864AB] mb-3 w-full border-b-2 border-dashed border-[#A5D8FF] pb-2">아밀레이스</div>
+                        <div class="text-center font-black text-[1.1rem] text-[#1864AB] mb-3 w-full border-b-2 border-dashed border-[#A5D8FF] pb-2">아밀레이스(7)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-amylase" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#FFB3C6] flex flex-col items-center">
                         <img src="images/q2_m2_04_pepsin.png" alt="펩신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=펩신'">
-                        <div class="text-center font-black text-[1.1rem] text-[#C2255C] mb-3 w-full border-b-2 border-dashed border-[#FFB3C6] pb-2">펩신</div>
+                        <div class="text-center font-black text-[1.1rem] text-[#C2255C] mb-3 w-full border-b-2 border-dashed border-[#FFB3C6] pb-2">펩신(3)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-pepsin" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#D8F5A2] flex flex-col items-center">
                         <img src="images/q2_m2_03_trypsin.png" alt="트립신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=트립신'">
-                        <div class="text-center font-black text-[1.1rem] text-[#5C940D] mb-3 w-full border-b-2 border-dashed border-[#D8F5A2] pb-2">트립신</div>
+                        <div class="text-center font-black text-[1.1rem] text-[#5C940D] mb-3 w-full border-b-2 border-dashed border-[#D8F5A2] pb-2">트립신(4)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-trypsin" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#FFE066] flex flex-col items-center">
                         <img src="images/q2_m2_02_lipase.png" alt="라이페이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=라이페이스'">
-                        <div class="text-center font-black text-[1.1rem] text-[#E67700] mb-3 w-full border-b-2 border-dashed border-[#FFE066] pb-2">라이페이스</div>
+                        <div class="text-center font-black text-[1.1rem] text-[#E67700] mb-3 w-full border-b-2 border-dashed border-[#FFE066] pb-2">라이페이스(4)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-lipase" data-dnd-capacity="15"></div>
                     </div>
                 </div>
@@ -876,13 +881,12 @@
                             </svg>
 
                             <!-- Nutrient Pool for Game (1 of each type - 컴팩트 디자인 - 무한생성) -->
-                            <div id="game-nutrient-pool" class="absolute top-4 left-4 flex flex-col gap-1.5 bg-white/95 p-2 rounded-xl shadow border-2 border-dashed border-[#A5D8FF] z-10 w-[85px]">
+                             <div id="game-nutrient-pool" class="absolute top-[58%] -translate-y-1/2 left-4 flex flex-col gap-1.5 bg-white/95 p-2 rounded-xl shadow border-2 border-dashed border-[#A5D8FF] z-10 w-[85px]">
                                 <div class="text-center font-bold text-[#1864AB] text-[0.75rem] mb-0.5">👇 드래그!</div>
                                 <div class="game-draggable bg-blue-100 border border-blue-400 text-blue-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="water" data-name="포도당" id="drag-glucose">포도당</div>
                                 <div class="game-draggable bg-green-100 border border-green-400 text-green-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="water" data-name="아미노산" id="drag-amino">아미노산</div>
                                 <div class="game-draggable bg-orange-100 border border-orange-400 text-orange-700 py-1.5 text-[0.85rem] rounded cursor-grab font-black shadow-sm text-center select-none touch-none" data-type="fat" data-name="지방" id="drag-fat">지방</div>
                             </div>
-                            
                             <!-- Success Overlay -->
                             <div id="game-success-overlay" class="absolute inset-0 bg-white/90 hidden flex-col items-center justify-center z-20 rounded-xl">
                                 <div class="text-[2rem] font-black text-[var(--color-mint)] mb-3 animate-bounce">🎉 완벽합니다! 🎉</div>
@@ -915,22 +919,19 @@
                         <div class="text-center font-bold text-[var(--color-mint)] text-[0.95rem] mb-2">게임에서 배운 내용을 떠올리며 문장을 완성해보세요!</div>
                         <div id="m4-s3-pool" class="badge-pool dnd-zone dnd-pool m-0 border-none bg-transparent p-0" data-dnd-capacity="15"></div>
                     </div>
-
                     <div class="bg-[#f9f9f9] p-6 rounded-xl shadow-sm leading-[2.4] text-[1.05rem] font-bold text-[var(--text-main)]">
                         <div class="mb-5 pb-5 border-b border-[#ddd]">
-                            • 융털의 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="모세혈관" data-dnd-capacity="1"></div>) : <br>
-                            &nbsp;&nbsp;물에 잘 녹는 영양소인 
+                            • 물에 잘 녹는 영양소 : 융털의 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="모세혈관" data-dnd-capacity="1"></div>)으로 흡수 : <br>
+                            &nbsp;&nbsp;(<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>), 
                             (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>), 
                             (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>), 
-                            (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>), 
-                            (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>) 흡수
+                            (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="포도당,아미노산,무기염류,물" data-group="water_sol" data-dnd-capacity="1"></div>)
                         </div>
                         <div class="mb-5 pb-5 border-b border-[#ddd]">
-                            • 융털의 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="암죽관" data-dnd-capacity="1"></div>) : <br>
-                            &nbsp;&nbsp;물에 잘 녹지 않는 영양소인 
-                            (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="지방산,모노글리세라이드" data-group="fat_sol" data-dnd-capacity="1"></div>)와(과) 
+                            • 물에 잘 녹지 않는 영양소 : 융털의 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="암죽관" data-dnd-capacity="1"></div>)으로 흡수 : <br>
+                            &nbsp;&nbsp;지방이 분해되어 생긴 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="지방산,모노글리세라이드" data-group="fat_sol" data-dnd-capacity="1"></div>)와(과) 
                             (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="지방산,모노글리세라이드" data-group="fat_sol" data-dnd-capacity="1"></div>)은(는) 
-                            융털의 상피세포로 흡수된 후 다시 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="지방" data-dnd-capacity="1"></div>)(으)로 합성되어 흡수.
+                            융털의 상피세포로 흡수된 후 다시 (<div class="answer-slot dnd-zone m4-s3-slot inline-slot" data-answer="지방" data-dnd-capacity="1"></div>)(으)로 합성되어 흡수
                         </div>
                         <div class="text-[1rem]">
                             <span class="mr-1">👌</span> 음식물에 들어 있는 물은 대부분 작은창자에서 흡수되고, 큰창자로 이동한 찌꺼기에 남아있는 물이 큰창자에서 흡수돼.
