@@ -6,8 +6,172 @@
     <title>Quest 4: 호흡</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 폴더 경로 지정 -->
+    <script src="js/dragdrop.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="rewards/rewards.js" defer></script>
+    
     <style>
-        /* Quest 4 전용 CSS 공간 */
+        /* Quest 4 전용 스타일 */
+        .step-container { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .step-container.active { display: block; }
+        
+        /* 스텝 제목 표시용 배지 */
+        .step-badge {
+            display: inline-block;
+            background-color: var(--color-mint);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        /* 드래그 아이템 (터치 충돌 방지 최적화) */
+        .dnd-item {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background-color: white;
+            border: 2px solid var(--color-mint);
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            touch-action: none; 
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+        }
+        .dnd-item:active { cursor: grabbing; }
+
+        .dnd-zone {
+            min-height: 45px;
+            min-width: 100px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background-color: #f8fafc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            margin: 4px;
+            transition: all 0.2s;
+        }
+        .dnd-zone.dnd-over { background-color: #e0f2fe; border-color: #38bdf8; }
+        .drop-success { animation: pop 0.2s ease-out; }
+        
+        /* 뱃지가 드롭되면 드롭존의 테두리와 배경을 투명하게 만듦 */
+        .dnd-zone:has(.dnd-item) {
+            border-color: transparent !important;
+            background-color: transparent !important;
+        }
+        
+        .relative-img-container { position: relative; display: inline-block; max-width: 100%; }
+        /* 이미지 위 드롭존 - 불투명 및 중앙 정렬 */
+        .img-drop-zone { position: absolute; background: #ffffff; border: 2px dashed #94a3b8; padding: 2px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { 50% { transform: scale(1.05); } }
+
+        /* --- 상단 바 공통 디자인 --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            gap: 20px;
+        }
+        .quest-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--color-coral);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #FFFFFF;
+            border: 3px solid var(--color-coral-light);
+            padding: 10px 30px;
+            border-radius: 40px;
+            box-shadow: var(--shadow-soft);
+        }
+        .guide-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background-color: rgba(245, 245, 245, 0.9);
+            padding: 12px 40px;
+            border-radius: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin: 0 auto; 
+        }
+        .btn-refresh {
+            background-color: var(--color-coral);
+            border: none;
+            color: #FFFFFF;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-soft);
+        }
+        .btn-refresh:active {
+            transform: scale(0.95);
+            background-color: #ff7597;
+        }
+
+        /* --- 사이드바 미션 네비게이션 상태별 스타일 --- */
+        .mission-item {
+            width: 100%;
+            padding: 15px 10px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            /* 기본 상태: 열었으나 완료하지 못한 미션 (흰색/회색 테두리) */
+            background-color: #ffffff; 
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .mission-item:hover:not(.locked) {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 1. 현재 있는 미션 (Active) */
+        .mission-item.active {
+            background-color: #ff8fb3; /* 핑크색 바탕 */
+            border-color: #ff8fb3;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 143, 179, 0.4);
+        }
+
+        /* 2. 완료한 미션 (Completed) */
+        .mission-item.completed {
+            background-color: #e2f0cb; /* 연두색 바탕 */
+            border-color: #c5e1a5;
+            color: #555555;
+        }
+
+        /* 3. 잠겨있는 미션 (Locked) */
+        .mission-item.locked {
+            background-color: #efece8; /* 옅은 회색 바탕 */
+            border-color: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .mission-icon {
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -15,31 +179,712 @@
         <div class="quest-title">✨ QUEST 4 호흡</div>
         <div class="guide-text" id="main-guide-text">호흡계의 구조와 호흡의 원리를 알아보세요!</div>
         <div class="header-buttons">
-            <button class="btn-ghost" style="width: 150px;" onclick="location.reload()">새로고침 ↺</button>
+            <button class="btn-refresh" onclick="location.reload()">새로고침 ↺</button>
         </div>
     </header>
 
     <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
         
-        <!-- Mission 1: 호흡계 -->
-        <section id="mission1-section" class="card block overflow-y-auto px-5 py-4" style="display: block;">
+        <!-- ============================================== -->
+        <!-- Mission 1: 호흡계                              -->
+        <!-- ============================================== -->
+        <section id="mission1-section" class="card block overflow-y-auto px-5 py-4">
             <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 1: 호흡계</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">호흡 기관의 구조 콘텐츠를 여기에 작성하세요.</div>
+            
+            <!-- M1 Step 1 -->
+            <div id="m1-step1" class="step-container active text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 1</span>
+                    <span class="text-[1.3rem] font-bold ml-2">호흡계 전체보기</span>
+                </div>
+                
+                <div class="mb-8 w-full flex justify-center">
+                    <iframe 
+                        src="https://pubvw.qmt.kr/web_document/474201/3/Respiratorysystem.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3B1YnZ3LnFtdC5rci93ZWJfZG9jdW1lbnQvNDc0MjAxLzMvUmVzcGlyYXRvcnlzeXN0ZW0uaHRtbCIsImV4cCI6MTc5MTYxMjMyODYxMywiaWF0IjoxNzkxNjA4NzI4NjEzLCJwYXRoIjoid2ViX2RvY3VtZW50In0.TXC-QCzg71s1wPc_xM3cbeuXs4QsecG6p2M2QJ3TVlw" 
+                        class="w-full max-w-4xl h-[540px] rounded-xl shadow-lg border-2 border-gray-200" 
+                        allow="fullscreen">
+                    </iframe>
+                </div>
+                
+                <div class="text-[1.2rem] font-bold mb-6">Q. 코로 들어온 공기가 허파까지 가는 경로를 완성하시오.</div>
+                
+                <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m1-path-pool">
+                    <div class="dnd-item" data-dnd-group="path" data-answer="숨관가지">숨관가지</div>
+                    <div class="dnd-item" data-dnd-group="path" data-answer="코">코</div>
+                    <div class="dnd-item" data-dnd-group="path" data-answer="숨관">숨관</div>
+                    <div class="dnd-item" data-dnd-group="path" data-answer="허파">허파</div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 mb-8 flex-wrap font-bold text-lg">
+                    <span>공기</span> ➔
+                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z1"></div> ➔
+                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z2"></div> ➔
+                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z3"></div> ➔
+                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z4"></div>
+                </div>
+
+                <button class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM1Step1()">확인</button>
+                <div id="m1-step1-feedback" class="mt-4 font-bold text-red-500"></div>
+            </div>
+
+            <!-- M1 Step 2 -->
+            <div id="m1-step2" class="step-container text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 2</span>
+                    <span class="text-[1.3rem] font-bold ml-2">호흡계 기관 위치 찾기</span>
+                </div>
+                
+                <div class="text-[1.1rem] font-bold mb-4 text-gray-700">그림의 알맞은 위치에 호흡 기관의 이름을 넣어보세요.</div>
+                
+                <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m1-organs-pool">
+                    <div class="dnd-item" data-dnd-group="organs" data-val="숨관">숨관</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="숨관가지">숨관가지</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="허파">허파</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="가로막">가로막</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="갈비뼈">갈비뼈</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="허파꽈리">허파꽈리</div>
+                    <div class="dnd-item" data-dnd-group="organs" data-val="모세혈관">모세혈관</div>
+                </div>
+
+                <div class="relative-img-container mb-6 flex justify-center">
+                    <div class="relative inline-block">
+                        <img src="images/q4_m1_s3_01_respiratory.jpg" alt="호흡계 구조" class="rounded-xl shadow-md max-w-full" style="max-height: 600px; width: auto;" onerror="this.src='https://placehold.co/800x600?text=호흡계+이미지'">
+                        
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-숨관" style="top: 30.4%; left: 40.1%; width: 100px; height: 36px;"></div>
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-숨관가지" style="top: 37%; left: 40.1%; width: 110px; height:36px;"></div>
+                        
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-허파" style="top: 48.2%; left: 40.1%; width: 100px; height: 36px;"></div>
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-갈비뼈" style="top: 32.4%; left: 7%; width: 100px; height: 36px;"></div>
+                        
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-허파꽈리" style="top: 75%; left: 55.4%; width: 110px; height: 36px;"></div>
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-모세혈관" style="top: 29%; left: 84.6%; width: 110px; height: 36px;"></div>
+                        
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="organs" id="img-z-가로막" style="top: 73.8%; left: 40.7%; width: 100px; height: 36px;"></div>
+                    </div>
+                </div>
+
+                <button id="btn-m1-check-img" class="btn-primary bg-yellow-400 mt-4 max-w-[300px]" onclick="checkM1Step2()">확인</button>
+                <div id="m1-step2-feedback" class="mt-4 font-bold text-red-500"></div>
+            </div>
+
+            <!-- M1 Step 3 -->
+            <div id="m1-step3" class="step-container text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 3</span>
+                    <span class="text-[1.3rem] font-bold ml-2">호흡계의 구조와 기능</span>
+                </div>
+                
+                <div class="text-[1.1rem] font-bold mb-4 text-gray-700">설명에 알맞은 호흡 기관의 명칭을 드래그하여 빈칸을 채워보세요.</div>
+                
+                <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m1-func-pool">
+                    <div class="dnd-item" data-dnd-group="func" data-answer="코">코</div>
+                    <div class="dnd-item" data-dnd-group="func" data-answer="숨관">숨관</div>
+                    <div class="dnd-item" data-dnd-group="func" data-answer="숨관가지">숨관가지</div>
+                    <div class="dnd-item" data-dnd-group="func" data-answer="허파">허파</div>
+                    <div class="dnd-item" data-dnd-group="func" data-answer="허파꽈리">허파꽈리</div>
+                    <div class="dnd-item" data-dnd-group="func" data-answer="가로막">가로막</div>
+                </div>
+
+                <div class="w-full mb-6 overflow-hidden rounded-xl border border-blue-200 shadow-sm">
+                    <table class="w-full text-left bg-white border-collapse">
+                        <thead class="bg-blue-50 text-[var(--text-main)]">
+                            <tr>
+                                <th class="py-1 px-2 w-[140px] text-center border-b border-blue-200 font-bold text-[1rem]">기관명</th>
+                                <th class="py-1 px-2 text-center border-b border-blue-200 font-bold text-[1rem]">구조와 기능</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-[0.95rem]">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-1"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    콧속의 점액과 털은 공기의 먼지와 세균을 거름.
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-2"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    공기가 지나는 통로, 표면의 점액과 섬모운동으로 먼지와 세균을 거름.
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-3"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    숨관에서 양쪽으로 갈라져 좌우의 허파로 연결되며 허파에서 나뭇가지처럼 갈라져 허파꽈리로 연결됨.
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-4"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    양쪽 가슴에 한 개씩 들어있다. 근육이 없어서 스스로 수축하거나 이완할 수 없다. 무수히 많은 허파꽈리로 이루어져 있어서 표면적이 매우 넓다.
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-5"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    포도송이 모양의 공기주머니이며, 모세혈관으로 둘러싸여 있다.
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="py-1 px-1 text-center align-middle border-r border-gray-100">
+                                    <div class="dnd-zone dnd-single-slot bg-gray-50 w-[110px] mx-auto min-h-[38px] p-0 flex items-center justify-center" data-dnd-accept="func" id="m1-f-6"></div>
+                                </td>
+                                <td class="py-1 px-3 align-middle leading-snug">
+                                    흉강의 아래쪽에 있어서 배와 가슴을 분리하는 근육.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button id="btn-m1-check-table" class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM1Step3()">확인</button>
+                <div id="m1-step3-feedback" class="mt-4 font-bold text-red-500"></div>
+
+                <!-- 추가 퀴즈 영역 -->
+                <div id="m1-step3-quiz-area" class="hidden mt-8 bg-indigo-50 p-6 rounded-xl border border-indigo-200 text-center shadow-sm">
+                    <div class="text-[1.2rem] font-black mb-2 text-indigo-700">Q. 허파의 수많은 허파꽈리 구조의 장점은?</div>
+                    <div class="mb-4 text-gray-500 font-bold">(초성 힌트: ㄱㄱㅇ ㅈㅎ는 ㅍㅁㅈㅇ ㄴㅇㅈㄷ)</div>
+                    <div class="flex gap-2 justify-center items-center flex-wrap">
+                        <input type="text" id="m1-step3-answer" class="border-2 border-indigo-300 rounded-lg px-4 py-2 w-full max-w-[350px] font-bold text-center focus:outline-none focus:border-indigo-500" placeholder="정답을 입력하세요">
+                        <button id="btn-quiz-check" class="btn-primary bg-[var(--color-mint)] max-w-[100px] whitespace-nowrap" onclick="checkM1Step3Quiz()">확인</button>
+                    </div>
+                    <div id="m1-step3-quiz-feedback" class="mt-4 font-bold text-red-500"></div>
+                    
+                    <button id="btn-go-m2" class="hidden btn-primary bg-[var(--color-mint)] max-w-[300px] mt-6 mx-auto shadow-md" onclick="finishMission(1)">Mission 2 가기 🚀</button>
+                </div>
+            </div>
         </section>
 
-        <!-- Mission 2: 호흡운동 원리 -->
+        <!-- ============================================== -->
+        <!-- Mission 2: 호흡운동 원리                       -->
+        <!-- ============================================== -->
         <section id="mission2-section" class="card overflow-y-auto px-5 py-4" style="display: none;">
             <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 2: 호흡운동 원리</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">들숨과 날숨, 횡격막과 갈비뼈의 운동 콘텐츠를 여기에 작성하세요.</div>
+            
+            <!-- M2 Step 1 -->
+            <div id="m2-step1" class="step-container active text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 1</span>
+                    <span class="text-[1.3rem] font-bold ml-2">호흡운동 모형 관찰하기</span>
+                </div>
+                
+                <div class="mb-6 w-full flex flex-col items-center">
+                    <iframe 
+                        src="https://sciencej1.cafe24.com/sci2/respiration2.html" 
+                        class="w-full max-w-3xl h-[600px] rounded-xl shadow-lg border-2 border-gray-200" 
+                        allow="fullscreen">
+                    </iframe>
+                    <div class="text-[0.95rem] text-gray-500 font-bold mt-3 text-right w-full max-w-3xl px-2">
+                        출처: 김정식 허명성의 과학사랑
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 text-center mb-6 max-w-3xl mx-auto shadow-sm">
+                    <p class="text-[1.15rem] font-bold text-gray-800 leading-loose">
+                        Q. 공기가 허파로 들어가려면(들숨)<br>
+                        갈비뼈는 
+                        <select id="m2-s1-rib" class="mx-1 p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500">
+                            <option value="">선택</option>
+                            <option value="up">올라가고</option>
+                            <option value="down">내려가고</option>
+                        </select>, 
+                        가로막은 
+                        <select id="m2-s1-dia" class="mx-1 p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500">
+                            <option value="">선택</option>
+                            <option value="up">올라가게</option>
+                            <option value="down">내려가게</option>
+                        </select> 
+                        하여<br>흉강의 부피가 
+                        <select id="m2-s1-vol" class="mx-1 p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500">
+                            <option value="">선택</option>
+                            <option value="inc">커지고</option>
+                            <option value="dec">작아지고</option>
+                        </select>, 
+                        흉강의 압력이 
+                        <select id="m2-s1-pres" class="mx-1 p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500">
+                            <option value="">선택</option>
+                            <option value="high">높아져야</option>
+                            <option value="low">낮아져야</option>
+                        </select> 
+                        한다.
+                    </p>
+                </div>
+
+                <button id="btn-m2-check-s1" class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM2Step1()">확인</button>
+                <div id="m2-step1-feedback" class="mt-4 font-bold text-red-500"></div>
+            </div>
+
+            <!-- M2 Step 2 -->
+            <div id="m2-step2" class="step-container text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 2</span>
+                    <span class="text-[1.3rem] font-bold ml-2">들숨과 날숨 비교하기</span>
+                </div>
+                
+                <img src="images/q4_m2_s3_01_breath.jpg" alt="들숨 날숨" class="mx-auto rounded-xl shadow-md max-w-full mb-8" style="max-height: 320px; width: auto;" onerror="this.src='https://placehold.co/500x300?text=들숨+날숨+이미지'">
+                
+                <div class="text-[1.1rem] font-bold mb-4 text-gray-700">그림과 앞서 관찰한 모형을 바탕으로 표의 빈칸을 채워보세요.</div>
+                
+                <div class="w-full max-w-3xl mx-auto mb-6 overflow-hidden rounded-xl border border-blue-200 shadow-sm">
+                    <table class="w-full text-center bg-white border-collapse">
+                        <thead class="bg-blue-50 text-[var(--text-main)]">
+                            <tr>
+                                <th class="py-2 px-3 border-b border-blue-200 font-bold text-[1.05rem] w-[20%]">구분</th>
+                                <th class="py-2 px-3 border-b border-blue-200 border-l border-blue-100 font-bold text-[1.05rem] w-[40%] text-blue-600">들숨</th>
+                                <th class="py-2 px-3 border-b border-blue-200 border-l border-blue-100 font-bold text-[1.05rem] w-[40%] text-red-500">날숨</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 font-medium">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">갈비뼈</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-rib-in" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="up">올라간다</option>
+                                        <option value="down">내려간다</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-rib-out" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="up">올라간다</option>
+                                        <option value="down">내려간다</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">가로막</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-dia-in" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="up">올라간다</option>
+                                        <option value="down">내려간다</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-dia-out" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="up">올라간다</option>
+                                        <option value="down">내려간다</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">가슴 속 부피</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-vol-in" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="inc">커진다</option>
+                                        <option value="dec">작아진다</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-vol-out" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="inc">커진다</option>
+                                        <option value="dec">작아진다</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">가슴 속 압력</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-pres-in" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="high">높아진다</option>
+                                        <option value="low">낮아진다</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-pres-out" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="high">높아진다</option>
+                                        <option value="low">낮아진다</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">허파 부피</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-lung-in" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="inc">커진다</option>
+                                        <option value="dec">작아진다</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-lung-out" class="w-[140px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="inc">커진다</option>
+                                        <option value="dec">작아진다</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">공기 이동 경로</td>
+                                <td class="py-2 px-2 border-r border-gray-100">
+                                    <select id="m2-s2-air-in" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="in">몸 밖 ➔ 허파</option>
+                                        <option value="out">허파 ➔ 몸 밖</option>
+                                    </select>
+                                </td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s2-air-out" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="in">몸 밖 ➔ 허파</option>
+                                        <option value="out">허파 ➔ 몸 밖</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button id="btn-m2-check-s2" class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM2Step2()">확인</button>
+                <div id="m2-step2-feedback" class="mt-4 font-bold text-red-500"></div>
+                <button id="btn-go-m2s3" class="hidden btn-primary bg-[var(--color-mint)] max-w-[300px] mt-4 mx-auto shadow-md" onclick="nextStep(2, 3)">다음 단계로 ➔</button>
+            </div>
+
+            <!-- M2 Step 3 -->
+            <div id="m2-step3" class="step-container text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 3</span>
+                    <span class="text-[1.3rem] font-bold ml-2">호흡운동 모형과 우리 몸 비교</span>
+                </div>
+                
+                <img src="images/q4_m2_01_model1.jpg" alt="호흡운동 모형" class="mx-auto rounded-xl shadow-md max-w-full mb-6" style="max-height: 350px; width: auto;" onerror="this.src='https://placehold.co/400x300?text=모형+이미지'">
+                
+                <p class="mb-4 text-[1.1rem] text-gray-700 font-bold">모형의 각 부분이 우리 몸의 어떤 기관에 해당하는지 표를 완성해보세요.</p>
+                
+                <div class="w-full max-w-2xl mx-auto mb-6 overflow-hidden rounded-xl border border-blue-200 shadow-sm">
+                    <table class="w-full text-center bg-white border-collapse">
+                        <thead class="bg-blue-50 text-[var(--text-main)]">
+                            <tr>
+                                <th class="py-2 px-3 border-b border-blue-200 font-bold text-[1.05rem] w-[50%]">모형</th>
+                                <th class="py-2 px-3 border-b border-blue-200 border-l border-blue-100 font-bold text-[1.05rem] w-[50%]">우리 몸</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 font-medium text-[0.95rem]">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">플라스틱 컵</td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s3-cup" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="rib">갈비뼈 (흉곽)</option>
+                                        <option value="trachea">숨관</option>
+                                        <option value="lung">허파</option>
+                                        <option value="dia">가로막</option>
+                                        <option value="cavity">흉강</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">빨대</td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s3-straw" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="rib">갈비뼈 (흉곽)</option>
+                                        <option value="trachea">숨관</option>
+                                        <option value="lung">허파</option>
+                                        <option value="dia">가로막</option>
+                                        <option value="cavity">흉강</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">작은 고무풍선</td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s3-balloon" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="rib">갈비뼈 (흉곽)</option>
+                                        <option value="trachea">숨관</option>
+                                        <option value="lung">허파</option>
+                                        <option value="dia">가로막</option>
+                                        <option value="cavity">흉강</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">고무막</td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s3-membrane" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="rib">갈비뼈 (흉곽)</option>
+                                        <option value="trachea">숨관</option>
+                                        <option value="lung">허파</option>
+                                        <option value="dia">가로막</option>
+                                        <option value="cavity">흉강</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="py-2 px-2 border-r border-gray-100 bg-gray-50 font-bold">플라스틱 컵 속 공간</td>
+                                <td class="py-2 px-2">
+                                    <select id="m2-s3-space" class="w-[160px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="rib">갈비뼈 (흉곽)</option>
+                                        <option value="trachea">숨관</option>
+                                        <option value="lung">허파</option>
+                                        <option value="dia">가로막</option>
+                                        <option value="cavity">흉강</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200 text-center mb-6 max-w-2xl mx-auto shadow-sm">
+                    <p class="text-[1.1rem] font-bold text-indigo-800 leading-loose">
+                        Q. 컵을 위로 올리고 고무 막을 아래로 잡아당기는 것은<br>들숨과 날숨 중 어떤 상황에 해당할까?
+                    </p>
+                    <div class="mt-4">
+                        <select id="m2-s3-quiz" class="p-2 border-2 border-indigo-300 rounded-lg text-center font-bold focus:outline-none focus:border-indigo-500 w-[150px]">
+                            <option value="">선택</option>
+                            <option value="in">들숨</option>
+                            <option value="out">날숨</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btn-m2-check-s3" class="btn-primary bg-green-500 max-w-[300px]" onclick="checkM2Step3()">확인</button>
+                <div id="m2-step3-feedback" class="mt-4 font-bold text-red-500"></div>
+                
+                <button id="btn-go-m3" class="hidden btn-primary bg-[var(--color-mint)] max-w-[300px] mt-6 mx-auto shadow-md" onclick="finishMission(2)">Mission 3 가기 🚀</button>
+            </div>
         </section>
 
-        <!-- Mission 3: 기체교환 -->
+        <!-- ============================================== -->
+        <!-- Mission 3: 기체교환                            -->
+        <!-- ============================================== -->
         <section id="mission3-section" class="card overflow-y-auto px-5 py-4" style="display: none;">
             <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 3: 기체교환</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">폐포와 모세혈관 사이의 기체 교환 원리 콘텐츠를 여기에 작성하세요.</div>
+            
+            <!-- M3 Step 1 -->
+            <div id="m3-step1" class="step-container active text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 1</span>
+                    <span class="text-[1.3rem] font-bold ml-2">허파와 조직세포의 기체교환</span>
+                </div>
+                
+                <div class="text-[1.1rem] font-bold mb-4 text-gray-700">그림의 빈칸과 아래 설명에 알맞은 단어를 드래그하여 완성해보세요.</div>
+                
+                <!-- 이미지 및 드롭존 -->
+                <div class="relative-img-container mb-6 flex justify-center">
+                    <div class="relative inline-block">
+                        <img src="images/q4_m3_s1_01_exchanges.jpg" alt="기체 교환" class="rounded-xl shadow-md max-w-full" style="max-height: 500px; width: auto;" onerror="this.src='https://placehold.co/800x500?text=기체교환+이미지'">
+                        
+                        <!-- 허파꽈리 쪽 (왼쪽) -->
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-1" style="top: 24.5%; left: 9%; width: 80px; height: 32px;"></div>
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-2" style="top: 33%; left: 9%; width: 80px; height: 32px;"></div>
+                        
+                        <!-- 조직세포 쪽 (오른쪽) -->
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-3" style="top: 55%; left: 65%; width: 80px; height: 32px;"></div>
+                        <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-4" style="top: 57%; left: 73%; width: 80px; height: 32px;"></div>
+                    </div>
+                </div>
+
+                <!-- 드래그 풀 -->
+                <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m3-pool-1">
+                    <div class="dnd-item text-[0.95rem] px-3 py-1.5" data-dnd-group="m3-1" data-answer="산소">산소</div>
+                    <div class="dnd-item text-[0.95rem] px-3 py-1.5" data-dnd-group="m3-1" data-answer="산소">산소</div>
+                    <div class="dnd-item text-[0.85rem] px-2 py-1.5 tracking-tight" data-dnd-group="m3-1" data-answer="이산화탄소">이산화탄소</div>
+                    <div class="dnd-item text-[0.85rem] px-2 py-1.5 tracking-tight" data-dnd-group="m3-1" data-answer="이산화탄소">이산화탄소</div>
+                    <div class="dnd-item text-[0.95rem] px-3 py-1.5" data-dnd-group="m3-1" data-answer="외호흡">외호흡</div>
+                    <div class="dnd-item text-[0.95rem] px-3 py-1.5" data-dnd-group="m3-1" data-answer="내호흡">내호흡</div>
+                </div>
+
+                <!-- 호흡 개념 정리 -->
+                <div class="text-left bg-blue-50 p-6 rounded-xl border border-blue-200 mb-6 flex flex-col gap-4 max-w-3xl mx-auto shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="dnd-zone dnd-single-slot bg-white w-[110px] min-h-[40px] flex justify-center items-center p-0 shadow-sm" data-dnd-accept="m3-1" id="m3-f-1"></div>
+                        <span class="flex-1 font-bold text-gray-800 text-[1.05rem]">: 허파의 허파꽈리와 이를 둘러싼 모세혈관 사이에서 기체가 교환되는 것</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="dnd-zone dnd-single-slot bg-white w-[110px] min-h-[40px] flex justify-center items-center p-0 shadow-sm" data-dnd-accept="m3-1" id="m3-f-2"></div>
+                        <span class="flex-1 font-bold text-gray-800 text-[1.05rem]">: 조직세포와 모세혈관 사이에서 기체가 교환되는 것</span>
+                    </div>
+                </div>
+
+                <button id="btn-m3-check-s1" class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM3Step1()">확인</button>
+                <div id="m3-step1-feedback" class="mt-4 font-bold text-red-500"></div>
+            </div>
+
+            <!-- M3 Step 2 -->
+            <div id="m3-step2" class="step-container text-center">
+                <div class="text-left mb-4">
+                    <span class="step-badge">Step 2</span>
+                    <span class="text-[1.3rem] font-bold ml-2">기체교환의 원리</span>
+                </div>
+                
+                <div class="text-[1.1rem] font-bold mb-4 text-gray-700">기체교환의 원리를 빈칸과 표에 알맞게 선택하여 채워보세요.</div>
+                
+                <!-- 개념 박스 -->
+                <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200 text-left mb-6 max-w-3xl mx-auto shadow-sm flex flex-col gap-5">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-indigo-700 text-[1.2rem]">•</span>
+                        <select id="m3-s2-def1" class="p-2 border-2 border-indigo-300 rounded-lg font-bold text-center w-[120px] focus:outline-none focus:border-indigo-500">
+                            <option value="">선택</option>
+                            <option value="확산">확산</option>
+                            <option value="삼투">삼투</option>
+                        </select>
+                        <span class="font-bold text-gray-800 text-[1.05rem]"> : 입자가 농도가 높은 곳에서 낮은 곳으로 이동하는 현상</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-indigo-700 text-[1.1rem]">• 기체교환의 원리 :</span>
+                        <select id="m3-s2-def2" class="p-2 border-2 border-indigo-300 rounded-lg font-bold text-center w-[200px] focus:outline-none focus:border-indigo-500">
+                            <option value="">선택</option>
+                            <option value="농도">농도 차이에 의한 확산</option>
+                            <option value="압력">압력 차이에 의한 이동</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 기체 교환 표 -->
+                <div class="w-full max-w-4xl mx-auto mb-8 overflow-hidden rounded-xl border border-blue-200 shadow-sm">
+                    <table class="w-full text-center bg-white border-collapse">
+                        <thead class="bg-blue-50 text-[var(--text-main)]">
+                            <tr>
+                                <th class="py-3 px-3 border-b border-blue-200 font-bold text-[1.05rem] w-[25%]">구분</th>
+                                <th class="py-3 px-3 border-b border-blue-200 border-l border-blue-100 font-bold text-[1.05rem] w-[37.5%]">허파꽈리-모세혈관</th>
+                                <th class="py-3 px-3 border-b border-blue-200 border-l border-blue-100 font-bold text-[1.05rem] w-[37.5%]">모세혈관-조직세포</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 font-medium">
+                            <!-- 산소 농도 -->
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-2 border-r border-gray-100 bg-gray-50 font-bold">산소 농도</td>
+                                <td class="py-3 px-2 border-r border-gray-100">
+                                    <select id="m3-s2-t1-1" class="w-[110px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-bold"> 이/가 높음</span>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <select id="m3-s2-t1-2" class="w-[110px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-bold"> 이/가 높음</span>
+                                </td>
+                            </tr>
+                            <!-- 산소 이동 -->
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-2 border-r border-gray-100 bg-gray-50 font-bold text-blue-600">산소 이동</td>
+                                <td class="py-3 px-2 border-r border-gray-100">
+                                    <select id="m3-s2-t2-1" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-black mx-1">➔</span>
+                                    <select id="m3-s2-t2-2" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <select id="m3-s2-t2-3" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-black mx-1">➔</span>
+                                    <select id="m3-s2-t2-4" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- 이산화탄소 농도 -->
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-2 border-r border-gray-100 bg-gray-50 font-bold">이산화탄소 농도</td>
+                                <td class="py-3 px-2 border-r border-gray-100">
+                                    <select id="m3-s2-t3-1" class="w-[110px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-bold"> 이/가 높음</span>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <select id="m3-s2-t3-2" class="w-[110px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-bold"> 이/가 높음</span>
+                                </td>
+                            </tr>
+                            <!-- 이산화탄소 이동 -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-2 border-r border-gray-100 bg-gray-50 font-bold text-red-500">이산화탄소 이동</td>
+                                <td class="py-3 px-2 border-r border-gray-100">
+                                    <select id="m3-s2-t4-1" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-black mx-1">➔</span>
+                                    <select id="m3-s2-t4-2" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <select id="m3-s2-t4-3" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                    <span class="font-black mx-1">➔</span>
+                                    <select id="m3-s2-t4-4" class="w-[100px] p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400">
+                                        <option value="">선택</option>
+                                        <option value="허파꽈리">허파꽈리</option>
+                                        <option value="모세혈관">모세혈관</option>
+                                        <option value="조직세포">조직세포</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button id="btn-m3-check-s2" class="btn-primary bg-green-500 max-w-[300px]" onclick="checkM3Step2()">확인 및 Mission 3 완료 🎉</button>
+                <div id="m3-step2-feedback" class="mt-4 font-bold text-red-500"></div>
+            </div>
         </section>
 
-        <!-- Mission 4: 종합정리 -->
+        <!-- ============================================== -->
+        <!-- Mission 4: 종합정리                            -->
+        <!-- ============================================== -->
         <section id="mission4-section" class="card overflow-y-auto px-5 py-4 flex-col" style="display: none;">
             <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">🏆 Mission 4: 종합정리</h2>
             <div class="text-center mt-20 text-gray-400 font-bold">호흡 과정 전체 요약 및 퀴즈 콘텐츠를 여기에 작성하세요.</div>
@@ -56,29 +901,361 @@
             <button class="w-full bg-[#E2F0CB] text-[var(--text-main)] border-2 border-[#C5E1A5] py-3 px-2.5 text-[0.95rem] font-bold leading-[1.4] rounded-2xl mb-1 cursor-pointer" onclick="location.href='index.html'">
                    인체탐험지도로<br>돌아가기 🏠
             </button> 
-            <div id="nav-m1" class="mission-item" onclick="switchMission(1)">
+            <div id="nav-m1" class="mission-item active" onclick="switchMission(1)">
                 <div class="mission-icon text-xl mb-2">💓</div><div class="text-sm font-bold">Mission 1</div><div class="text-sm mt-1">호흡계</div>
             </div>
-            <div id="nav-m2" class="mission-item" onclick="switchMission(2)">
+            <div id="nav-m2" class="mission-item locked" onclick="switchMission(2)">
                 <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 2</div><div class="text-sm mt-1">호흡 원리</div>
             </div>
-            <div id="nav-m3" class="mission-item" onclick="switchMission(3)">
+            <div id="nav-m3" class="mission-item locked" onclick="switchMission(3)">
                 <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 3</div><div class="text-sm mt-1">기체 교환</div>
             </div>
-            <div id="nav-m4" class="mission-item" onclick="switchMission(4)">
+            <div id="nav-m4" class="mission-item locked" onclick="switchMission(4)">
                 <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 4</div><div class="text-sm mt-1">종합 정리</div>
             </div>
         </aside>
-
     </main>
 
     <script>
-        function switchMission(num) {
-            for(let i=1; i<=4; i++) {
-                const sec = document.getElementById('mission' + i + '-section');
-                if(sec) sec.style.display = (i === num) ? 'block' : 'none';
+        const QUEST_ID = 4;
+
+        // --- 미션 네비게이션 상태 업데이트 함수 ---
+        function updateNavUI(activeMissionNum) {
+            for(let i = 1; i <= 4; i++) {
+                const nav = document.getElementById('nav-m' + i);
+                if(!nav) continue;
+                
+                const isCompleted = localStorage.getItem(`quest4_m${i}_completed`) === 'true';
+                // 이전 미션이 완료되지 않았다면 잠김 상태 (1번 미션은 항상 열려있음)
+                const isLocked = !isCompleted && i > 1 && localStorage.getItem(`quest4_m${i-1}_completed`) !== 'true';
+                const isActive = (i === activeMissionNum);
+                
+                // 기본 클래스 초기화
+                nav.className = 'mission-item';
+                let icon = '';
+                
+                if (isActive) {
+                    nav.classList.add('active');
+                    icon = '💓'; // 현재 있는 미션
+                } else if (isCompleted) {
+                    nav.classList.add('completed');
+                    icon = '✅'; // 완료한 미션
+                } else if (isLocked) {
+                    nav.classList.add('locked');
+                    icon = '🔒'; // 잠겨있는 미션
+                } else {
+                    icon = '🔓'; // 열었으나 완료하지 못한 미션
+                }
+                
+                nav.querySelector('.mission-icon').innerText = icon;
             }
         }
+
+        // --- 미션 전환 함수 ---
+        function switchMission(num) {
+            const nav = document.getElementById('nav-m' + num);
+            // 잠긴 미션은 클릭해도 이동하지 않도록 차단
+            if(nav && nav.classList.contains('locked')) return; 
+
+            document.querySelectorAll('section').forEach(sec => sec.style.display = 'none');
+            const target = document.getElementById('mission' + num + '-section');
+            if(target) target.style.display = 'block';
+
+            // UI 및 아이콘 업데이트 실행
+            updateNavUI(num);
+            
+            setTimeout(() => { if(window.humanBadyDnD) window.humanBadyDnD.init(); }, 100);
+        }
+
+        function nextStep(missionNum, stepNum) {
+            document.querySelectorAll(`#mission${missionNum}-section .step-container`).forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`m${missionNum}-step${stepNum}`).classList.add('active');
+            
+            setTimeout(() => { if(window.humanBadyDnD) window.humanBadyDnD.init(); }, 100);
+        }
+
+        // --- Mission 1 Scripts ---
+        function checkM1Step1() {
+            const ans = ['코', '숨관', '숨관가지', '허파'];
+            let correct = true;
+            for(let i=1; i<=4; i++) {
+                const zone = document.getElementById('m1-z' + i);
+                const item = zone.querySelector('.dnd-item');
+                if(!item || item.dataset.answer !== ans[i-1]) {
+                    correct = false;
+                    break;
+                }
+            }
+            if(correct) {
+                document.getElementById('m1-step1-feedback').innerHTML = "정답입니다! 👏 다음 단계로 이동합니다.";
+                document.getElementById('m1-step1-feedback').className = "mt-4 font-bold text-green-500";
+                setTimeout(() => nextStep(1, 2), 1000); 
+            } else {
+                document.getElementById('m1-step1-feedback').innerHTML = "순서가 틀렸거나 비어있는 칸이 있습니다. 다시 확인해보세요!";
+                document.getElementById('m1-step1-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        function checkM1Step2() {
+            const checks = ['숨관', '숨관가지', '허파', '가로막', '갈비뼈', '허파꽈리', '모세혈관'];
+            let allFilled = true;
+            let isCorrect = true;
+            
+            checks.forEach(id => {
+                const z = document.getElementById('img-z-' + id);
+                const item = z.querySelector('.dnd-item');
+                if(!item) {
+                    allFilled = false;
+                } else if(item.dataset.val !== id) {
+                    isCorrect = false;
+                }
+            });
+
+            if(!allFilled) {
+                document.getElementById('m1-step2-feedback').innerHTML = "그림의 빈칸을 모두 채워주세요.";
+                document.getElementById('m1-step2-feedback').className = "mt-4 font-bold text-red-500";
+                return;
+            }
+            if(!isCorrect) {
+                document.getElementById('m1-step2-feedback').innerHTML = "위치가 바르지 않은 기관이 있습니다. 다시 확인해보세요.";
+                document.getElementById('m1-step2-feedback').className = "mt-4 font-bold text-red-500";
+                return;
+            }
+            
+            document.getElementById('m1-step2-feedback').innerHTML = "정답입니다! 👏 다음 단계로 이동합니다.";
+            document.getElementById('m1-step2-feedback').className = "mt-4 font-bold text-green-500";
+            document.getElementById('btn-m1-check-img').style.display = 'none';
+            setTimeout(() => nextStep(1, 3), 1000);
+        }
+
+        function checkM1Step3() {
+            const ans = ['코', '숨관', '숨관가지', '허파', '허파꽈리', '가로막'];
+            let correct = true;
+            
+            for(let i=1; i<=6; i++) {
+                const zone = document.getElementById('m1-f-' + i);
+                const item = zone.querySelector('.dnd-item');
+                if(!item || item.dataset.answer !== ans[i-1]) {
+                    correct = false;
+                    break;
+                }
+            }
+            
+            if(correct) {
+                document.getElementById('m1-step3-feedback').innerHTML = "표를 완벽하게 완성했습니다! 👏 마지막 퀴즈를 풀어보세요.";
+                document.getElementById('m1-step3-feedback').className = "mt-4 font-bold text-green-500";
+                
+                document.getElementById('btn-m1-check-table').style.display = 'none';
+                document.getElementById('m1-step3-quiz-area').classList.remove('hidden');
+                document.getElementById('m1-step3-quiz-area').classList.add('block');
+            } else {
+                document.getElementById('m1-step3-feedback').innerHTML = "알맞지 않은 명칭이 있습니다. 다시 확인해보세요!";
+                document.getElementById('m1-step3-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        function checkM1Step3Quiz() {
+            const userAnswer = document.getElementById('m1-step3-answer').value.replace(/\s+/g, '');
+            const expectedAnswer = "공기와접하는표면적이넓어진다";
+
+            if(userAnswer === expectedAnswer) {
+                document.getElementById('m1-step3-quiz-feedback').innerHTML = "정답입니다! 🎉 보상을 획득했습니다.<br>아래 버튼을 눌러 다음 미션으로 이동하세요.";
+                document.getElementById('m1-step3-quiz-feedback').className = "mt-4 font-bold text-green-500 leading-relaxed";
+                
+                document.getElementById('m1-step3-answer').disabled = true;
+                document.getElementById('btn-quiz-check').style.display = 'none';
+
+                document.getElementById('btn-go-m2').classList.remove('hidden');
+                document.getElementById('btn-go-m2').classList.add('block');
+            } else {
+                document.getElementById('m1-step3-quiz-feedback').innerHTML = "오답입니다. 초성 힌트를 보고 다시 생각해보세요!";
+                document.getElementById('m1-step3-quiz-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        // --- Mission 2 Scripts ---
+        function checkM2Step1() {
+            const rib = document.getElementById('m2-s1-rib').value;
+            const dia = document.getElementById('m2-s1-dia').value;
+            const vol = document.getElementById('m2-s1-vol').value;
+            const pres = document.getElementById('m2-s1-pres').value;
+
+            if (rib === 'up' && dia === 'down' && vol === 'inc' && pres === 'low') {
+                document.getElementById('m2-step1-feedback').innerHTML = "정답입니다! 👏 다음 단계로 이동하여 내용을 정리해 봅시다.";
+                document.getElementById('m2-step1-feedback').className = "mt-4 font-bold text-green-500";
+                
+                document.getElementById('btn-m2-check-s1').style.display = 'none';
+                setTimeout(() => nextStep(2, 2), 1000);
+            } else {
+                document.getElementById('m2-step1-feedback').innerHTML = "선택이 잘못되었습니다. 모형을 다시 움직이며 확인해보세요.";
+                document.getElementById('m2-step1-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        function checkM2Step2() {
+            const ans = {
+                'm2-s2-rib-in': 'up', 'm2-s2-rib-out': 'down',
+                'm2-s2-dia-in': 'down', 'm2-s2-dia-out': 'up',
+                'm2-s2-vol-in': 'inc', 'm2-s2-vol-out': 'dec',
+                'm2-s2-pres-in': 'low', 'm2-s2-pres-out': 'high',
+                'm2-s2-lung-in': 'inc', 'm2-s2-lung-out': 'dec',
+                'm2-s2-air-in': 'in', 'm2-s2-air-out': 'out'
+            };
+
+            let correct = true;
+            for (let id in ans) {
+                const el = document.getElementById(id);
+                if (!el || el.value !== ans[id]) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            if (correct) {
+                document.getElementById('m2-step2-feedback').innerHTML = "정답입니다! 👏 표를 완벽하게 완성했습니다.";
+                document.getElementById('m2-step2-feedback').className = "mt-4 font-bold text-green-500";
+                
+                document.getElementById('btn-m2-check-s2').style.display = 'none';
+                document.getElementById('btn-go-m2s3').classList.remove('hidden');
+                document.getElementById('btn-go-m2s3').classList.add('block');
+            } else {
+                document.getElementById('m2-step2-feedback').innerHTML = "틀린 부분이 있습니다. 들숨과 날숨의 과정을 다시 생각해보세요.";
+                document.getElementById('m2-step2-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        function checkM2Step3() {
+            const cup = document.getElementById('m2-s3-cup').value;
+            const straw = document.getElementById('m2-s3-straw').value;
+            const balloon = document.getElementById('m2-s3-balloon').value;
+            const membrane = document.getElementById('m2-s3-membrane').value;
+            const space = document.getElementById('m2-s3-space').value;
+            const quiz = document.getElementById('m2-s3-quiz').value;
+
+            if (cup === 'rib' && straw === 'trachea' && balloon === 'lung' && 
+                membrane === 'dia' && space === 'cavity' && quiz === 'in') {
+                
+                document.getElementById('m2-step3-feedback').innerHTML = "정답입니다! 🎉 보상을 획득했습니다.<br>아래 버튼을 눌러 다음 미션으로 이동하세요.";
+                document.getElementById('m2-step3-feedback').className = "mt-4 font-bold text-green-500 leading-relaxed";
+                
+                document.getElementById('m2-s3-cup').disabled = true;
+                document.getElementById('m2-s3-straw').disabled = true;
+                document.getElementById('m2-s3-balloon').disabled = true;
+                document.getElementById('m2-s3-membrane').disabled = true;
+                document.getElementById('m2-s3-space').disabled = true;
+                document.getElementById('m2-s3-quiz').disabled = true;
+                
+                document.getElementById('btn-m2-check-s3').style.display = 'none';
+                document.getElementById('btn-go-m3').classList.remove('hidden');
+                document.getElementById('btn-go-m3').classList.add('block');
+            } else {
+                document.getElementById('m2-step3-feedback').innerHTML = "오답입니다. 표의 연결이나 퀴즈의 정답을 다시 확인해보세요.";
+                document.getElementById('m2-step3-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        // --- Mission 3 Scripts ---
+        function checkM3Step1() {
+            // 정답 판정 로직 수정: 화살표 방향에 맞게 산소와 이산화탄소 위치 정정
+            const ans = {
+                'm3-img-1': '이산화탄소', // 위쪽 빈칸 (노란 화살표: 모세혈관 -> 허파꽈리)
+                'm3-img-2': '산소',       // 아래쪽 빈칸 (파란 화살표: 허파꽈리 -> 모세혈관)
+                'm3-img-3': '산소',       // 왼쪽 빈칸 (파란 화살표: 모세혈관 -> 조직세포)
+                'm3-img-4': '이산화탄소', // 오른쪽 빈칸 (노란 화살표: 조직세포 -> 모세혈관)
+                'm3-f-1': '외호흡', 
+                'm3-f-2': '내호흡'
+            };
+            let correct = true;
+            
+            for (let key in ans) {
+                const item = document.getElementById(key).querySelector('.dnd-item');
+                if(!item || item.dataset.answer !== ans[key]) {
+                    correct = false;
+                    break;
+                }
+            }
+            
+            if(correct) {
+                document.getElementById('m3-step1-feedback').innerHTML = "정답입니다! 👏 다음 단계로 이동합니다.";
+                document.getElementById('m3-step1-feedback').className = "mt-4 font-bold text-green-500";
+                
+                document.getElementById('btn-m3-check-s1').style.display = 'none';
+                setTimeout(() => nextStep(3, 2), 1000);
+            } else {
+                document.getElementById('m3-step1-feedback').innerHTML = "알맞지 않은 위치가 있습니다. 다시 확인해보세요!";
+                document.getElementById('m3-step1-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+        function checkM3Step2() {
+            const vals = {
+                'm3-s2-def1': '확산',
+                'm3-s2-def2': '농도',
+                'm3-s2-t1-1': '허파꽈리', 'm3-s2-t1-2': '모세혈관',
+                'm3-s2-t2-1': '허파꽈리', 'm3-s2-t2-2': '모세혈관', 'm3-s2-t2-3': '모세혈관', 'm3-s2-t2-4': '조직세포',
+                'm3-s2-t3-1': '모세혈관', 'm3-s2-t3-2': '조직세포',
+                'm3-s2-t4-1': '모세혈관', 'm3-s2-t4-2': '허파꽈리', 'm3-s2-t4-3': '조직세포', 'm3-s2-t4-4': '모세혈관'
+            };
+            
+            let correct = true;
+            for (let id in vals) {
+                const el = document.getElementById(id);
+                if (!el || el.value !== vals[id]) {
+                    correct = false;
+                    break;
+                }
+            }
+            
+            if(correct) {
+                document.getElementById('m3-step2-feedback').innerHTML = "완벽합니다! 🎉 보상을 획득하며 Mission 3를 완료했습니다.";
+                document.getElementById('m3-step2-feedback').className = "mt-4 font-bold text-green-500";
+                
+                document.getElementById('btn-m3-check-s2').style.display = 'none';
+                setTimeout(() => finishMission(3), 1000);
+            } else {
+                document.getElementById('m3-step2-feedback').innerHTML = "틀린 부분이 있습니다. 표와 원리를 다시 꼼꼼히 확인해보세요.";
+                document.getElementById('m3-step2-feedback').className = "mt-4 font-bold text-red-500";
+            }
+        }
+
+        // --- Mission 완료 처리 함수 (수정됨) ---
+        function finishMission(mNum) {
+            localStorage.setItem(`quest4_m${mNum}_completed`, 'true');
+
+            if(typeof window.completeMissionAction === 'function') {
+                const success = window.completeMissionAction(QUEST_ID, mNum);
+                if(success) {
+                    alert(`Mission ${mNum} 완료! 보상을 획득했습니다.`);
+                } else {
+                    alert('이미 완료한 미션입니다.');
+                }
+            } else {
+                alert(`Mission ${mNum} 완료 처리되었습니다!`);
+            }
+            
+            // 다음 미션으로 바로 이동
+            switchMission(mNum + 1);
+        }
+        
+        // --- 페이지 로드 시 초기화 로직 (수정됨) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 처음 로드될 때 접속할 미션 번호 찾기 (가장 최근에 열린 미션)
+            let activeMission = 1;
+            for(let i = 4; i >= 1; i--) {
+                if(i === 1 || localStorage.getItem(`quest4_m${i-1}_completed`) === 'true') {
+                    activeMission = i;
+                    break;
+                }
+            }
+            
+            // 네비게이션 UI 초기 렌더링 및 해당 미션으로 이동
+            switchMission(activeMission);
+
+            setTimeout(() => {
+                if(window.humanBadyDnD) window.humanBadyDnD.init();
+            }, 100);
+        });
     </script>
 </body>
 </html>
