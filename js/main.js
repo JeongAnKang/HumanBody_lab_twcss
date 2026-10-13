@@ -3,7 +3,7 @@
 // ==========================================
 const TEACHER_ACCESS = Object.freeze({
     unlockedQuest: 1,        
-    lockedQuest: 1,          
+    lockedQuest: 2,          
     explicitLocks: []        
 });
 
