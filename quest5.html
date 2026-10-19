@@ -6,8 +6,178 @@
     <title>Quest 5: 배설</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 폴더 경로 지정 -->
+    <script src="js/dragdrop.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="rewards/rewards.js" defer></script>
+    
     <style>
-        /* Quest 5 전용 CSS 공간 */
+        /* 공통 및 전용 스타일 적용 */
+        .step-container { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .step-container.active { display: block; }
+        
+        .step-badge {
+            display: inline-block;
+            background-color: var(--color-mint);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        /* 🌟 기존 뱃지와 복제형 뱃지 모두 적용되도록 콤마로 클래스 추가 */
+        .dnd-item, .clone-item {
+            display: inline-block;
+            padding: 4px 6px; 
+            margin: 4px;
+            background-color: white;
+            border: 2px solid var(--color-mint);
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.85rem; 
+            white-space: nowrap; 
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            touch-action: none; 
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+        }
+        .dnd-item:active, .clone-item:active { cursor: grabbing; }
+
+        .dnd-zone, .clone-zone {
+            min-height: 38px;
+            min-width: 80px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            margin: 2px;
+            transition: all 0.2s;
+        }
+        .dnd-zone.dnd-over, .clone-zone.dnd-over { background-color: #e0f2fe; border-color: #38bdf8; }
+        .drop-success { animation: pop 0.2s ease-out; }
+        
+        .dnd-zone:has(.dnd-item), .clone-zone:has(.clone-item) {
+            border-color: transparent !important;
+            background-color: transparent !important;
+        }
+        
+        .relative-img-container { position: relative; display: inline-block; max-width: 100%; }
+        
+        /* 이미지 위 드롭존 */
+        .img-drop-zone { 
+            position: absolute; 
+            background: rgba(255,255,255,0.8); 
+            border: 2px dashed #94a3b8; 
+            padding: 0px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10; 
+            transform: translate(-50%, -50%); 
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { 50% { transform: scale(1.05); } }
+
+        /* 상단 바 및 기타 UI */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            gap: 20px;
+        }
+        .quest-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--color-coral);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #FFFFFF;
+            border: 3px solid var(--color-coral-light);
+            padding: 10px 30px;
+            border-radius: 40px;
+            box-shadow: var(--shadow-soft);
+        }
+        .guide-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background-color: rgba(245, 245, 245, 0.9);
+            padding: 12px 40px;
+            border-radius: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin: 0 auto; 
+        }
+        .btn-refresh {
+            background-color: var(--color-coral);
+            border: none;
+            color: #FFFFFF;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-soft);
+        }
+        .btn-refresh:active {
+            transform: scale(0.95);
+            background-color: #ff7597;
+        }
+
+        .mission-item {
+            width: 100%;
+            padding: 15px 10px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #ffffff; 
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+        }
+        .mission-item:hover:not(.locked) {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .mission-item.active {
+            background-color: #ff8fb3; 
+            border-color: #ff8fb3;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 143, 179, 0.4);
+        }
+        .mission-item.completed {
+            background-color: #e2f0cb; 
+            border-color: #c5e1a5;
+            color: #555555;
+        }
+        .mission-item.locked {
+            background-color: #efece8; 
+            border-color: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .mission-icon { font-size: 1.5rem; }
+        
+        .interactive-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
     </style>
 </head>
 <body>
@@ -15,59 +185,951 @@
         <div class="quest-title">✨ QUEST 5 배설</div>
         <div class="guide-text" id="main-guide-text">노폐물이 어떻게 몸 밖으로 나가는지 알아보세요!</div>
         <div class="header-buttons">
-            <button class="btn-ghost" style="width: 150px;" onclick="location.reload()">새로고침 ↺</button>
+            <button class="btn-refresh" onclick="location.reload()">새로고침 ↺</button>
         </div>
     </header>
 
     <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
         
+        <!-- ============================================== -->
         <!-- Mission 1: 노폐물의 생성과 배설 -->
+        <!-- ============================================== -->
         <section id="mission1-section" class="card block overflow-y-auto px-5 py-4" style="display: block;">
             <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 1: 노폐물의 생성과 배설</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">세포 호흡에 의한 노폐물 생성 과정 콘텐츠를 여기에 작성하세요.</div>
-        </section>
-
-        <!-- Mission 2: 배설계의 구조와 기능 -->
-        <section id="mission2-section" class="card overflow-y-auto px-5 py-4" style="display: none;">
-            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 2: 배설계의 구조와 기능</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">신장(콩팥), 네프론 등의 구조 콘텐츠를 여기에 작성하세요.</div>
-        </section>
-
-        <!-- Mission 3: 오줌이 만들어 지는 과정 -->
-        <section id="mission3-section" class="card overflow-y-auto px-5 py-4 flex-col" style="display: none;">
-            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">🏆 Mission 3: 오줌이 만들어지는 과정</h2>
-            <div class="text-center mt-20 text-gray-400 font-bold">여과, 재흡수, 분비 과정 정리 콘텐츠를 여기에 작성하세요.</div>
             
-            <div class="text-center mt-10">
-                <button class="btn-primary max-w-[300px] bg-[var(--color-mint)] text-white text-[1.3rem] px-10 py-4 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-2 border-white transition-transform duration-200" onclick="location.href='quest6.html'">
-                    QUEST 6 인체 에너지 가기 🚀
-                </button>
+            <div id="m1-step1" class="step-container active">
+                <div class="step-badge">Step 1</div>
+                <img src="images/q5_m1_intro.png" alt="도입 이미지" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
+                <h3 class="text-xl font-bold mb-4 text-center">Q. 오줌은 대부분을 차지하는 물 외에 꼭 제거하여야할 어떤 물질을 포함하고 있을까? (1가지 쓰기)</h3>
+                <div class="flex justify-center items-center gap-2 mb-2">
+                    <input type="text" id="m1-s1-input" class="border-2 border-slate-300 rounded-lg px-4 py-2 text-lg focus:border-mint focus:outline-none text-center" placeholder="정답 입력">
+                    <button onclick="checkM1Step1()" class="bg-[var(--color-mint)] text-white px-6 py-2 rounded-lg font-bold">확인</button>
+                </div>
+                <p id="m1-s1-msg" class="text-center text-red-500 font-bold hidden"></p>
+            </div>
+
+            <div id="m1-step2" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 2</div>
+                <h3 class="text-xl font-bold mb-4 text-center">노폐물의 생성</h3>
+                <img src="images/q5_m1_s2_waste.png" alt="노폐물 생성" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
+                <p class="mb-4 bg-slate-100 p-3 rounded-lg font-bold">세포에서 산소를 이용하여 영양소를 분해하여 에너지를 내고 나면 이산화탄소와 물이 생김.</p>
+                
+                <div class="interactive-box flex flex-col gap-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        • 탄수화물, 지방: 세포에서 분해되면 <div class="dnd-zone" data-answer="이산화탄소"></div>, <div class="dnd-zone" data-answer="물"></div> 생성
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        • 단백질: 세포에서 분해되면 <div class="dnd-zone" data-answer="이산화탄소"></div>, <div class="dnd-zone" data-answer="물"></div>, <div class="dnd-zone" data-answer="암모니아"></div> 생성
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mt-2 bg-yellow-50 p-3 rounded-lg border-2 border-yellow-200">
+                        ※ 독성이 강한 암모니아는 <div class="dnd-zone" data-answer="간"></div>로 가서 독성이 약한 <div class="dnd-zone" data-answer="요소"></div>로 전환됨.
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="이산화탄소">이산화탄소</div>
+                    <div class="dnd-item" draggable="true" data-id="이산화탄소">이산화탄소</div>
+                    <div class="dnd-item" draggable="true" data-id="물">물</div>
+                    <div class="dnd-item" draggable="true" data-id="물">물</div>
+                    <div class="dnd-item" draggable="true" data-id="암모니아">암모니아</div>
+                    <div class="dnd-item" draggable="true" data-id="간">간</div>
+                    <div class="dnd-item" draggable="true" data-id="요소">요소</div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="checkM1Step2()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md">확인</button>
+                    <p id="m1-s2-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div id="m1-step3" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 3</div>
+                <h3 class="text-xl font-bold mb-4 text-center">노폐물의 배설</h3>
+                
+                <div class="interactive-box flex flex-col gap-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        • <div class="dnd-zone" data-answer="배설"></div> : 콩팥에서 오줌을 만들어 요소와 같은 노폐물을 몸 밖으로 내보내는 과정
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        • 이산화탄소 : <div class="dnd-zone" data-answer="허파"></div>에서 <div class="dnd-zone" data-answer="날숨"></div>으로 내보냄
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        • 물 : <div class="dnd-zone" data-answer="허파"></div>에서 <div class="dnd-zone" data-answer="날숨"></div>, <div class="dnd-zone" data-answer="콩팥"></div>에서 <div class="dnd-zone" data-answer="오줌"></div>으로 내보냄
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        • 요소 : <div class="dnd-zone" data-answer="콩팥"></div>에서 <div class="dnd-zone" data-answer="오줌"></div>으로 내보냄
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="배설">배설</div>
+                    <div class="dnd-item" draggable="true" data-id="허파">허파</div>
+                    <div class="dnd-item" draggable="true" data-id="허파">허파</div>
+                    <div class="dnd-item" draggable="true" data-id="날숨">날숨</div>
+                    <div class="dnd-item" draggable="true" data-id="날숨">날숨</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥">콩팥</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥">콩팥</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌">오줌</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌">오줌</div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="checkM1Step3()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md">확인</button>
+                    <p id="m1-s3-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
             </div>
         </section>
 
+        <!-- ============================================== -->
+        <!-- Mission 2: 배설계의 구조와 기능 -->
+        <!-- ============================================== -->
+        <section id="mission2-section" class="card overflow-y-auto px-5 py-4" style="display: none;">
+            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">✨ Mission 2: 배설계의 구조와 기능</h2>
+            
+            <div id="m2-step1" class="step-container active">
+                <div class="step-badge">Step 1</div>
+                <h3 class="text-xl font-bold mb-4 text-center">그림으로 보는 배설계의 구조</h3>
+                <p class="text-center font-bold mb-4">필요한 명칭 뱃지를 끌어다 빈칸을 채워보세요! (무한 생성)</p>
+                
+                <div class="relative-img-container flex justify-center mx-auto w-max mb-6">
+                    <img id="m2-s1-img" src="images/q5_m2_s1_urinarysystem.png" alt="배설계 구조" class="h-[600px] w-auto object-contain rounded-lg border shadow-sm">
+                    
+                    <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="콩팥" style="top: 63%; left: 9%;"></div>
+                    <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="오줌관" style="top: 71%; left: 9%;"></div>
+                    <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="방광" style="top: 85%; left: 38.7%;"></div>
+                    <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="요도" style="top: 90%; left: 38.7%;"></div>
+                  
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥단위" style="top:38.5%; left: 90%;"></div>          
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥겉질" style="top:43.8%; left: 61%;"></div>
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥속질" style="top:50.3%; left: 61%;"></div>
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥깔때기" style="top:76%; left: 52%;"></div>
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥동맥" style="top:64%; left: 52%;"></div>
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="콩팥정맥" style="top:70%; left: 52%;"></div>
+                    <div class="img-drop-zone clone-zone w-[100px] h-[36px] text-sm" data-answer="오줌관" style="top:81%; left: 61%;"></div>   
+                </div>
+
+                <div id="m2-s1-pool" class="bg-slate-100 p-4 rounded-xl flex gap-2 flex-wrap justify-center mb-6 border-2 border-slate-200 min-h-[60px]"></div>
+                
+                <div class="interactive-box flex flex-col gap-4">
+                    <h4 class="font-bold text-center mb-2 text-slate-700">💡 배설계 구조 설명</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-[0.95rem]">
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥"></div><span class="font-bold text-slate-700">: 혈액 속 노폐물을 걸러 오줌을 만드는 곳</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="오줌관"></div><span class="font-bold text-slate-700">: 콩팥에서 방광으로 오줌이 이동하는 관</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="방광"></div><span class="font-bold text-slate-700">: 콩팥 바깥에 오줌을 모아두는 곳</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="요도"></div><span class="font-bold text-slate-700">: 오줌이 몸 밖으로 나가는 통로</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥겉질"></div><span class="font-bold text-slate-700">: 콩팥의 겉 부분</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥속질"></div><span class="font-bold text-slate-700">: 콩팥의 안쪽 부분</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥깔때기"></div><span class="font-bold text-blue-600">: 콩팥 안의 오줌이 모이는 빈 공간</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥동맥"></div><span class="font-bold text-red-500">: 콩팥으로 혈액이 들어가는 혈관</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥정맥"></div><span class="font-bold text-blue-600">: 콩팥에서 혈액이 나가는 혈관</span></div>
+                        <div class="flex items-center gap-2"><div class="clone-zone w-[100px] h-[36px] text-sm bg-white" data-answer="콩팥단위"></div><span class="font-bold text-slate-700">: 콩팥을 구성하는 오줌을 만드는 기본 단위</span></div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button onclick="checkM2Step1()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m2-s1-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div id="m2-step2" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 2</div>
+                <h3 class="text-xl font-bold mb-4 text-center">배설계의 구조</h3>
+                
+                <div class="interactive-box flex flex-col gap-4 text-lg">
+                    <div class="flex flex-wrap items-center gap-2 font-bold mb-2">
+                        ■ 배설계는 <div class="dnd-zone" data-answer="콩팥"></div>, <div class="dnd-zone" data-answer="오줌관"></div>, <div class="dnd-zone" data-answer="방광"></div>, <div class="dnd-zone" data-answer="요도"></div>로 구성
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        • <div class="dnd-zone inline-flex" data-answer="콩팥"></div> : 혈액에 있는 노폐물을 걸러 오줌을 만드는 기관. 콩팥겉질, 콩팥속질, 콩팥깔때기로 구분하며 콩팥겉질과 콩팥속질에 오줌을 만드는 기본 단위인 <div class="dnd-zone inline-flex" data-answer="콩팥단위"></div> 분포
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        • <div class="dnd-zone inline-flex" data-answer="오줌관"></div> : 콩팥에서 만들어진 오줌이 방광으로 이동하는 통로
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        • <div class="dnd-zone inline-flex" data-answer="방광"></div> : 오줌관에서 받은 오줌을 일시적으로 저장하는 주머니
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        • <div class="dnd-zone inline-flex" data-answer="요도"></div> : 방광과 연결되어 오줌이 몸 밖으로 나가는 통로
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-2 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="콩팥">콩팥</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥">콩팥</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌관">오줌관</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌관">오줌관</div>
+                    <div class="dnd-item" draggable="true" data-id="방광">방광</div>
+                    <div class="dnd-item" draggable="true" data-id="방광">방광</div>
+                    <div class="dnd-item" draggable="true" data-id="요도">요도</div>
+                    <div class="dnd-item" draggable="true" data-id="요도">요도</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥단위">콩팥단위</div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button id="btn-m2-check2" onclick="checkM2Step2()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md">확인</button>
+                    <p id="m2-s2-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                    
+                    <button id="btn-go-m3" class="hidden bg-yellow-400 text-black px-10 py-3 rounded-lg font-black text-lg shadow-md mx-auto mt-4 transition-transform hover:scale-105" onclick="switchMission(3)">Mission 3 가기 🚀</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- Mission 3: 콩팥단위와 오줌 생성 -->
+        <!-- ============================================== -->
+        <section id="mission3-section" class="card overflow-y-auto px-5 py-4 flex-col" style="display: none;">
+            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">🏆 Mission 3: 콩팥단위와 오줌 생성</h2>
+            
+            <!-- 스텝 1: 콩팥단위 구조 -->
+            <div id="m3-step1" class="step-container active">
+                <div class="step-badge">Step 1</div>
+                <h3 class="text-xl font-bold mb-4 text-center">콩팥단위 구조</h3>
+                <p class="text-center font-bold mb-6 text-slate-600">그림을 참고하여 각 부분에 대한 설명을 바르게 연결해 보세요!</p>
+                
+                <div class="flex justify-center w-full mb-6">
+                    <img src="images/q5_m3_s1_nephron.png" alt="콩팥단위 구조" class="h-[540px] w-auto object-contain rounded-xl border-2 border-slate-200 shadow-sm">
+                </div>
+
+                <div class="bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center mb-6 border-2 border-slate-200 shadow-inner">
+                    <div class="dnd-item" draggable="true" data-id="토리">토리</div>
+                    <div class="dnd-item" draggable="true" data-id="토리">토리</div>
+                    <div class="dnd-item" draggable="true" data-id="보먼주머니">보먼주머니</div>
+                    <div class="dnd-item" draggable="true" data-id="보먼주머니">보먼주머니</div>
+                    <div class="dnd-item" draggable="true" data-id="세뇨관">세뇨관</div>
+                    <div class="dnd-item" draggable="true" data-id="세뇨관">세뇨관</div>
+                </div>
+
+                <div class="interactive-box flex flex-col gap-4 m-0 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="dnd-zone min-w-[100px] bg-white" data-answer="토리"></div>
+                        <span class="text-[0.95rem] font-bold text-slate-700 leading-snug">: 모세혈관이 털실 뭉치처럼 뭉쳐 있는 부분</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="dnd-zone min-w-[100px] bg-white" data-answer="보먼주머니"></div>
+                        <span class="text-[0.95rem] font-bold text-slate-700 leading-snug">: 토리를 둘러싸고 있는 주머니</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="dnd-zone min-w-[100px] bg-white" data-answer="세뇨관"></div>
+                        <span class="text-[0.95rem] font-bold text-slate-700 leading-snug">: 보먼주머니와 연결된 가늘고 긴 관 (모세혈관으로 둘러싸여 있음)</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mt-2 pt-4 border-t border-slate-300 font-bold text-blue-600 text-[0.95rem]">
+                        ⭐ 콩팥단위 = <div class="dnd-zone bg-white min-w-[80px]" data-answer="토리"></div> + <div class="dnd-zone bg-white min-w-[80px]" data-answer="보먼주머니"></div> + <div class="dnd-zone bg-white min-w-[80px]" data-answer="세뇨관"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button onclick="checkM3Step1()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m3-s1-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <!-- 스텝 2: 오줌을 만드는 3가지 작용 -->
+            <div id="m3-step2" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 2</div>
+                <h3 class="text-xl font-bold mb-4 text-center">오줌을 만드는 3가지 작용</h3>
+                
+                <div class="mb-4 flex flex-col items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="font-bold text-slate-600 mb-4 text-center">버튼을 눌러 각 영역의 성분 차이를 관찰해 보세요! (여러 개 동시 관찰 가능)</p>
+                    
+                    <div class="relative inline-block mx-auto h-[400px]">
+                        <img id="m3-s2-base-img" src="images/q5_m3_s3_urin_01.png" alt="오줌 생성 작용" class="h-full w-auto object-contain rounded-lg border shadow-sm">
+                        <img id="m3-s2-filter-img" src="images/q5_m3_s3_urin_circle_2.png" alt="여과액" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 opacity-0">
+                        <img id="m3-s2-pelvis-img" src="images/q5_m3_s3_urin_circle_3.png" alt="콩팥깔때기액" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 opacity-0">
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-3 mt-5">
+                        <button id="btn-m3s2-base" onclick="changeM3S2Img('base', this)" class="m3-img-btn px-5 py-2.5 bg-[var(--color-mint)] text-white rounded-full font-bold shadow-md transition-transform hover:scale-105 active-btn">기본 그림 보기</button>
+                        <button id="btn-m3s2-filter" onclick="changeM3S2Img('filter', this)" class="m3-img-btn px-5 py-2.5 bg-slate-100 text-slate-600 border-2 border-slate-200 rounded-full font-bold shadow-sm transition-transform hover:scale-105">여과액 관찰</button>
+                        <button id="btn-m3s2-pelvis" onclick="changeM3S2Img('pelvis', this)" class="m3-img-btn px-5 py-2.5 bg-slate-100 text-slate-600 border-2 border-slate-200 rounded-full font-bold shadow-sm transition-transform hover:scale-105">콩팥깔때기액 관찰</button>
+                    </div>
+                </div>
+
+                <!-- 🌟 오줌의 생성 문장 완성하기 -->
+                <div class="interactive-box text-[1.1rem] leading-loose font-bold text-gray-700 bg-white p-6 rounded-xl border-2 border-dashed border-gray-300 shadow-sm mb-4">
+                    ■ 오줌의 생성 : 콩팥동맥을 통해 혈액이 콩팥에 들어온 후 토리에서 보먼주머니로 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="여과"></div> 된 후 세뇨관을 지나는 동안 
+                    <div class="dnd-zone mx-1 inline-flex m3-s2-action"></div>, 
+                    <div class="dnd-zone mx-1 inline-flex m3-s2-action"></div> 작용을 거쳐 노폐물을 걸러낸 오줌이 되어 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="콩팥깔때기"></div>에 모인다.
+                </div>
+
+                <!-- 🌟 이동된 뱃지 풀 (문장과 3가지 과정 사이) -->
+                <div class="mt-2 mb-6 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center border-2 border-slate-200 shadow-inner">
+                    <div class="dnd-item" draggable="true" data-id="여과">여과</div>
+                    <div class="dnd-item" draggable="true" data-id="여과">여과</div>
+                    <div class="dnd-item" draggable="true" data-id="재흡수">재흡수</div>
+                    <div class="dnd-item" draggable="true" data-id="재흡수">재흡수</div>
+                    <div class="dnd-item" draggable="true" data-id="분비">분비</div>
+                    <div class="dnd-item" draggable="true" data-id="분비">분비</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥깔때기">콩팥깔때기</div>
+                </div>
+
+                <div class="interactive-box flex flex-col gap-4">
+                    <div class="bg-white p-3 rounded-lg border-2 border-blue-100">
+                        <div class="flex items-center gap-2 mb-2 font-bold text-blue-600">
+                            1. <div class="dnd-zone" data-answer="여과"></div> 과정
+                        </div>
+                        <p>토리에서 보먼주머니로 크기가 작은 포도당, 아미노산, 무기염류, 물, 요소 등이 이동하는 현상입니다. (단백질과 혈구는 크기가 커서 이동하지 못합니다.)</p>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-lg border-2 border-green-100">
+                        <div class="flex items-center gap-2 mb-2 font-bold text-green-600">
+                            2. <div class="dnd-zone" data-answer="재흡수"></div> 과정
+                        </div>
+                        <p>세뇨관을 지나는 동안 포도당, 아미노산 등 <b>몸에 필요한 물질</b>이 세뇨관을 둘러싼 모세혈관으로 다시 돌아가는 현상입니다.</p>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-lg border-2 border-red-100">
+                        <div class="flex items-center gap-2 mb-2 font-bold text-red-600">
+                            3. <div class="dnd-zone" data-answer="분비"></div> 과정
+                        </div>
+                        <p>혈액에 미처 걸러지지 않고 남아 있던 <b>노폐물</b>이 모세혈관에서 세뇨관으로 이동하는 현상입니다.</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="checkM3Step2()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m3-s2-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <!-- 스텝 3: 오줌이 몸 밖으로 나가는 과정 -->
+            <div id="m3-step3" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 3</div>
+                <h3 class="text-xl font-bold mb-4 text-center">오줌이 몸 밖으로 나가는 과정</h3>
+                
+                <div class="interactive-box flex flex-col gap-4 text-center">
+                    <p class="font-bold mb-4">만들어진 오줌이 콩팥에서부터 어떻게 나가는지 순서를 맞춰보세요.</p>
+                    <div class="flex flex-wrap justify-center items-center gap-2 font-black text-lg text-slate-700">
+                        <div class="dnd-zone" data-answer="콩팥깔때기"></div> ➔
+                        <div class="dnd-zone" data-answer="오줌관"></div> ➔
+                        <div class="dnd-zone" data-answer="방광"></div> ➔
+                        <div class="dnd-zone" data-answer="요도"></div> ➔ 몸 밖
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="요도">요도</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌관">오줌관</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥깔때기">콩팥깔때기</div>
+                    <div class="dnd-item" draggable="true" data-id="방광">방광</div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="btn-m3-check3" onclick="checkM3Step3()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m3-s3-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                    
+                    <button id="btn-go-m4" class="hidden bg-yellow-400 text-black px-10 py-3 rounded-lg font-black text-lg shadow-md mx-auto mt-4 transition-transform hover:scale-105" onclick="switchMission(4)">Mission 4 종합정리 가기 🚀</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- Mission 4: 종합정리 -->
+        <!-- ============================================== -->
+        <section id="mission4-section" class="card overflow-y-auto px-5 py-4 flex-col" style="display: none;">
+            <h2 class="text-center mb-5 text-[1.8rem] font-black text-[var(--color-mint)]">🏆 Mission 4: 종합정리</h2>
+            
+            <div id="m4-step1" class="step-container active">
+                <div class="step-badge">Step 1</div>
+                <h3 class="text-xl font-bold mb-4 text-center">배설계 구성</h3>
+                
+                <div class="interactive-box text-center text-lg font-bold">
+                    ■ 배설계 : 
+                    <div class="dnd-zone inline-flex" id="m4-s1-z1"></div>, 
+                    <div class="dnd-zone inline-flex" id="m4-s1-z2"></div>, 
+                    <div class="dnd-zone inline-flex" id="m4-s1-z3"></div>, 
+                    <div class="dnd-zone inline-flex" id="m4-s1-z4"></div> 으로 구성
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="콩팥">콩팥</div>
+                    <div class="dnd-item" draggable="true" data-id="요도">요도</div>
+                    <div class="dnd-item" draggable="true" data-id="방광">방광</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌관">오줌관</div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="checkM4Step1()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m4-s1-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <!-- 🌟 수정된 미션 4 스텝 2: 드롭존을 용어 텍스트로 대체 및 물 추가 -->
+            <div id="m4-step2" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 2</div>
+                <h3 class="text-xl font-bold mb-4 text-center">오줌이 만들어지는 과정</h3>
+                <p class="text-center text-sm font-bold text-slate-500 mb-4">무한 생성 뱃지를 드래그하여 표를 완성하세요!</p>
+                
+                <div id="m4-s2-pool" class="sticky top-2 z-50 bg-slate-100/95 backdrop-blur-sm p-4 rounded-xl flex gap-2 flex-wrap justify-center mb-6 border-2 border-slate-300 shadow-md">
+                    <!-- JS에서 랜덤 생성됨 -->
+                </div>
+
+                <div class="interactive-box flex flex-col gap-6 text-[0.95rem] font-bold">
+                    
+                    <div class="bg-white border-2 border-blue-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            <span class="text-blue-600 text-lg mx-2">여과</span> : 이동 경로 : <div class="clone-zone w-[80px]" data-answer="토리"></div> ➔ <div class="clone-zone w-[100px]" data-answer="보먼주머니"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            물질의 특성 : <div class="clone-zone w-[130px]" data-answer="크기가 작은 물질"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            이동 물질 : 
+                            <!-- 물 추가로 총 5개의 슬롯 -->
+                            <div class="clone-zone m4-filter-yes w-[80px]"></div>,
+                            <div class="clone-zone m4-filter-yes w-[80px]"></div>,
+                            <div class="clone-zone m4-filter-yes w-[80px]"></div>,
+                            <div class="clone-zone m4-filter-yes w-[80px]"></div>,
+                            <div class="clone-zone m4-filter-yes w-[80px]"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-red-500">이동하면 안되는 것 :</span> 
+                            <div class="clone-zone m4-filter-no w-[80px]"></div>,
+                            <div class="clone-zone m4-filter-no w-[80px]"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-green-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            <span class="text-green-600 text-lg mx-2">재흡수</span> : 이동 경로 : <div class="clone-zone w-[80px]" data-answer="세뇨관"></div> ➔ <div class="clone-zone w-[100px]" data-answer="모세혈관"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            물질의 특성 : <div class="clone-zone w-[130px]" data-answer="몸에 필요한 물질"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            이동 물질 : 
+                            <div class="clone-zone m4-reabsorb w-[80px]"></div>,
+                            <div class="clone-zone m4-reabsorb w-[80px]"></div>,
+                            <div class="clone-zone m4-reabsorb w-[80px]"></div>,
+                            <div class="clone-zone m4-reabsorb w-[80px]"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-red-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            <span class="text-red-600 text-lg mx-2">분비</span> : 이동 경로 : <div class="clone-zone w-[100px]" data-answer="모세혈관"></div> ➔ <div class="clone-zone w-[80px]" data-answer="세뇨관"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            물질의 특성 : <div class="clone-zone w-[180px]" data-answer="여과되지 않은 노폐물"></div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            이동 물질 : <div class="clone-zone w-[80px]" data-answer="노폐물"></div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="checkM4Step2()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">확인</button>
+                    <p id="m4-s2-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <div id="m4-step3" class="step-container mt-8" style="display: none;">
+                <div class="step-badge">Step 3</div>
+                <h3 class="text-xl font-bold mb-4 text-center">혈액 중 노폐물이 몸 밖으로 나가는 경로</h3>
+                
+                <div class="interactive-box text-center font-bold text-lg leading-loose">
+                    콩팥 동맥 ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="토리"></div> ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="보먼주머니"></div> ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="세뇨관"></div> ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="콩팥깔때기"></div> ➔ <br>
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="오줌관"></div> ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="방광"></div> ➔ 
+                    <div class="dnd-zone mx-1 inline-flex" data-answer="요도"></div> ➔ 
+                    몸 밖
+                </div>
+
+                <div class="mt-4 bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center">
+                    <div class="dnd-item" draggable="true" data-id="토리">토리</div>
+                    <div class="dnd-item" draggable="true" data-id="보먼주머니">보먼주머니</div>
+                    <div class="dnd-item" draggable="true" data-id="세뇨관">세뇨관</div>
+                    <div class="dnd-item" draggable="true" data-id="콩팥깔때기">콩팥깔때기</div>
+                    <div class="dnd-item" draggable="true" data-id="오줌관">오줌관</div>
+                    <div class="dnd-item" draggable="true" data-id="방광">방광</div>
+                    <div class="dnd-item" draggable="true" data-id="요도">요도</div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="btn-m4-check3" onclick="checkM4Step3()" class="bg-[var(--color-mint)] text-white px-8 py-3 rounded-lg font-bold text-lg shadow-md hover:scale-105 transition-transform">최종 확인</button>
+                    <p id="m4-s3-msg" class="text-center text-red-500 font-bold mt-2 hidden"></p>
+                </div>
+                
+                <div id="m4-final-btn" class="text-center mt-10 hidden animate-[fadeIn_0.5s_ease-in-out]">
+                    <h3 class="text-2xl font-black text-green-500 mb-6">🎉 Mission 4 최종 완료 축하합니다! 보상을 획득하셨습니다! 🎉</h3>
+                    <button class="btn-primary max-w-[300px] bg-[var(--color-mint)] text-white text-[1.3rem] px-10 py-4 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-2 border-white transition-transform duration-200" onclick="location.href='quest6.html'">
+                        QUEST 6 인체 에너지 가기 🚀
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
         <!-- 사이드바 네비게이션 -->
+        <!-- ============================================== -->
         <aside class="card mission-sidebar lg:w-max flex flex-col gap-4 items-center min-w-[140px]">
             <button class="w-full bg-[#E2F0CB] text-[var(--text-main)] border-2 border-[#C5E1A5] py-3 px-2.5 text-[0.95rem] font-bold leading-[1.4] rounded-2xl mb-1 cursor-pointer" onclick="location.href='index.html'">
                    인체탐험지도로<br>돌아가기 🏠
             </button> 
-            <div id="nav-m1" class="mission-item" onclick="switchMission(1)">
-                <div class="mission-icon text-xl mb-2">💓</div><div class="text-sm font-bold">Mission 1</div><div class="text-sm mt-1">노폐물 생성</div>
+            <div id="nav-m1" class="mission-item active" onclick="switchMission(1)">
+                <div class="mission-icon text-xl mb-2">💖</div><div class="text-sm font-bold">Mission 1</div><div class="text-sm mt-1">노폐물 생성</div>
             </div>
-            <div id="nav-m2" class="mission-item" onclick="switchMission(2)">
+            <div id="nav-m2" class="mission-item locked" onclick="switchMission(2)">
                 <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 2</div><div class="text-sm mt-1">배설계 구조</div>
             </div>
-            <div id="nav-m3" class="mission-item" onclick="switchMission(3)">
+            <div id="nav-m3" class="mission-item locked" onclick="switchMission(3)">
                 <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 3</div><div class="text-sm mt-1">오줌 생성</div>
+            </div>
+            <div id="nav-m4" class="mission-item locked" onclick="switchMission(4)">
+                <div class="mission-icon text-xl mb-2">🔒</div><div class="text-sm font-bold">Mission 4</div><div class="text-sm mt-1">종합 정리</div>
             </div>
         </aside>
 
     </main>
 
     <script>
+        const QUEST_ID = 5;
+
+        // ==========================================
+        // 1. 미션 전환 및 진행 상태 업데이트 (공통 엔진 사용)
+        // ==========================================
+        function updateNavUI(activeMissionNum) {
+            for(let i = 1; i <= 4; i++) {
+                const nav = document.getElementById('nav-m' + i);
+                if(!nav) continue;
+                
+                let isCompleted = false;
+                let isAccessible = false;
+                
+                if (typeof window.isMissionCompleted === 'function') {
+                    isCompleted = window.isMissionCompleted(QUEST_ID, i);
+                }
+                
+                if (typeof window.canAccessMission === 'function') {
+                    isAccessible = window.canAccessMission(QUEST_ID, i).access;
+                }
+                
+                const isLocked = !isAccessible;
+                const isActive = (i === activeMissionNum);
+                
+                nav.className = 'mission-item';
+                let icon = '';
+                
+                if (isActive) {
+                    nav.classList.add('active');
+                    icon = '💖';
+                } else if (isCompleted) {
+                    nav.classList.add('completed');
+                    icon = '✅';
+                } else if (isLocked) {
+                    nav.classList.add('locked');
+                    icon = '🔒';
+                } else {
+                    icon = '🔓';
+                }
+                nav.querySelector('.mission-icon').innerText = icon;
+            }
+        }
+
         function switchMission(num) {
-            for(let i=1; i<=3; i++) {
+            const nav = document.getElementById('nav-m' + num);
+            if(nav && nav.classList.contains('locked')) {
+                alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+                return;
+            }
+
+            for(let i = 1; i <= 4; i++) {
                 const sec = document.getElementById('mission' + i + '-section');
                 if(sec) sec.style.display = (i === num) ? 'block' : 'none';
+            }
+            
+            updateNavUI(num);
+            setTimeout(() => { if(window.humanBadyDnD) window.humanBadyDnD.init(); }, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let activeMission = 1;
+            if (typeof window.getLastAvailableMission === 'function') {
+                activeMission = window.getLastAvailableMission(QUEST_ID);
+            }
+            switchMission(activeMission);
+            
+            setTimeout(() => {
+                if(window.humanBadyDnD && typeof window.humanBadyDnD.createRandomPool === 'function') {
+                    window.humanBadyDnD.createRandomPool(
+                        '#m2-s1-pool', 
+                        ['콩팥', '오줌관', '방광', '요도', '콩팥단위', '콩팥겉질', '콩팥속질', '콩팥동맥', '콩팥정맥', '콩팥깔때기']
+                    );
+                    window.humanBadyDnD.createRandomPool(
+                        '#m4-s2-pool', 
+                        ['여과', '재흡수', '분비', '토리', '보먼주머니', '세뇨관', '모세혈관', '크기가 작은 물질', '몸에 필요한 물질', '여과되지 않은 노폐물', '물', '포도당', '아미노산', '무기염류', '요소', '단백질', '혈구', '노폐물']
+                    );
+                }
+            }, 100);
+        });
+
+        function changeM3S2Img(type, btnEl) {
+            const filterImg = document.getElementById('m3-s2-filter-img');
+            const pelvisImg = document.getElementById('m3-s2-pelvis-img');
+            
+            const activeClass = "m3-img-btn px-5 py-2.5 bg-[var(--color-mint)] text-white rounded-full font-bold shadow-md transition-transform hover:scale-105 active-btn";
+            const inactiveClass = "m3-img-btn px-5 py-2.5 bg-slate-100 text-slate-600 border-2 border-slate-200 rounded-full font-bold shadow-sm transition-transform hover:scale-105";
+
+            if (type === 'base') {
+                filterImg.style.opacity = '0';
+                pelvisImg.style.opacity = '0';
+                document.getElementById('btn-m3s2-base').className = activeClass;
+                document.getElementById('btn-m3s2-filter').className = inactiveClass;
+                document.getElementById('btn-m3s2-pelvis').className = inactiveClass;
+            } else {
+                document.getElementById('btn-m3s2-base').className = inactiveClass;
+
+                if (type === 'filter') {
+                    const isShowing = filterImg.style.opacity === '1';
+                    filterImg.style.opacity = isShowing ? '0' : '1';
+                    btnEl.className = isShowing ? inactiveClass : activeClass;
+                } else if (type === 'pelvis') {
+                    const isShowing = pelvisImg.style.opacity === '1';
+                    pelvisImg.style.opacity = isShowing ? '0' : '1';
+                    btnEl.className = isShowing ? inactiveClass : activeClass;
+                }
+                
+                if (filterImg.style.opacity !== '1' && pelvisImg.style.opacity !== '1') {
+                    document.getElementById('btn-m3s2-base').className = activeClass;
+                }
+            }
+        }
+
+        // ==========================================
+        // Mission 1 로직
+        // ==========================================
+        function checkM1Step1() {
+            const input = document.getElementById('m1-s1-input').value.trim();
+            const msg = document.getElementById('m1-s1-msg');
+            if (input.includes('요소')) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m1-step2').style.display = 'block';
+                document.getElementById('m1-step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "다시 생각해 보세요. (힌트: ㅇㅅ)";
+                msg.classList.remove('hidden');
+            }
+        }
+        
+        function checkM1Step2() {
+            const zones = document.querySelectorAll('#m1-step2 .dnd-zone');
+            let allFilled = true;
+            zones.forEach(zone => { if (!zone.querySelector('.dnd-item')) allFilled = false; });
+            const msg = document.getElementById('m1-s2-msg');
+            
+            if (!allFilled) return msg.className = "text-red-500 font-bold mt-2 text-center", msg.innerText = "모든 빈칸을 채워주세요.", msg.classList.remove('hidden');
+
+            let allCorrect = true;
+            const group1 = [zones[0].querySelector('.dnd-item').dataset.id, zones[1].querySelector('.dnd-item').dataset.id];
+            if (!group1.includes('이산화탄소') || !group1.includes('물')) allCorrect = false;
+
+            const group2 = [zones[2].querySelector('.dnd-item').dataset.id, zones[3].querySelector('.dnd-item').dataset.id, zones[4].querySelector('.dnd-item').dataset.id];
+            if (!group2.includes('이산화탄소') || !group2.includes('물') || !group2.includes('암모니아')) allCorrect = false;
+
+            if (zones[5].querySelector('.dnd-item').dataset.id !== '간' || zones[6].querySelector('.dnd-item').dataset.id !== '요소') allCorrect = false;
+
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "모두 정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m1-step3').style.display = 'block';
+                document.getElementById('m1-step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "연결이 틀린 곳이 있습니다. 다시 확인해 보세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM1Step3() {
+            const zones = document.querySelectorAll('#m1-step3 .dnd-zone');
+            let allCorrect = true;
+            zones.forEach(zone => {
+                const item = zone.querySelector('.dnd-item');
+                if (!item || item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            const msg = document.getElementById('m1-s3-msg');
+            
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "미션 1 클리어! 다음 미션으로 이동합니다.";
+                msg.classList.remove('hidden');
+                
+                if(typeof window.completeMissionAction === 'function') {
+                    window.completeMissionAction(QUEST_ID, 1);
+                }
+                updateNavUI(1);
+                setTimeout(() => switchMission(2), 1500);
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "빈칸을 알맞게 채워주세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // Mission 2 로직
+        // ==========================================
+        function checkM2Step1() {
+            const zones = document.querySelectorAll('#m2-step1 .clone-zone');
+            let allCorrect = true, allFilled = true;
+
+            zones.forEach(zone => {
+                const item = zone.querySelector('.clone-item');
+                if(!item) allFilled = false;
+                else if (item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            
+            const msg = document.getElementById('m2-s1-msg');
+            if(!allFilled) return msg.className = "text-red-500 font-bold mt-2 text-center", msg.innerText = "모든 빈칸을 채워주세요.", msg.classList.remove('hidden');
+
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "모두 정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m2-step2').style.display = 'block';
+                document.getElementById('m2-step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "위치나 설명에 맞지 않는 명칭이 있습니다. 다시 확인해 보세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM2Step2() {
+            const zones = document.querySelectorAll('#m2-step2 .dnd-zone');
+            let allCorrect = true;
+            zones.forEach(zone => {
+                const item = zone.querySelector('.dnd-item');
+                if (!item || item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            const msg = document.getElementById('m2-s2-msg');
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "정답입니다! 구조와 역할이 완벽하게 연결되었습니다.";
+                msg.classList.remove('hidden');
+                
+                document.getElementById('btn-m2-check2').style.display = 'none';
+                document.getElementById('btn-go-m3').classList.remove('hidden');
+                document.getElementById('btn-go-m3').classList.add('block');
+                
+                if (typeof window.completeMissionAction === 'function') {
+                    window.completeMissionAction(QUEST_ID, 2);
+                }
+                updateNavUI(2);
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "빈칸을 알맞게 채워주세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // Mission 3 로직
+        // ==========================================
+        function checkM3Step1() {
+            const zones = document.querySelectorAll('#m3-step1 .dnd-zone');
+            let allCorrect = true;
+            zones.forEach(zone => {
+                const item = zone.querySelector('.dnd-item');
+                if (!item || item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            const msg = document.getElementById('m3-s1-msg');
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "모두 정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m3-step2').style.display = 'block';
+                document.getElementById('m3-step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "명칭을 알맞게 연결해 주세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM3Step2() {
+            const sentenceZones = [
+                document.querySelectorAll('#m3-step2 .dnd-zone')[0],
+                document.querySelectorAll('#m3-step2 .m3-s2-action')[0],
+                document.querySelectorAll('#m3-step2 .m3-s2-action')[1],
+                document.querySelectorAll('#m3-step2 .dnd-zone')[3] 
+            ];
+            
+            const processZones = [
+                document.querySelectorAll('#m3-step2 .dnd-zone')[4],
+                document.querySelectorAll('#m3-step2 .dnd-zone')[5],
+                document.querySelectorAll('#m3-step2 .dnd-zone')[6] 
+            ];
+
+            let allFilled = true;
+            sentenceZones.forEach(zone => { if (!zone.querySelector('.dnd-item')) allFilled = false; });
+            processZones.forEach(zone => { if (!zone.querySelector('.dnd-item')) allFilled = false; });
+            
+            const msg = document.getElementById('m3-s2-msg');
+            if (!allFilled) return msg.className = "text-red-500 font-bold mt-2 text-center", msg.innerText = "모든 빈칸을 채워주세요.", msg.classList.remove('hidden');
+
+            let allCorrect = true;
+            if (sentenceZones[0].querySelector('.dnd-item').dataset.id !== '여과') allCorrect = false;
+            
+            const g1 = [sentenceZones[1].querySelector('.dnd-item').dataset.id, sentenceZones[2].querySelector('.dnd-item').dataset.id];
+            if (!g1.includes('재흡수') || !g1.includes('분비')) allCorrect = false;
+            
+            if (sentenceZones[3].querySelector('.dnd-item').dataset.id !== '콩팥깔때기') allCorrect = false;
+            
+            if (processZones[0].querySelector('.dnd-item').dataset.id !== '여과') allCorrect = false;
+            if (processZones[1].querySelector('.dnd-item').dataset.id !== '재흡수') allCorrect = false;
+            if (processZones[2].querySelector('.dnd-item').dataset.id !== '분비') allCorrect = false;
+
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m3-step3').style.display = 'block';
+                document.getElementById('m3-step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "단어의 위치가 맞지 않습니다. 다시 확인해 보세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM3Step3() {
+            const zones = document.querySelectorAll('#m3-step3 .dnd-zone');
+            let allCorrect = true;
+            zones.forEach(zone => {
+                const item = zone.querySelector('.dnd-item');
+                if (!item || item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            const msg = document.getElementById('m3-s3-msg');
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "미션 3 클리어! 다음 단계가 열립니다.";
+                msg.classList.remove('hidden');
+                
+                document.getElementById('btn-m3-check3').style.display = 'none';
+                document.getElementById('btn-go-m4').classList.remove('hidden');
+                document.getElementById('btn-go-m4').classList.add('block');
+                
+                if (typeof window.completeMissionAction === 'function') {
+                    window.completeMissionAction(QUEST_ID, 3);
+                }
+                updateNavUI(3);
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "순서가 맞지 않습니다. 다시 확인해 보세요.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // Mission 4 로직
+        // ==========================================
+        function checkM4Step1() {
+            const zones = [
+                document.getElementById('m4-s1-z1'), document.getElementById('m4-s1-z2'),
+                document.getElementById('m4-s1-z3'), document.getElementById('m4-s1-z4')
+            ];
+            let allFilled = true;
+            zones.forEach(z => { if(!z.querySelector('.dnd-item')) allFilled = false; });
+            const msg = document.getElementById('m4-s1-msg');
+            
+            if(!allFilled) return msg.className = "text-red-500 font-bold mt-2 text-center", msg.innerText = "모든 빈칸을 채워주세요.", msg.classList.remove('hidden');
+
+            const answers = zones.map(z => z.querySelector('.dnd-item').dataset.id);
+            const req = ['콩팥', '오줌관', '방광', '요도'];
+            let correct = req.every(r => answers.includes(r));
+
+            if(correct) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "정답입니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m4-step2').style.display = 'block';
+                document.getElementById('m4-step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "알맞지 않은 기관이 포함되어 있습니다.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM4Step2() {
+            const zones = document.querySelectorAll('#m4-step2 .clone-zone');
+            let allFilled = true, allCorrect = true;
+            
+            zones.forEach(z => {
+                if(!z.querySelector('.clone-item')) allFilled = false;
+                else if(z.dataset.answer && z.dataset.answer !== z.querySelector('.clone-item').dataset.id) allCorrect = false;
+            });
+
+            const filterYes = Array.from(document.querySelectorAll('.m4-filter-yes')).map(z => z.querySelector('.clone-item')?.dataset.id);
+            const reqFilterYes = ['물', '포도당', '아미노산', '요소', '무기염류'];
+            filterYes.forEach(v => { if(!reqFilterYes.includes(v)) allCorrect = false; });
+            if(new Set(filterYes).size !== 5) allCorrect = false;
+
+            const filterNo = Array.from(document.querySelectorAll('.m4-filter-no')).map(z => z.querySelector('.clone-item')?.dataset.id);
+            if(!filterNo.includes('단백질') || !filterNo.includes('혈구')) allCorrect = false;
+
+            const reabsorb = Array.from(document.querySelectorAll('.m4-reabsorb')).map(z => z.querySelector('.clone-item')?.dataset.id);
+            const reqReabsorb = ['물', '포도당', '아미노산', '무기염류'];
+            reqReabsorb.forEach(r => { if(!reabsorb.includes(r)) allCorrect = false; });
+
+            const msg = document.getElementById('m4-s2-msg');
+            if(!allFilled) return msg.className = "text-red-500 font-bold mt-2 text-center", msg.innerText = "모든 빈칸을 채워주세요.", msg.classList.remove('hidden');
+
+            if(allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "완벽하게 정리했습니다!";
+                msg.classList.remove('hidden');
+                document.getElementById('m4-step3').style.display = 'block';
+                document.getElementById('m4-step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "단어가 알맞지 않거나, 위치가 틀린 부분이 있습니다.";
+                msg.classList.remove('hidden');
+            }
+        }
+
+        function checkM4Step3() {
+            const zones = document.querySelectorAll('#m4-step3 .dnd-zone');
+            let allCorrect = true;
+            zones.forEach(zone => {
+                const item = zone.querySelector('.dnd-item');
+                if (!item || item.dataset.id !== zone.dataset.answer) allCorrect = false;
+            });
+            const msg = document.getElementById('m4-s3-msg');
+            
+            if (allCorrect) {
+                msg.className = "text-green-500 font-bold mt-2 text-center";
+                msg.innerText = "모든 과정을 완벽하게 이해했습니다!";
+                msg.classList.remove('hidden');
+                
+                document.getElementById('btn-m4-check3').style.display = 'none';
+                
+                if (typeof window.completeMissionAction === 'function') {
+                    window.completeMissionAction(QUEST_ID, 4);
+                }
+                updateNavUI(4);
+                
+                document.getElementById('m4-final-btn').classList.remove('hidden');
+                document.getElementById('m4-final-btn').classList.add('block');
+                document.getElementById('m4-final-btn').scrollIntoView({ behavior: 'smooth', block: 'end' });
+            } else {
+                msg.className = "text-red-500 font-bold mt-2 text-center";
+                msg.innerText = "순서가 맞지 않습니다. 다시 생각해보세요!";
+                msg.classList.remove('hidden');
             }
         }
     </script>
