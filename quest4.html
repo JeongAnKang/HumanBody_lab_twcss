@@ -2,22 +2,19 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quest 4: 호흡</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 폴더 경로 지정 -->
     <script src="js/dragdrop.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="rewards/rewards.js" defer></script>
     
     <style>
-        /* Quest 4 전용 스타일 */
         .step-container { display: none; animation: fadeIn 0.4s ease-in-out; }
         .step-container.active { display: block; }
         
-        /* 스텝 제목 표시용 배지 */
         .step-badge {
             display: inline-block;
             background-color: var(--color-mint);
@@ -29,7 +26,6 @@
             margin-bottom: 10px;
         }
 
-        /* 드래그 아이템 (터치 충돌 방지 최적화) */
         .dnd-item {
             display: inline-block;
             padding: 8px 16px;
@@ -64,106 +60,41 @@
         .dnd-zone.dnd-over { background-color: #e0f2fe; border-color: #38bdf8; }
         .drop-success { animation: pop 0.2s ease-out; }
         
-        /* 뱃지가 드롭되면 드롭존의 테두리와 배경을 투명하게 만듦 */
         .dnd-zone:has(.dnd-item) {
             border-color: transparent !important;
             background-color: transparent !important;
         }
         
         .relative-img-container { position: relative; display: inline-block; max-width: 100%; }
-        /* 이미지 위 드롭존 - 불투명 및 중앙 정렬 */
         .img-drop-zone { position: absolute; background: #ffffff; border: 2px dashed #94a3b8; padding: 2px; display: flex; align-items: center; justify-content: center; z-index: 10; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.05); } }
 
-        /* --- 상단 바 공통 디자인 --- */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            gap: 20px;
-        }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; gap: 20px; }
         .quest-title {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--color-coral);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #FFFFFF;
-            border: 3px solid var(--color-coral-light);
-            padding: 10px 30px;
-            border-radius: 40px;
-            box-shadow: var(--shadow-soft);
+            font-size: 1.4rem; font-weight: 800; color: var(--color-coral); display: flex; align-items: center; gap: 10px;
+            background-color: #FFFFFF; border: 3px solid var(--color-coral-light); padding: 10px 30px; border-radius: 40px; box-shadow: var(--shadow-soft);
         }
         .guide-text {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--text-main);
-            background-color: rgba(245, 245, 245, 0.9);
-            padding: 12px 40px;
-            border-radius: 40px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            margin: 0 auto; 
+            font-size: 1.15rem; font-weight: 800; color: var(--text-main); background-color: rgba(245, 245, 245, 0.9);
+            padding: 12px 40px; border-radius: 40px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; margin: 0 auto; 
         }
         .btn-refresh {
-            background-color: var(--color-coral);
-            border: none;
-            color: #FFFFFF;
-            padding: 12px 30px;
-            border-radius: 40px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-soft);
+            background-color: var(--color-coral); border: none; color: #FFFFFF; padding: 12px 30px; border-radius: 40px;
+            font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-soft);
         }
-        .btn-refresh:active {
-            transform: scale(0.95);
-            background-color: #ff7597;
-        }
+        .btn-refresh:active { transform: scale(0.95); background-color: #ff7597; }
 
-        /* --- 사이드바 미션 네비게이션 상태별 스타일 --- */
         .mission-item {
-            width: 100%;
-            padding: 15px 10px;
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #ffffff; 
-            border: 2px solid #e2e8f0;
-            color: #64748b;
+            width: 100%; padding: 15px 10px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s ease;
+            background-color: #ffffff; border: 2px solid #e2e8f0; color: #64748b;
         }
-
-        .mission-item:hover:not(.locked) {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .mission-item.active {
-            background-color: #ff8fb3; 
-            border-color: #ff8fb3;
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(255, 143, 179, 0.4);
-        }
-        .mission-item.completed {
-            background-color: #e2f0cb; 
-            border-color: #c5e1a5;
-            color: #555555;
-        }
-        .mission-item.locked {
-            background-color: #efece8; 
-            border-color: #e2e8f0;
-            color: #94a3b8;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        .mission-icon {
-            font-size: 1.5rem;
-        }
+        .mission-item:hover:not(.locked) { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .mission-item.active { background-color: #ff8fb3; border-color: #ff8fb3; color: #ffffff; box-shadow: 0 4px 15px rgba(255, 143, 179, 0.4); }
+        .mission-item.completed { background-color: #e2f0cb; border-color: #c5e1a5; color: #555555; }
+        .mission-item.locked { background-color: #efece8; border-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; opacity: 0.8; }
+        .mission-icon { font-size: 1.5rem; }
     </style>
 </head>
 <body>
@@ -176,7 +107,6 @@
     </header>
 
     <main class="quest-layout grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
-        
         <!-- ============================================== -->
         <!-- Mission 1: 호흡계                              -->
         <!-- ============================================== -->
@@ -188,32 +118,53 @@
                     <span class="step-badge">Step 1</span>
                     <span class="text-[1.3rem] font-bold ml-2">호흡계 전체보기</span>
                 </div>
-                <div class="mb-8 w-full flex justify-center">
-                    <iframe 
-                        src="https://pubvw.qmt.kr/web_document/474201/3/Respiratorysystem.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3B1YnZ3LnFtdC5rci93ZWJfZG9jdW1lbnQvNDc0MjAxLzMvUmVzcGlyYXRvcnlzeXN0ZW0uaHRtbCIsImV4cCI6MTc5MTYxMjMyODYxMywiaWF0IjoxNzkxNjA4NzI4NjEzLCJwYXRoIjoid2ViX2RvY3VtZW50In0.TXC-QCzg71s1wPc_xM3cbeuXs4QsecG6p2M2QJ3TVlw" 
-                        class="w-full max-w-4xl h-[540px] rounded-xl shadow-lg border-2 border-gray-200" 
-                        allow="fullscreen">
-                    </iframe>
-                </div>
-                <div class="text-[1.2rem] font-bold mb-6">Q. 코로 들어온 공기가 허파까지 가는 경로를 완성하시오.</div>
                 
-                <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m1-path-pool">
-                    <div class="dnd-item" data-dnd-group="path" data-answer="숨관가지">숨관가지</div>
-                    <div class="dnd-item" data-dnd-group="path" data-answer="코">코</div>
-                    <div class="dnd-item" data-dnd-group="path" data-answer="숨관">숨관</div>
-                    <div class="dnd-item" data-dnd-group="path" data-answer="허파">허파</div>
+                
+                <!-- 💡 도입 이미지 및 질문 추가 -->
+                <div class="intro-activity bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center border-2 border-gray-100 mb-8">
+                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-4">🤔 생각 열기: 호흡은 왜 필요할까?</h3>
+                    <div class="image-container w-full max-w-lg mb-6 rounded-xl overflow-hidden shadow-md">
+                        <img src="images/q4_m1_intro.png" alt="호흡계 도입 이미지" class="w-full h-auto object-cover">
+                    </div>
+                    <div class="question-box bg-[#F4F9F4] p-5 rounded-xl w-full text-center mb-6">
+                        <p class="text-[1.1rem] text-gray-700 font-bold mb-3 leading-relaxed">
+                            격렬하게 치어리딩 연습을 했을 때<br>왜 숨이 차고 땀이 비 오듯 솟아날까?
+                        </p>
+                    </div>
+                    
+                    <button id="reveal-m1-secret-btn" class="bg-[var(--color-mint)] hover:bg-[#4a9f9d] text-white px-8 py-3 rounded-full font-bold shadow-md transition-all duration-200 transform hover:scale-105" onclick="revealM1Secret()">비밀 확인하기 🚚</button>
                 </div>
 
-                <div class="flex items-center justify-center gap-2 mb-8 flex-wrap font-bold text-lg">
-                    <span>공기</span> ➔
-                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z1"></div> ➔
-                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z2"></div> ➔
-                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z3"></div> ➔
-                    <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z4"></div>
-                </div>
+                <!-- 💡 숨겨진 본문 영역 -->
+                <div id="m1-intro-content" class="hidden flex-col items-center w-full">
+                    <div class="mb-8 w-full flex justify-center">
+                        <iframe 
+                            src="https://pubvw.qmt.kr/web_document/474201/3/Respiratorysystem.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3B1YnZ3LnFtdC5rci93ZWJfZG9jdW1lbnQvNDc0MjAxLzMvUmVzcGlyYXRvcnlzeXN0ZW0uaHRtbCIsImV4cCI6MTc5MTYxMjMyODYxMywiaWF0IjoxNzkxNjA4NzI4NjEzLCJwYXRoIjoid2ViX2RvY3VtZW50In0.TXC-QCzg71s1wPc_xM3cbeuXs4QsecG6p2M2QJ3TVlw" 
+                            class="w-full max-w-4xl h-[540px] rounded-xl shadow-lg border-2 border-gray-200" 
+                            allow="fullscreen">
+                        </iframe>
+                    </div>
 
-                <button class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM1Step1()">확인</button>
-                <div id="m1-step1-feedback" class="mt-4 font-bold text-red-500"></div>
+                    <div class="text-[1.2rem] font-bold mb-6">Q. 코로 들어온 공기가 허파까지 가는 경로를 완성하시오.</div>
+                    
+                    <div class="dnd-pool bg-gray-100 p-4 rounded-xl mb-6 flex flex-wrap justify-center gap-2" id="m1-path-pool">
+                        <div class="dnd-item" data-dnd-group="path" data-answer="숨관가지">숨관가지</div>
+                        <div class="dnd-item" data-dnd-group="path" data-answer="코">코</div>
+                        <div class="dnd-item" data-dnd-group="path" data-answer="숨관">숨관</div>
+                        <div class="dnd-item" data-dnd-group="path" data-answer="허파">허파</div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 mb-8 flex-wrap font-bold text-lg">
+                        <span>공기</span> ➔
+                        <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z1"></div> ➔
+                        <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z2"></div> ➔
+                        <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z3"></div> ➔
+                        <div class="dnd-zone dnd-single-slot" data-dnd-accept="path" id="m1-z4"></div>
+                    </div>
+
+                    <button class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM1Step1()">확인</button>
+                    <div id="m1-step1-feedback" class="mt-4 font-bold text-red-500"></div>
+                </div>
             </div>
 
             <div id="m1-step2" class="step-container text-center">
@@ -319,10 +270,14 @@
                 <div id="m1-step3-feedback" class="mt-4 font-bold text-red-500"></div>
 
                 <div id="m1-step3-quiz-area" class="hidden mt-8 bg-indigo-50 p-6 rounded-xl border border-indigo-200 text-center shadow-sm">
-                    <div class="text-[1.2rem] font-black mb-2 text-indigo-700">Q. 허파의 수많은 허파꽈리 구조의 장점은?</div>
-                    <div class="mb-4 text-gray-500 font-bold">(초성 힌트: ㄱㄱㅇ ㅈㅎ는 ㅍㅁㅈㅇ ㄴㅇㅈㄷ)</div>
+                    <div class="text-[1.2rem] font-black mb-4 text-indigo-700">Q. 허파의 수많은 허파꽈리 구조의 장점은?</div>
                     <div class="flex gap-2 justify-center items-center flex-wrap">
-                        <input type="text" id="m1-step3-answer" class="border-2 border-indigo-300 rounded-lg px-4 py-2 w-full max-w-[350px] font-bold text-center focus:outline-none focus:border-indigo-500" placeholder="정답을 입력하세요">
+                        <select id="m1-step3-answer" class="border-2 border-indigo-300 rounded-lg px-4 py-2 w-full max-w-[350px] font-bold text-center focus:outline-none focus:border-indigo-500 cursor-pointer">
+                            <option value="">장점을 선택하세요</option>
+                            <option value="wrong1">공기가 머무는 시간을 길게 해준다</option>
+                            <option value="correct">공기와 접하는 표면적이 넓어진다</option>
+                            <option value="wrong2">공기 중의 먼지를 더 잘 걸러낸다</option>
+                        </select>
                         <button id="btn-quiz-check" class="btn-primary bg-[var(--color-mint)] max-w-[100px] whitespace-nowrap" onclick="checkM1Step3Quiz()">확인</button>
                     </div>
                     <div id="m1-step3-quiz-feedback" class="mt-4 font-bold text-red-500"></div>
@@ -639,7 +594,7 @@
                 
                 <div class="relative-img-container mb-6 flex justify-center">
                     <div class="relative inline-block">
-                        <img src="images/q4_m3_s1_01_exchanges.jpg" alt="기체 교환" class="rounded-xl shadow-md max-w-full" style="max-height: 500px; width: auto;" onerror="this.src='https://placehold.co/800x500?text=기체교환+이미지'">
+                        <img src="images/q4_m3_s1_01_exchanges.png" alt="기체 교환" class="rounded-xl shadow-md max-w-full" style="max-height: 500px; width: auto;" onerror="this.src='https://placehold.co/800x500?text=기체교환+이미지'">
                         
                         <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-1" style="top: 24.5%; left: 9%; width: 80px; height: 32px;"></div>
                         <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-2" style="top: 33%; left: 9%; width: 80px; height: 32px;"></div>
@@ -844,9 +799,9 @@
                 </div>
                 
                 <div class="text-[1.15rem] leading-loose font-bold text-gray-700 bg-white p-6 rounded-xl border-2 border-dashed border-gray-300 shadow-sm">
-                    세포는 영양소를 분해하여 생명 활동에 필요한 에너지를 얻어요. 이 과정을 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z1"></div>(이)라고 해요. 이때 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z2"></div>가 필요하고, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z3"></div>가 생겨요.<br><br>
-                    호흡계는 몸에 필요한 산소를 받아들이고 이산화탄소를 몸 밖으로 내보내요. 호흡계는 코, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z4"></div>, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z5"></div>, 허파로 이루어져 있어요.<br>
-                    허파는 수많은 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z6"></div>로 이루어져 공기와 접하는 표면적이 넓어요. 허파꽈리는 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z7"></div>(으)로 둘러싸여 있어 기체 교환이 일어나요.
+                    세포는 영양소를 분해하여 생명 활동에 필요한 에너지를 얻어요. 이 과정을 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z1"></div>(이)라고 해요. 세포호흡을 하려면 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z2"></div>기체가 필요하고, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z3"></div>기체가 생겨요.<br><br>
+                    호흡계는 몸에 필요한 산소를 받아들이고 이산화탄소를 몸 밖으로 내보내는 작용을 해요. 호흡계는 코, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z4"></div>, <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z5"></div>, 허파로 이루어져 있어요.<br>
+                    허파는 수많은 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z6"></div>로 이루어져 공기와 접하는 표면적이 넓어요. 허파꽈리는 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g1" id="m4-s1-z7"></div>(으)로 둘러싸여 있어 허파꽈리와 모세혈관 사이에는 기체 교환이 일어나요.
                 </div>
                 
                 <div class="text-center mt-6">
@@ -895,7 +850,7 @@
                     - 허파꽈리에서 모세혈관으로 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z2"></div>가 이동하고, 모세혈관에서 허파꽈리로 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z3"></div>가 이동해요.<br>
                     <span class="text-indigo-600">• 내호흡:</span> 조직세포와 모세혈관 사이에서<br>
                     - 모세혈관에서 조직세포로 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z4"></div>가 이동하고, 조직세포에서 모세혈관으로 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z5"></div>가 이동해요.<br><br>
-                    • 혈액이 순환계를 따라 산소를 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z6"></div>(으)로 운반하면, 조직세포는 산소를 이용해 세포 호흡을 하고 그 결과 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z7"></div>가 생겨요. 이산화탄소는 혈액을 통해 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z8"></div>(으)로 운반되어 날숨을 통해 몸 밖으로 나가요.
+                    • 혈액이 순환계를 따라 산소를 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[110px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z6"></div>(으)로 운반하면, 조직세포는 산소를 이용해 세포 호흡을 하고 그 결과 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[120px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z7"></div>기체가 생겨요. 이산화탄소는 혈액을 통해 <div class="dnd-zone dnd-single-slot mx-1 inline-flex w-[80px] h-[36px] align-middle p-0 m4-zone" data-dnd-accept="m4-g3" id="m4-s3-z8"></div>(으)로 운반되어 날숨을 통해 몸 밖으로 나가요.
                 </div>
                 
                 <div class="text-center mt-6">
@@ -935,14 +890,43 @@
     <script>
         const QUEST_ID = 4;
 
-        // --- 미션 네비게이션 상태 업데이트 ---
+        // ==============================================
+        // 뱃지 랜덤 셔플 함수 (Mission 1, 3 용)
+        // ==============================================
+        function shuffleStaticPools() {
+            const pools = ['m1-path-pool', 'm1-organs-pool', 'm1-func-pool', 'm3-pool-1'];
+            pools.forEach(poolId => {
+                const pool = document.getElementById(poolId);
+                if (!pool) return;
+                const items = Array.from(pool.children);
+                // Fisher-Yates 셔플 적용
+                for (let i = items.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [items[i], items[j]] = [items[j], items[i]];
+                }
+                // 섞인 순서대로 다시 append (이동 처리됨)
+                items.forEach(item => pool.appendChild(item));
+            });
+        }
+
+        // --- 미션 네비게이션 상태 업데이트 (공통 엔진 사용) ---
         function updateNavUI(activeMissionNum) {
             for(let i = 1; i <= 4; i++) {
                 const nav = document.getElementById('nav-m' + i);
                 if(!nav) continue;
                 
-                const isCompleted = localStorage.getItem(`quest4_m${i}_completed`) === 'true';
-                const isLocked = !isCompleted && i > 1 && localStorage.getItem(`quest4_m${i-1}_completed`) !== 'true';
+                let isCompleted = false;
+                let isAccessible = false;
+                
+                if (typeof window.isMissionCompleted === 'function') {
+                    isCompleted = window.isMissionCompleted(QUEST_ID, i);
+                }
+                
+                if (typeof window.canAccessMission === 'function') {
+                    isAccessible = window.canAccessMission(QUEST_ID, i).access;
+                }
+                
+                const isLocked = !isAccessible;
                 const isActive = (i === activeMissionNum);
                 
                 nav.className = 'mission-item';
@@ -966,7 +950,10 @@
 
         function switchMission(num) {
             const nav = document.getElementById('nav-m' + num);
-            if(nav && nav.classList.contains('locked')) return; 
+            if(nav && nav.classList.contains('locked')) {
+                alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
+                return; 
+            }
 
             document.querySelectorAll('section').forEach(sec => sec.style.display = 'none');
             const target = document.getElementById('mission' + num + '-section');
@@ -984,7 +971,19 @@
             setTimeout(() => { if(window.humanBadyDnD) window.humanBadyDnD.init(); }, 100);
         }
 
-        // --- 기존 미션 1~3 체크 로직 생략(정상 작동 유지) ---
+        // ==============================================
+        // M1 비밀 확인 함수
+        // ==============================================
+        function revealM1Secret() {
+            document.getElementById('m1-intro-content').classList.remove('hidden');
+            document.getElementById('m1-intro-content').classList.add('flex');
+            document.getElementById('reveal-m1-secret-btn').classList.add('hidden');
+            
+            // 배지가 처음 나타날 때 올바르게 인식되도록 초기화 호출
+            setTimeout(() => { if(window.humanBadyDnD) window.humanBadyDnD.init(); }, 100);
+        }
+
+        // --- Mission 1 ~ 3 로직 ---
         function checkM1Step1() {
             const ans = ['코', '숨관', '숨관가지', '허파'];
             let correct = true;
@@ -1002,6 +1001,7 @@
                 document.getElementById('m1-step1-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM1Step2() {
             const checks = ['숨관', '숨관가지', '허파', '가로막', '갈비뼈', '허파꽈리', '모세혈관'];
             let allFilled = true, isCorrect = true;
@@ -1018,6 +1018,7 @@
             document.getElementById('btn-m1-check-img').style.display = 'none';
             setTimeout(() => nextStep(1, 3), 1000);
         }
+
         function checkM1Step3() {
             const ans = ['코', '숨관', '숨관가지', '허파', '허파꽈리', '가로막'];
             let correct = true;
@@ -1036,20 +1037,31 @@
                 document.getElementById('m1-step3-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM1Step3Quiz() {
-            const userAnswer = document.getElementById('m1-step3-answer').value.replace(/\s+/g, '');
-            if(userAnswer === "공기와접하는표면적이넓어진다") {
+            const answerSelect = document.getElementById('m1-step3-answer');
+            const userAnswer = answerSelect.value;
+            
+            if(userAnswer === "correct") {
                 document.getElementById('m1-step3-quiz-feedback').innerHTML = "정답입니다! 🎉 보상을 획득했습니다.";
                 document.getElementById('m1-step3-quiz-feedback').className = "mt-4 font-bold text-green-500 leading-relaxed";
-                document.getElementById('m1-step3-answer').disabled = true;
+                
+                answerSelect.disabled = true;
+                answerSelect.style.borderColor = 'var(--color-mint)';
+                answerSelect.style.backgroundColor = '#EFFFFD';
+                
                 document.getElementById('btn-quiz-check').style.display = 'none';
                 document.getElementById('btn-go-m2').classList.remove('hidden');
                 document.getElementById('btn-go-m2').classList.add('block');
             } else {
-                document.getElementById('m1-step3-quiz-feedback').innerHTML = "오답입니다.";
+                document.getElementById('m1-step3-quiz-feedback').innerHTML = "오답입니다. 허파꽈리가 수많은 포도송이 모양일 때의 장점을 다시 생각해보세요!";
                 document.getElementById('m1-step3-quiz-feedback').className = "mt-4 font-bold text-red-500";
+                
+                answerSelect.classList.add('error');
+                setTimeout(() => answerSelect.classList.remove('error'), 300);
             }
         }
+
         function checkM2Step1() {
             if (document.getElementById('m2-s1-rib').value === 'up' && document.getElementById('m2-s1-dia').value === 'down' && document.getElementById('m2-s1-vol').value === 'inc' && document.getElementById('m2-s1-pres').value === 'low') {
                 document.getElementById('m2-step1-feedback').innerHTML = "정답입니다!";
@@ -1061,6 +1073,7 @@
                 document.getElementById('m2-step1-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM2Step2() {
             const ans = { 'm2-s2-rib-in': 'up', 'm2-s2-rib-out': 'down', 'm2-s2-dia-in': 'down', 'm2-s2-dia-out': 'up', 'm2-s2-vol-in': 'inc', 'm2-s2-vol-out': 'dec', 'm2-s2-pres-in': 'low', 'm2-s2-pres-out': 'high', 'm2-s2-lung-in': 'inc', 'm2-s2-lung-out': 'dec', 'm2-s2-air-in': 'in', 'm2-s2-air-out': 'out' };
             let correct = true;
@@ -1076,6 +1089,7 @@
                 document.getElementById('m2-step2-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM2Step3() {
             if (document.getElementById('m2-s3-cup').value === 'rib' && document.getElementById('m2-s3-straw').value === 'trachea' && document.getElementById('m2-s3-balloon').value === 'lung' && document.getElementById('m2-s3-membrane').value === 'dia' && document.getElementById('m2-s3-space').value === 'cavity' && document.getElementById('m2-s3-quiz').value === 'in') {
                 document.getElementById('m2-step3-feedback').innerHTML = "정답입니다! 🎉 보상을 획득했습니다.";
@@ -1088,6 +1102,7 @@
                 document.getElementById('m2-step3-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM3Step1() {
             const ans = { 'm3-img-1': '이산화탄소', 'm3-img-2': '산소', 'm3-img-3': '산소', 'm3-img-4': '이산화탄소', 'm3-f-1': '외호흡', 'm3-f-2': '내호흡' };
             let correct = true;
@@ -1105,6 +1120,7 @@
                 document.getElementById('m3-step1-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
+
         function checkM3Step2() {
             const vals = { 'm3-s2-def1': '확산', 'm3-s2-def2': '농도', 'm3-s2-t1-1': '허파꽈리', 'm3-s2-t1-2': '모세혈관', 'm3-s2-t2-1': '허파꽈리', 'm3-s2-t2-2': '모세혈관', 'm3-s2-t2-3': '모세혈관', 'm3-s2-t2-4': '조직세포', 'm3-s2-t3-1': '모세혈관', 'm3-s2-t3-2': '조직세포', 'm3-s2-t4-1': '모세혈관', 'm3-s2-t4-2': '허파꽈리', 'm3-s2-t4-3': '조직세포', 'm3-s2-t4-4': '모세혈관' };
             let correct = true;
@@ -1120,15 +1136,14 @@
             }
         }
 
+        // 💡 공통 엔진(main.js)의 상태 관리에 의존
         function finishMission(mNum) {
-            localStorage.setItem(`quest4_m${mNum}_completed`, 'true');
             if(typeof window.completeMissionAction === 'function') {
-                const success = window.completeMissionAction(QUEST_ID, mNum);
-                if(success) alert(`Mission ${mNum} 완료! 보상을 획득했습니다.`);
-                else alert('이미 완료한 미션입니다.');
-            } else {
-                alert(`Mission ${mNum} 완료 처리되었습니다!`);
+                window.completeMissionAction(QUEST_ID, mNum);
             }
+    
+            updateNavUI(mNum); 
+    
             if (mNum < 4) switchMission(mNum + 1);
         }
 
@@ -1161,22 +1176,26 @@
                 if (!poolEl) continue;
                 
                 const groupName = poolEl.getAttribute('data-dnd-accept');
-                const requiredItems = m4BadgeData[poolId];
+                // Fisher-Yates 셔플로 Mission 4 뱃지 무작위 생성
+                let requiredItems = [...m4BadgeData[poolId]];
+                for (let i = requiredItems.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [requiredItems[i], requiredItems[j]] = [requiredItems[j], requiredItems[i]];
+                }
                 
-                // 1. 필요한 아이템이 풀에 없으면 생성 (복사 기능)
                 requiredItems.forEach(text => {
-                    const exists = Array.from(poolEl.children).some(child => child.innerText.trim() === text);
-                    if (!exists) {
-                        const newItem = document.createElement('div');
-                        newItem.className = 'dnd-item';
-                        newItem.setAttribute('data-dnd-group', groupName);
-                        newItem.setAttribute('data-answer', text);
-                        newItem.innerText = text;
-                        poolEl.appendChild(newItem);
+                    let existingItem = Array.from(poolEl.children).find(child => child.innerText.trim() === text);
+                    if (!existingItem) {
+                        existingItem = document.createElement('div');
+                        existingItem.className = 'dnd-item';
+                        existingItem.setAttribute('data-dnd-group', groupName);
+                        existingItem.setAttribute('data-answer', text);
+                        existingItem.innerText = text;
                     }
+                    // 셔플된 배열 순서에 맞게 다시 append하여 순서 적용
+                    poolEl.appendChild(existingItem);
                 });
                 
-                // 2. 풀에 중복된 아이템이 들어오면 삭제 (무한 복사 방지)
                 const seen = new Set();
                 Array.from(poolEl.children).forEach(child => {
                     const txt = child.innerText.trim();
@@ -1188,10 +1207,8 @@
                 });
             }
 
-            // 아이템 생성/삭제 후 드래그 앤 드롭 재활성화
             if(window.humanBadyDnD) window.humanBadyDnD.init();
 
-            // 다음 이벤트 사이클에 락 해제
             setTimeout(() => { isReplenishing = false; }, 10);
         }
 
@@ -1214,12 +1231,24 @@
         }
 
         function checkM4S2() {
-            const ans = ['갈비뼈', '가로막', '올라가고', '내려가고', '커지고', '내려가고', '올라가고', '작아지고'];
             let correct = true;
-            for(let i=1; i<=8; i++) {
-                const item = document.getElementById('m4-s2-z' + i).querySelector('.dnd-item');
-                if(!item || item.innerText.trim() !== ans[i-1]) correct = false;
+            
+            // 💡 갈비뼈/가로막 순서 무관하게 허용 처리 로직 추가
+            const item1 = document.getElementById('m4-s2-z1').querySelector('.dnd-item');
+            const item2 = document.getElementById('m4-s2-z2').querySelector('.dnd-item');
+            const val1 = item1 ? item1.innerText.trim() : "";
+            const val2 = item2 ? item2.innerText.trim() : "";
+            
+            if (!((val1 === '갈비뼈' && val2 === '가로막') || (val1 === '가로막' && val2 === '갈비뼈'))) {
+                correct = false;
             }
+
+            const ansRest = ['올라가고', '내려가고', '커지고', '내려가고', '올라가고', '작아지고'];
+            for(let i = 3; i <= 8; i++) {
+                const item = document.getElementById('m4-s2-z' + i).querySelector('.dnd-item');
+                if(!item || item.innerText.trim() !== ansRest[i-3]) correct = false;
+            }
+
             if (correct) {
                 document.getElementById('m4-step2-feedback').innerHTML = "정답입니다! 👏 마지막 단계로 이동합니다.";
                 document.getElementById('m4-step2-feedback').className = "mt-4 font-bold text-green-500";
@@ -1243,8 +1272,6 @@
                 
                 document.getElementById('m4-reward-area').classList.remove('hidden');
                 
-                // 완료 상태 저장
-                localStorage.setItem('quest4_m4_completed', 'true');
                 if(typeof window.completeMissionAction === 'function') {
                     window.completeMissionAction(QUEST_ID, 4);
                 }
@@ -1260,23 +1287,22 @@
         // ==============================================
         document.addEventListener('DOMContentLoaded', () => {
             let activeMission = 1;
-            for(let i = 4; i >= 1; i--) {
-                if(i === 1 || localStorage.getItem(`quest4_m${i-1}_completed`) === 'true') {
-                    activeMission = i;
-                    break;
-                }
+            if (typeof window.getLastAvailableMission === 'function') {
+                activeMission = window.getLastAvailableMission(QUEST_ID);
             }
+            
+            // 💡 초기화 시 Mission 1, 3 고정 뱃지 풀 섞기
+            shuffleStaticPools();
+
             switchMission(activeMission);
 
-            // Mission 4 뱃지 풀 초기화
+            // 💡 초기화 시 Mission 4 동적 뱃지 풀 섞기
             replenishM4Pools();
 
-            // DOM 변화를 감지하여 뱃지가 영역에 놓이거나 되돌아올 때마다 무한 복사 로직 실행
             const m4Observer = new MutationObserver((mutations) => {
                 replenishM4Pools();
             });
 
-            // 풀 영역과 드롭존 영역 관찰 시작
             document.querySelectorAll('.m4-pool, .m4-zone').forEach(el => {
                 m4Observer.observe(el, { childList: true });
             });
