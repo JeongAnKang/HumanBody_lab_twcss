@@ -1,9 +1,10 @@
-/* Universal Pointer/Keyboard Drag-and-Drop Engine (Overlap & Swap Fix Ver) */
+/* Universal Pointer/Keyboard Drag-and-Drop Engine (Infinite Clone + Random Pool + Tap-Tap) */
 (function () {
   'use strict';
   
-  const ITEM_SELECTOR = '.dnd-item';
-  const ZONE_SELECTOR = '.dnd-zone';
+  // 기존 dnd 요소에 복제형(clone) 요소까지 선택자에 추가
+  const ITEM_SELECTOR = '.dnd-item, .clone-item';
+  const ZONE_SELECTOR = '.dnd-zone, .clone-zone, .dnd-pool, [id*="-pool"]';
   
   let selected = null, gesture = null, activeMode = 'pending', suppressClickUntil = 0;
 
@@ -11,12 +12,20 @@
     return item.classList.contains('dnd-locked') || item.dataset.dndLocked === 'true';
   }
 
+  // 드롭존이 정규 존인지 복제용 존인지 판별
+  function isCloneZone(el) {
+    return el && (el.classList.contains('dnd-zone') || el.classList.contains('clone-zone'));
+  }
+
   function accepts(item, zone) {
-    // 💡 참조 버그 픽스: ZziritDnD -> humanBadyDnD로 통일
     if (typeof window.humanBadyDnD?.customAccept === 'function') {
       const customResult = window.humanBadyDnD.customAccept(item, zone);
       if (typeof customResult === 'boolean') return customResult;
     }
+    
+    // 풀(Pool) 영역은 원래 자리로 돌아오는 뱃지들을 항상 허용
+    if (zone.classList.contains('dnd-pool') || zone.id.includes('-pool')) return true;
+
     const itemGroup = item.dataset.dndGroup || 'default';
     const zoneAccept = zone.dataset.dndAccept;
     
@@ -30,7 +39,7 @@
       const originZone = document.getElementById(originId);
       if (originZone && originZone.matches(ZONE_SELECTOR)) return originZone;
     }
-    return document.querySelector('.dnd-pool') || item.parentElement;
+    return document.querySelector('.dnd-pool, [id*="-pool"]') || item.parentElement;
   }
 
   function clear() {
@@ -40,21 +49,67 @@
 
   function move(item, zone) {
     if (!item || !zone || !accepts(item, zone)) return false;
-    
+
+    // ★ 추가된 안전장치: 이동하려는 아이템 자체가 잠금 상태라면 이동 무효화
+    if (isLocked(item)) return false;
+
+    const isCloneItem = item.classList.contains('clone-item');
+    const isSourceZone = isCloneZone(item.parentElement);
+    const isTargetZone = isCloneZone(zone);
+
     const capacity = parseInt(zone.dataset.dndCapacity, 10) || 0;
-    const isSingle = capacity === 1 || zone.classList.contains('dnd-single-slot');
+    // 복제 존(clone-zone)은 기본적으로 1개만 들어가는 싱글 슬롯으로 처리
+    const isSingle = capacity === 1 || zone.classList.contains('dnd-single-slot') || zone.classList.contains('clone-zone');
     
-    if (isSingle) {
+    // 싱글 슬롯 밀어내기 처리
+    if (isSingle && isTargetZone) {
       const old = Array.from(zone.children).find(el => el !== item && el.matches(ITEM_SELECTOR));
       if (old) {
-        let pool = sourcePool(old);
-        if (!pool || pool === zone) pool = document.querySelector('.dnd-pool');
-        if (pool && pool !== zone) {
-            pool.appendChild(old);
+        // ★ 핵심 반영: 타겟 존에 있는 기존 아이템이 잠금 상태라면 밀어내지 않고 이동 자체를 취소
+        if (isLocked(old)) {
+            return false;
+        }
+
+        if (old.classList.contains('clone-item')) {
+          old.remove(); // 복제된 뱃지는 밀려나면 파괴됨
+        } else {
+          let pool = sourcePool(old);
+          if (!pool || pool === zone) pool = document.querySelector('.dnd-pool, [id*="-pool"]');
+          if (pool && pool !== zone) {
+              pool.appendChild(old);
+          }
         }
       }
     }
+
+    // 🌟 무한 복제 (Clone) 특별 로직
+    if (isCloneItem) {
+      if (!isSourceZone && isTargetZone) {
+        // [풀 -> 빈칸] 드롭/클릭 시 뱃지를 무한 복제해서 넣음
+        const clone = item.cloneNode(true);
+        clone.classList.remove('dnd-selected', 'dnd-source-dragging');
+        clone.removeAttribute('id');
+        delete clone.dataset.dndInit; 
+        
+        zone.appendChild(clone);
+        clear();
+        zone.classList.add('drop-success');
+        setTimeout(() => zone.classList.remove('drop-success'), 220);
+        
+        clone.dispatchEvent(new CustomEvent('dnd-dropped', { bubbles: true, detail: { item: clone, zone } }));
+        
+        // 새로 생긴 복제본에 이벤트 리스너 입히기
+        if (window.humanBadyDnD) window.humanBadyDnD.init();
+        return true;
+      } else if (isSourceZone && !isTargetZone) {
+        // [빈칸 -> 풀] 드롭/클릭 시 복제본 파괴 (중복 방지)
+        item.remove();
+        clear();
+        return true;
+      }
+    }
     
+    // 일반 뱃지 이동 로직 (빈칸 -> 빈칸 이동 포함)
     zone.appendChild(item); 
     clear();
     
@@ -77,7 +132,6 @@
     ghost.removeAttribute('role');
     ghost.classList.add('dnd-ghost');
     
-    // 💡 포지션 버그 픽스: position: fixed 명시 적용
     ghost.style.position = 'fixed';
     ghost.style.pointerEvents = 'none'; 
     ghost.style.zIndex = '9999';
@@ -144,7 +198,12 @@
     if (state.moved) {
       suppressClickUntil = Date.now() + 350;
       e.preventDefault();
-      move(state.item, zone);
+      if (zone) {
+         move(state.item, zone);
+      } else if (state.item.classList.contains('clone-item') && isCloneZone(state.item.parentElement)) {
+         // 허공에 버리면 파괴
+         state.item.remove();
+      }
     }
   }
 
@@ -192,10 +251,16 @@
       move(item, zone);
     }, true);
     
-    document.addEventListener('dragend', () => {
+    document.addEventListener('dragend', e => {
+      const item = e.target.closest(ITEM_SELECTOR);
       document.querySelectorAll('.dnd-source-dragging').forEach(el => el.classList.remove('dnd-source-dragging'));
       document.querySelectorAll('.dnd-over').forEach(el => el.classList.remove('dnd-over'));
       document.body.classList.remove('dnd-active');
+      
+      // 데스크탑 네이티브 모드에서 허공에 버렸을 때 파괴 처리
+      if (e.dataTransfer.dropEffect === 'none' && item && item.classList.contains('clone-item') && isCloneZone(item.parentElement)) {
+          item.remove();
+      }
     }, true);
   }
 
@@ -220,6 +285,7 @@
     }
   }
 
+  // 🌟 탭탭(클릭) 인터랙션 로직
   document.addEventListener('click', e => {
     if (Date.now() < suppressClickUntil) { e.preventDefault(); return; }
     let item = e.target.closest(ITEM_SELECTOR);
@@ -236,6 +302,8 @@
       clear(); selected = item; item.classList.add('dnd-selected'); 
     } else if (zone && selected) { 
       e.preventDefault(); move(selected, zone); 
+    } else {
+      clear(); // 빈 공간 클릭 시 선택 해제
     }
   });
 
@@ -256,11 +324,11 @@
   function init() {
     document.querySelectorAll(ITEM_SELECTOR).forEach(el => { 
       if(el.dataset.dndInit) return;
-      el.draggable = false; 
+      el.draggable = activeMode === 'drag-drop-touch'; // 네이티브 모드일때만 true
       el.tabIndex = 0; 
       el.setAttribute('role', 'button'); 
       el.style.touchAction = 'none'; 
-      if (!el.dataset.dndOrigin && el.parentElement.id) {
+      if (!el.dataset.dndOrigin && el.parentElement && el.parentElement.id) {
         el.dataset.dndOrigin = el.parentElement.id;
       }
       el.dataset.dndInit = 'true';
@@ -276,12 +344,35 @@
     if(activeMode === 'pending') selectEngine();
   }
 
+  // 🌟 모듈화된 랜덤 뱃지 풀 생성 API
+  function createRandomPool(poolSelector, itemsArray, groupName = 'default') {
+      const pool = document.querySelector(poolSelector);
+      if (!pool || !Array.isArray(itemsArray)) return;
+
+      // 무작위로 배열 섞기
+      const shuffled = [...itemsArray].sort(() => Math.random() - 0.5);
+      pool.innerHTML = ''; 
+
+      shuffled.forEach(text => {
+          const div = document.createElement('div');
+          div.className = 'clone-item'; // 복제용 클래스 자동 부여
+          div.dataset.id = text;
+          div.dataset.answer = text;
+          div.dataset.dndGroup = groupName;
+          div.innerText = text;
+          pool.appendChild(div);
+      });
+      init(); // 생성된 요소 활성화
+  }
+
   document.addEventListener('DOMContentLoaded', init);
   
+  // 외부에서 호출할 수 있도록 기능 노출
   window.humanBadyDnD = { 
     init, 
     move, 
     clear, 
+    createRandomPool, 
     get activeMode() { return activeMode; },
     customAccept: null
   };
