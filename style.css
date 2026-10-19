@@ -277,3 +277,60 @@ body {
 }
 
 .dnd-ghost { position: fixed; opacity: 0.85; pointer-events: none; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+
+/* 상단 바 컨테이너 */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    gap: 20px;
+}
+
+/* 왼쪽: 퀘스트 타이틀 (흰색 배경 + 산호색 테두리) */
+.quest-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-coral);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #FFFFFF;
+    border: 3px solid var(--color-coral-light);
+    padding: 10px 30px;
+    border-radius: 40px;
+    box-shadow: var(--shadow-soft);
+}
+
+/* 중앙: 가이드 텍스트 (연한 회색/흰색 배경 + 부드러운 그림자) */
+.guide-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+    background-color: rgba(245, 245, 245, 0.9);
+    padding: 12px 40px;
+    border-radius: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    /* 가운데 정렬을 위해 양쪽 여백을 자동으로 밀어줍니다 */
+    margin: 0 auto; 
+}
+
+/* 오른쪽: 새로고침 버튼 (산호색 배경 + 흰색 글씨) */
+.btn-refresh {
+    background-color: var(--color-coral);
+    border: none;
+    color: #FFFFFF;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-soft);
+}
+
+.btn-refresh:active {
+    transform: scale(0.95);
+    background-color: #ff7597;
+}
