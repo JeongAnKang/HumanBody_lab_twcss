@@ -32,6 +32,7 @@
             margin-bottom: 10px;
         }
 
+        /* 드래그 아이템 (터치 충돌 방지 및 여백 최소화, 줄바꿈 방지 추가) */
         .dnd-item {
             display: inline-block;
             padding: 4px 10px; 
@@ -73,11 +74,13 @@
         }
         
         .relative-img-container { position: relative; display: inline-block; max-width: 100%; }
+        /* 이미지 위 드롭존 스타일 보정 (transform 조정) */
         .img-drop-zone { position: absolute; background: #ffffff; border: 2px dashed #94a3b8; padding: 2px; display: flex; align-items: center; justify-content: center; z-index: 10; transform: translate(-50%, -50%); }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pop { 50% { transform: scale(1.05); } }
 
+        /* --- 상단 바 공통 디자인 --- */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; gap: 20px; }
         .quest-title {
             font-size: 1.4rem; font-weight: 800; color: var(--color-coral); display: flex; align-items: center; gap: 10px;
@@ -93,6 +96,7 @@
         }
         .btn-refresh:active { transform: scale(0.95); background-color: #ff7597; }
 
+        /* --- 사이드바 미션 네비게이션 상태별 스타일 --- */
         .mission-item {
             width: 100%; padding: 15px 10px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s ease;
             background-color: #ffffff; border: 2px solid #e2e8f0; color: #64748b;
@@ -175,6 +179,7 @@
                         <div class="dnd-zone dnd-single-slot w-[100px] h-[45px] bg-white border-2 border-dashed border-gray-400" data-dnd-accept="cell" id="m1-s2-z4"></div>
                     </div>
                 </div>
+
                 <button id="btn-m1-check-s2" class="btn-primary bg-yellow-400 mt-4 max-w-[300px]" onclick="checkM1Step2()">확인</button>
                 <div id="m1-step2-feedback" class="mt-4 font-bold text-red-500"></div>
             </div>
@@ -248,6 +253,7 @@
                     <div class="dnd-item cursor-grab bg-purple-400 hover:bg-purple-500 text-white" data-dnd-group="m2_organ" data-answer="배설계">배설계</div>
                 </div>
 
+                <!-- 표 영역 -->
                 <div class="w-full max-w-4xl mx-auto mb-8 overflow-hidden rounded-xl border border-blue-200 shadow-sm">
                     <table class="w-full text-center bg-white border-collapse">
                         <thead class="bg-blue-50 text-[var(--text-main)]">
@@ -311,9 +317,8 @@
 
                 <div class="relative-img-container mb-8 flex justify-center mx-auto">
                     <div class="relative inline-block w-full max-w-3xl">
-                        <img src="images/q6_m3_s1.png" alt="물질의 이동" class="rounded-xl shadow-md w-full h-auto block cursor-crosshair" onerror="this.src='https://placehold.co/800x500?text=물질이동+이미지'">
+                        <img src="images/q6_m3_s1.png" alt="물질의 이동" class="rounded-xl shadow-md w-full h-auto block" onerror="this.src='https://placehold.co/800x500?text=물질이동+이미지'">
                         
-                        <!-- 💡 M3 이미지 위 드롭존 -->
                         <div class="dnd-zone dnd-single-slot img-drop-zone w-24 h-9 border-gray-500 border-dashed border-2 rounded-lg bg-white" data-dnd-accept="m3_substance" id="m3-img-z1" style="top: 5%; left: 20%;"></div>
                         <div class="dnd-zone dnd-single-slot img-drop-zone w-24 h-9 border-gray-500 border-dashed border-2 rounded-lg bg-white" data-dnd-accept="m3_substance" id="m3-img-z2" style="top: 10%; left: 65%;"></div>
                         <div class="dnd-zone dnd-single-slot img-drop-zone w-24 h-9 border-gray-500 border-dashed border-2 rounded-lg bg-white" data-dnd-accept="m3_substance" id="m3-img-z3" style="top: 10%; left: 83%;"></div>
@@ -400,7 +405,6 @@
                     <span class="text-[1.3rem] font-bold ml-2">세포 호흡과 기관계의 통합적 작용</span>
                 </div>
                 
-                <!-- 💡 M4 텍스트 기반 드롭다운 퀴즈 -->
                 <h3 class="text-[1.3rem] font-bold text-gray-800 mb-5">온 몸의 조직세포에서 세포 호흡을 통해 에너지를 얻기까지 각 기관계의 통합적 관계</h3>
                 <div class="text-[1.15rem] leading-[2.2] font-bold text-gray-700 bg-[#F8FAFC] p-8 rounded-xl border-2 border-dashed border-gray-300 shadow-sm text-left mx-auto max-w-4xl">
                     세포호흡에 필요한 영양소는 
@@ -411,6 +415,7 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
                     </select>를 통해, 
                     산소는 
                     <select id="m4-q2" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
@@ -420,6 +425,7 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
                     </select>를 통해 몸 안으로 들어와 
                     <select id="m4-q3" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
@@ -428,17 +434,17 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
                     </select>를 거쳐 조직세포로 운반된다.<br><br>
                     
-                    조직세포가 세포호흡을 통해 에너지를 얻은 결과 발생한 노폐물 중 이산화탄소는 
+                    조직세포가 세포 속의 
                     <select id="m4-q4" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
-                        <option value="소화계">소화계</option>
-                        <option value="순환계">순환계</option>
-                        <option value="호흡계">호흡계</option>
-                        <option value="배설계">배설계</option>
-                        <option value="세포 호흡">세포 호흡</option>
-                    </select>를 거쳐 
+                        <option value="엽록체">엽록체</option>
+                        <option value="핵">핵</option>
+                        <option value="세포막">세포막</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
+                    </select>에서 
                     <select id="m4-q5" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
                         <option value="소화계">소화계</option>
@@ -446,8 +452,7 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
-                    </select>로, 
-                    요소는 
+                    </select>을(를) 통해 에너지를 얻은 결과 발생한 노폐물 중 이산화탄소는 
                     <select id="m4-q6" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
                         <option value="소화계">소화계</option>
@@ -455,6 +460,7 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
                     </select>를 거쳐 
                     <select id="m4-q7" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
@@ -463,9 +469,9 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
-                    </select>로 운반되어 몸 밖으로 나간다.<br><br>
-                    
-                    소화계, 순환계, 호흡계, 배설계가 협력하여 통합적으로 조화롭게 작용할 때 세포는 
+                        <option value="마이토콘드리아">마이토콘드리아</option>
+                    </select>로, 
+                    요소는 
                     <select id="m4-q8" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
                         <option value="">선택</option>
                         <option value="소화계">소화계</option>
@@ -473,10 +479,30 @@
                         <option value="호흡계">호흡계</option>
                         <option value="배설계">배설계</option>
                         <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
+                    </select>를 거쳐 
+                    <select id="m4-q9" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
+                        <option value="">선택</option>
+                        <option value="소화계">소화계</option>
+                        <option value="순환계">순환계</option>
+                        <option value="호흡계">호흡계</option>
+                        <option value="배설계">배설계</option>
+                        <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
+                    </select>로 운반되어 몸 밖으로 나간다.<br><br>
+                    
+                    소화계, 순환계, 호흡계, 배설계가 협력하여 통합적으로 조화롭게 작용할 때 세포는 
+                    <select id="m4-q10" class="p-1 border-2 border-blue-300 rounded text-center focus:outline-none focus:border-blue-500 font-bold text-blue-700 bg-white">
+                        <option value="">선택</option>
+                        <option value="소화계">소화계</option>
+                        <option value="순환계">순환계</option>
+                        <option value="호흡계">호흡계</option>
+                        <option value="배설계">배설계</option>
+                        <option value="세포 호흡">세포 호흡</option>
+                        <option value="마이토콘드리아">마이토콘드리아</option>
                     </select>을(를) 통해 생명활동에 필요한 에너지를 얻는다.
                 </div>
                 
-                <!-- 보상 획득 및 엔딩 영역 -->
                 <div class="text-center mt-8">
                     <button id="btn-m4-finish" class="btn-primary bg-yellow-400 max-w-[300px]" onclick="checkM4S1()">확인</button>
                     <div id="m4-feedback" class="mt-4 font-bold text-red-500"></div>
@@ -825,7 +851,6 @@
                 }
             }
 
-            // 💡 이미지 드롭존 체크
             checkGroup(['m3-img-z1'], ['음식물']);
             checkGroup(['m3-img-z2'], ['산소']);
             checkGroup(['m3-img-z3'], ['이산화탄소']);
@@ -835,12 +860,10 @@
             checkGroup(['m3-img-z7'], ['대변']);
             checkGroup(['m3-img-z11'], ['오줌']);
             
-            // 💡 2개짜리 묶음 체크 (순서 무관)
             checkGroup(['m3-img-z8_1', 'm3-img-z8_2'], ['이산화탄소', '노폐물']);
             checkGroup(['m3-img-z9_1', 'm3-img-z9_2'], ['요소', '물']);
             checkGroup(['m3-img-z10_1', 'm3-img-z10_2'], ['산소', '영양소']);
 
-            // 💡 표 드롭존 체크
             checkGroup(['m3-tbl-z1'], ['영양소']);
             checkGroup(['m3-tbl-z2'], ['산소']);
             checkGroup(['m3-tbl-z3'], ['이산화탄소']);
@@ -884,17 +907,20 @@
             const q6 = document.getElementById('m4-q6').value;
             const q7 = document.getElementById('m4-q7').value;
             const q8 = document.getElementById('m4-q8').value;
+            const q9 = document.getElementById('m4-q9').value;
+            const q10 = document.getElementById('m4-q10').value;
 
-            if (!q1 || !q2 || !q3 || !q4 || !q5 || !q6 || !q7 || !q8) {
+            if (!q1 || !q2 || !q3 || !q4 || !q5 || !q6 || !q7 || !q8 || !q9 || !q10) {
                 document.getElementById('m4-feedback').innerHTML = "모든 빈칸을 선택해 주세요!";
                 document.getElementById('m4-feedback').className = "mt-4 font-bold text-red-500";
                 return;
             }
 
             if (q1 === '소화계' && q2 === '호흡계' && q3 === '순환계' && 
-                q4 === '순환계' && q5 === '호흡계' && 
-                q6 === '순환계' && q7 === '배설계' && 
-                (q8 === '세포호흡' || q8 === '세포 호흡')) {
+                q4 === '마이토콘드리아' && (q5 === '세포 호흡' || q5 === '세포호흡') &&
+                q6 === '순환계' && q7 === '호흡계' && 
+                q8 === '순환계' && q9 === '배설계' && 
+                (q10 === '세포 호흡' || q10 === '세포호흡')) {
                 
                 document.getElementById('m4-feedback').innerHTML = "";
                 document.getElementById('btn-m4-finish').style.display = 'none';
@@ -914,7 +940,7 @@
                 }
                 updateNavUI(4);
             } else {
-                document.getElementById('m4-feedback').innerHTML = "오답입니다. 문맥에 맞게 기관계를 올바르게 선택했는지 확인해보세요.";
+                document.getElementById('m4-feedback').innerHTML = "오답입니다. 문맥에 맞게 올바르게 선택했는지 확인해보세요.";
                 document.getElementById('m4-feedback').className = "mt-4 font-bold text-red-500";
             }
         }
