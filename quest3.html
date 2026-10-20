@@ -804,7 +804,7 @@
                         </svg>
                     </div>
 
-                    <div class="w-full xl:w-1/2 flex justify-center bg-gray-50 rounded-xl p-4 border border-gray-200" style="max-height: 450px;max-width:500px;">
+                    <div class="w-full xl:w-1/2 flex justify-center bg-gray-50 rounded-xl p-4 border border-gray-200" style="max-height: 450px;max-width: 500px;">
                         <img src="images/q3_m4_s1_circuration.jpg" alt="혈액 순환 모식도 참조" class="w-full h-full object-contain">
                     </div>
                 </div>
@@ -1009,11 +1009,17 @@
             const ans2 = document.getElementById('m2-q1-ans2').value.trim();
             const feedback = document.getElementById('m2-q1-feedback');
             const hiddenSteps = document.getElementById('m2-hidden-steps');
+            const iframe = document.getElementById('q3_m2-animation-iframe'); // 추가
 
             if ((ans1 === '2' || ans1 === '이') && (ans2 === '2' || ans2 === '이')) {
                 feedback.innerHTML = '🎉 훌륭합니다! 정답입니다! 아래로 내려가 Step 2를 진행하세요.';
                 feedback.className = 'mt-4 text-center text-green-600 block bg-green-100 p-3 rounded-lg border border-green-300 w-full font-bold';
                 
+                // 외부 프로그램 강제 종료 및 대체 텍스트 삽입 (추가)
+                if (iframe) {
+                    iframe.parentElement.innerHTML = '<div class="flex items-center justify-center w-full h-full bg-gray-50 text-gray-500 font-bold text-lg">심장 모습 관찰이 완료되었습니다.</div>';
+                }
+
                 hiddenSteps.classList.remove('hidden');
                 hiddenSteps.classList.add('flex');
                 setTimeout(() => {
@@ -1146,9 +1152,9 @@
             
             let descText = ""; let targetId = "";
             if(chamberName === "우심방") { descText = "<span class='text-blue-600 font-black text-xl'>우심방 (Right Atrium)</span><br><br> 온몸을 돌고 온 피(정맥혈)가 <strong> 대정맥</strong>을 통해 심장으로 들어오는 첫 번째 방입니다.<br><br><strong>대정맥</strong>과 연결되어 있습니다."; targetId = "svg-ra"; }
-            else if(chamberName === "좌심방") { descText = "<span class='text-red-600 font-black text-xl'>좌심방 (Left Atrium)</span><br><br>폐(허파)에서 신선한 산소를 듬뿍 받고 온 피(동맥혈)가  <strong> 폐정맥</strong>을 통해 심장으로 들어오는 방입니다.<br><br><strong>폐정맥</strong>과 연결되어 있습니다."; targetId = "svg-la"; }
+            else if(chamberName === "좌심방") { descText = "<span class='text-red-600 font-black text-xl'>좌심방 (Left Atrium)</span><br><br>폐(허파)에서 신선한 산소를 듬뿍 받고 온 피(동맥혈)가  <strong> 폐정맥</strong>을 통해 들어오는 방입니다.<br><br><strong>폐정맥</strong>과 연결되어 있습니다."; targetId = "svg-la"; }
             else if(chamberName === "우심실") { descText = "<span class='text-blue-600 font-black text-xl'>우심실 (Right Ventricle)</span><br><br>우심방에서 내려온 피를 <strog> 폐동맥</strong>을 통해 폐로 뿜어내는 역할을 합니다.<br><br><strong>폐동맥</strong>과 연결되어 있습니다."; targetId = "svg-rv"; }
-            else if(chamberName === "좌심실") { descText = "<span class='text-red-600 font-black text-xl'>좌심실 (Left Ventricle)</span><br><br>좌심방에서 내려온 산소가 풍부한 피를 <strong> 대동맥 </strong>을 통해 온몸으로 힘차게 뿜어내는 곳입니다! 가장 두꺼운 근육을 가지고 있습니다.<br><br><strong>대동맥</strong>과 연결되어 있습니다."; targetId = "svg-lv"; }
+            else if(chamberName === "좌심실") { descText = "<span class='text-red-600 font-black text-xl'>좌심실 (Left Ventricle)</span><br><br>산소가 풍부한 피를 <strong> 대동맥 </strong>을 통해 온몸으로 힘차게 뿜어내는 곳입니다! 가장 두꺼운 근육을 가지고 있습니다.<br><br><strong>대동맥</strong>과 연결되어 있습니다."; targetId = "svg-lv"; }
             
             descArea.innerHTML = descText;
             document.getElementById(targetId).classList.add('active-room');
