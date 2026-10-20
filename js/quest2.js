@@ -858,7 +858,7 @@ function verifyM4S3() {
 
 // ------------------ Step 4 ------------------
 function initM4S4Badges() {
-    replenishM4Pool('m4-s4-pool', ['간', '소장', '심장', '혈액', '간을 거쳐', '간을 거치지 않고']);
+    replenishM4Pool('m4-s4-pool', ['간', '작은창자', '심장', '혈액', '간을 거쳐', '간을 거치지 않고']);
 }
 function verifyM4S4() {
     if(verifyStep('m4-s4-slot', 'm4-s4-pool', null, 'btn-check-m4-s4', 8)) {
