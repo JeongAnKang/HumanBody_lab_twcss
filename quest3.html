@@ -814,18 +814,20 @@
                 </div>
             </div>
 
-            <!-- ★ 새로 추가된 M4 Step 2: 혈액 순환 시뮬레이션 관찰 -->
+            <!-- ★ 수정된 M4 Step 2: 혈액 순환 시뮬레이션 임베드 (iframe) -->
             <div id="m4-hidden-step2" class="w-full hidden flex-col gap-8 transition-all duration-700 opacity-0 mt-8 mb-8">
                 <div id="m4-step2-content" class="bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center border-2 border-gray-100 w-full transition-colors duration-300">
-                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-5 w-full text-left">🌐 Step 2. 혈액 순환 시뮬레이션</h3>
-                    <p class="text-gray-600 font-semibold mb-4 text-center">아래 링크를 클릭하여 혈액 순환 시뮬레이션을 관찰하고 돌아와 '확인' 버튼을 누르세요.</p>
+                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-3 w-full text-left">🌐 Step 2. 혈액 순환 시뮬레이션</h3>
+                    <p class="text-gray-600 font-semibold mb-4 text-center">아래 시뮬레이션을 직접 조작하며 혈액의 순환을 관찰한 후 '확인' 버튼을 누르세요.</p>
                     
-                    <a href="https://sciencej1.cafe24.com/html5/blood/" target="_blank" class="bg-blue-50 border border-blue-200 text-blue-700 font-bold py-4 px-6 rounded-xl hover:bg-blue-100 transition-colors mb-4 flex flex-col items-center gap-2 w-full max-w-lg shadow-sm">
-                        <span class="text-[1.1rem]">🔗 혈액 순환 시뮬레이션 열기 (새창)</span>
-                        <span class="text-[0.85rem] text-gray-500 font-normal">출처: 김정식 허명성 과학사랑</span>
-                    </a>
+                    <div class="w-full max-w-4xl mx-auto mb-2">
+                        <div class="relative w-full overflow-hidden rounded-xl shadow-md bg-gray-50 border border-gray-200" style="aspect-ratio: 4/3; max-height: 600px;">
+                            <iframe src="https://sciencej1.cafe24.com/html5/blood/" class="absolute top-0 left-0 w-full h-full border-0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <p class="text-[0.85rem] text-gray-500 font-normal mb-6 text-center">출처: 김정식 허명성 과학사랑</p>
 
-                    <button onclick="completeM4Step2()" class="bg-[#5BC0BE] hover:bg-[#4a9f9d] text-white px-10 py-3 rounded-full font-black shadow-md transition-transform transform hover:scale-105 mt-4">확인</button>
+                    <button onclick="completeM4Step2()" class="bg-[#5BC0BE] hover:bg-[#4a9f9d] text-white px-10 py-3 rounded-full font-black shadow-md transition-transform transform hover:scale-105">확인</button>
                 </div>
             </div>
 
@@ -1465,7 +1467,7 @@
             const step2Content = document.getElementById('m4-step2-content');
             const step3 = document.getElementById('m4-hidden-step3');
 
-            // 링크 내용 제거 및 완료 메시지로 변경
+            // 임베드된 iframe 내용 제거 및 완료 메시지로 변경
             step2Content.innerHTML = '<h3 class="text-[1.3rem] font-bold text-gray-500 w-full text-center">✅ 시뮬레이션 관찰 완료</h3>';
             step2Content.classList.replace('border-gray-100', 'border-green-200');
             step2Content.classList.replace('bg-white', 'bg-green-50');
