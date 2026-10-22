@@ -814,12 +814,28 @@
                 </div>
             </div>
 
-            <div id="m4-hidden-step2" class="w-full hidden flex-col gap-8 transition-all duration-700 opacity-0">
+            <!-- ★ 새로 추가된 M4 Step 2: 혈액 순환 시뮬레이션 관찰 -->
+            <div id="m4-hidden-step2" class="w-full hidden flex-col gap-8 transition-all duration-700 opacity-0 mt-8 mb-8">
+                <div id="m4-step2-content" class="bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center border-2 border-gray-100 w-full transition-colors duration-300">
+                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-5 w-full text-left">🌐 Step 2. 혈액 순환 시뮬레이션</h3>
+                    <p class="text-gray-600 font-semibold mb-4 text-center">아래 링크를 클릭하여 혈액 순환 시뮬레이션을 관찰하고 돌아와 '확인' 버튼을 누르세요.</p>
+                    
+                    <a href="https://sciencej1.cafe24.com/html5/blood/" target="_blank" class="bg-blue-50 border border-blue-200 text-blue-700 font-bold py-4 px-6 rounded-xl hover:bg-blue-100 transition-colors mb-4 flex flex-col items-center gap-2 w-full max-w-lg shadow-sm">
+                        <span class="text-[1.1rem]">🔗 혈액 순환 시뮬레이션 열기 (새창)</span>
+                        <span class="text-[0.85rem] text-gray-500 font-normal">출처: 김정식 허명성 과학사랑</span>
+                    </a>
+
+                    <button onclick="completeM4Step2()" class="bg-[#5BC0BE] hover:bg-[#4a9f9d] text-white px-10 py-3 rounded-full font-black shadow-md transition-transform transform hover:scale-105 mt-4">확인</button>
+                </div>
+            </div>
+
+            <!-- 기존 M4 Step 2가 Step 3으로 변경됨 -->
+            <div id="m4-hidden-step3" class="w-full hidden flex-col gap-8 transition-all duration-700 opacity-0">
                 <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center border-2 border-gray-100 w-full">
-                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-5 w-full text-left">🔄 Step 2. 혈액 순환 경로 완성하기</h3>
+                    <h3 class="text-[1.3rem] font-bold text-gray-800 mb-5 w-full text-left">🔄 Step 3. 혈액 순환 경로 완성하기</h3>
                     <p class="text-gray-600 font-semibold mb-6 text-center">알맞은 단어 카드를 드래그하여 두 가지 순환 경로를 완성해 보세요.</p>
                     
-                    <div class="badge-pool dnd-zone dnd-pool flex flex-wrap justify-center gap-3 p-4 bg-gray-50 rounded-xl border-2 border-gray-200 mb-8 w-full max-w-3xl" id="m4-s2-pool" data-dnd-accept="*">
+                    <div class="badge-pool dnd-zone dnd-pool flex flex-wrap justify-center gap-3 p-4 bg-gray-50 rounded-xl border-2 border-gray-200 mb-8 w-full max-w-3xl" id="m4-s3-pool" data-dnd-accept="*">
                         <div class="badge dnd-item cursor-grab bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-bold shadow-sm" data-dnd-group="aorta">대동맥</div>
                         <div class="badge dnd-item cursor-grab bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow-sm" data-dnd-group="vena_cava">대정맥</div>
                         <div class="badge dnd-item cursor-grab bg-blue-400 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-bold shadow-sm" data-dnd-group="pul_artery">폐동맥</div>
@@ -833,11 +849,11 @@
                         <div class="flex flex-wrap items-center justify-center gap-2 text-[1.1rem] font-bold text-gray-700">
                             <span class="bg-red-100 text-red-800 px-4 py-2 rounded-lg border border-red-300">좌심실</span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="aorta"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="aorta"></span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-36 h-10" data-dnd-accept="body_cap"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-36 h-10" data-dnd-accept="body_cap"></span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="vena_cava"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="vena_cava"></span>
                             <span>➔</span>
                             <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg border border-blue-300">우심방</span>
                         </div>
@@ -848,20 +864,20 @@
                         <div class="flex flex-wrap items-center justify-center gap-2 text-[1.1rem] font-bold text-gray-700">
                             <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg border border-blue-300">우심실</span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="pul_artery"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="pul_artery"></span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-36 h-10" data-dnd-accept="lung_cap"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-36 h-10" data-dnd-accept="lung_cap"></span>
                             <span>➔</span>
-                            <span class="drop-zone m4-s2-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="pul_vein"></span>
+                            <span class="drop-zone m4-s3-dz inline-drop-zone dnd-zone dnd-single-slot w-24 h-10" data-dnd-accept="pul_vein"></span>
                             <span>➔</span>
                             <span class="bg-red-100 text-red-800 px-4 py-2 rounded-lg border border-red-300">좌심방</span>
                         </div>
                     </div>
 
                     <div class="text-center mt-4">
-                        <button onclick="checkM4Step2Quiz()" class="bg-[#5BC0BE] hover:bg-[#4a9f9d] text-white px-10 py-3 rounded-full font-black shadow-md transition-transform transform hover:scale-105">경로 확인</button>
+                        <button onclick="checkM4Step3Quiz()" class="bg-[#5BC0BE] hover:bg-[#4a9f9d] text-white px-10 py-3 rounded-full font-black shadow-md transition-transform transform hover:scale-105">경로 확인</button>
                     </div>
-                    <div id="m4-q2-feedback" class="mt-4 text-center hidden w-full font-bold"></div>
+                    <div id="m4-q3-feedback" class="mt-4 text-center hidden w-full font-bold"></div>
 
                     <!-- ★ 퀘스트 최종 완료 영역 -->
                     <div class="text-center mt-8 w-full hidden flex-col items-center gap-6" id="m4-final-wrapper">
@@ -1351,7 +1367,7 @@
         // Mission 4 Logic (혈액 순환)
         // ==========================================
         function shuffleM4Badges() {
-            const pool = document.getElementById('m4-s2-pool');
+            const pool = document.getElementById('m4-s3-pool'); // Step 3로 변경됨
             if (!pool) return;
             for (let i = pool.children.length; i >= 0; i--) {
                 pool.appendChild(pool.children[Math.random() * i | 0]);
@@ -1443,17 +1459,37 @@
                 }, 100);
             }
         }
+        
+        // ★ 새로 추가된 M4 Step 2 확인 버튼 로직
+        function completeM4Step2() {
+            const step2Content = document.getElementById('m4-step2-content');
+            const step3 = document.getElementById('m4-hidden-step3');
 
-        // ★ M4 Step 2: 드래그 앤 드롭 정답 확인 및 퀘스트 완료 처리
-        function checkM4Step2Quiz() {
-            const zones = document.querySelectorAll('.m4-s2-dz');
+            // 링크 내용 제거 및 완료 메시지로 변경
+            step2Content.innerHTML = '<h3 class="text-[1.3rem] font-bold text-gray-500 w-full text-center">✅ 시뮬레이션 관찰 완료</h3>';
+            step2Content.classList.replace('border-gray-100', 'border-green-200');
+            step2Content.classList.replace('bg-white', 'bg-green-50');
+
+            // 기존 Step 2 였던 Step 3 표시
+            step3.classList.remove('hidden');
+            step3.classList.add('flex');
+            setTimeout(() => { 
+                step3.classList.remove('opacity-0'); 
+                step3.classList.add('opacity-100'); 
+                window.scrollBy({ top: 500, behavior: 'smooth' }); 
+            }, 100);
+        }
+
+        // 기존 M4 Step 2를 Step 3으로 변경
+        function checkM4Step3Quiz() {
+            const zones = document.querySelectorAll('.m4-s3-dz');
             let isAllCorrect = true;
             zones.forEach(dz => {
                 const badge = dz.firstElementChild;
                 if (!badge || badge.dataset.dndGroup !== dz.dataset.dndAccept) isAllCorrect = false;
             });
             
-            const feedback = document.getElementById('m4-q2-feedback');
+            const feedback = document.getElementById('m4-q3-feedback');
             const finalWrapper = document.getElementById('m4-final-wrapper');
 
             if (isAllCorrect && zones.length === 6) {
