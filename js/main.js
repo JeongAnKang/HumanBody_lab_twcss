@@ -7,6 +7,9 @@ const TEACHER_ACCESS = Object.freeze({
     explicitLocks: []        
 });
 
+// 💡 교사 커스텀 설정: 특정 퀘스트 이하 강제 오픈 (메인 맵 & 미션 1)
+const OPEN_QUEST_LIMIT = 3; // 열어둘 퀘스트의 최대 번호를 적어주세요. (예: 6이면 1~6번 퀘스트 모두 오픈)
+
 const QUESTS = Object.freeze({
     1: { title: '영양소', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
     2: { title: '소화', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
@@ -78,6 +81,12 @@ function canAccessMission(questId, missionId) {
     if (questId > TEACHER_ACCESS.lockedQuest) {
         return { access: false, reason: 'teacher_locked_quest' };
     }
+    
+    // 👇 [수정됨] 지정된 퀘스트 번호 이하이면서, 1번 미션일 경우 무조건 접근 허용
+    if (questId <= OPEN_QUEST_LIMIT && missionId === 1) {
+        return { access: true, reason: 'teacher_override' };
+    }
+    
     if (isMissionCompleted(questId, missionId)) {
         return { access: true, reason: 'completed' };
     }
@@ -97,6 +106,18 @@ function canAccessMission(questId, missionId) {
     return { access: false, reason: 'locked' };
 }
 window.canAccessMission = canAccessMission;
+
+// 💡 메인 맵용 퀘스트 진입 권한 검사 함수 추가
+function canAccessQuest(questId) {
+    questId = parseInt(questId);
+    // 지정된 퀘스트 번호 이하라면 무조건 접근 허용
+    if (questId <= OPEN_QUEST_LIMIT) {
+        return { access: true, reason: 'teacher_override' };
+    }
+    // 그 외는 1번 미션의 접근 권한 상태를 따름
+    return canAccessMission(questId, 1);
+}
+window.canAccessQuest = canAccessQuest;
 
 window.getLastAvailableMission = function(questId) {
     if (!QUESTS[questId]) return 1;
@@ -147,7 +168,8 @@ function updateQuestNavigation() {
         if (isQuestFullyCompleted(questId)) {
             bubble.classList.add('completed'); icon = '✅';
         } else {
-            const accessInfo = canAccessMission(questId, 1);
+            // 👇 [수정됨] 새로 정의한 canAccessQuest를 사용하여 메인 맵 권한 검사
+            const accessInfo = canAccessQuest(questId);
             if (accessInfo.access) {
                 bubble.classList.add('active'); icon = '🔓'; 
             } else {
@@ -233,8 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (match) {
         const questId = parseInt(match[1], 10);
         
-        // 2. 단원의 첫 번째 미션 접근 권한 검사
-        const accessCheck = canAccessMission(questId, 1);
+        // 2. 단원의 첫 번째 미션 접근 권한 검사 (수정된 canAccessQuest 활용)
+        const accessCheck = canAccessQuest(questId);
         
         if (!accessCheck.access) {
             alert("🔒 아직 접근할 수 없는 단원입니다. 인체 탐험 지도로 이동합니다.");
