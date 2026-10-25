@@ -2,7 +2,7 @@
 // 1. 교사 설정 및 퀘스트 데이터
 // ==========================================
 const TEACHER_ACCESS = Object.freeze({
-    unlockedQuest: 1,        
+    unlockedQuest: 4,        
     lockedQuest: 4,          
     explicitLocks: []        
 });
