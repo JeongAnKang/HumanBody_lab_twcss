@@ -3,12 +3,12 @@
 // ==========================================
 const TEACHER_ACCESS = Object.freeze({
     unlockedQuest: 1,        
-    lockedQuest: 3,          
+    lockedQuest: 4,          
     explicitLocks: []        
 });
 
 // 💡 교사 커스텀 설정: 특정 퀘스트 이하 강제 오픈 (메인 맵 & 미션 1)
-const OPEN_QUEST_LIMIT = 3; // 열어둘 퀘스트의 최대 번호를 적어주세요. (예: 6이면 1~6번 퀘스트 모두 오픈)
+const OPEN_QUEST_LIMIT = 4; // 열어둘 퀘스트의 최대 번호를 적어주세요. (예: 6이면 1~6번 퀘스트 모두 오픈)
 
 const QUESTS = Object.freeze({
     1: { title: '영양소', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
