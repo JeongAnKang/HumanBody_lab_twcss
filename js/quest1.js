@@ -263,6 +263,8 @@ function verifyQ2() {
 }
 
 function launchConfettiEffect() {
+    // 외부 축포 라이브러리를 불러오지 못한 경우(학교망 차단 등) 축포만 건너뛰고 진행은 계속
+    if (typeof confetti !== 'function') return;
     const duration = 1000; 
     const end = Date.now() + duration;
     (function frame() {

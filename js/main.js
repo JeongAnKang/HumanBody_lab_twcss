@@ -210,20 +210,7 @@ window.completeMissionAction = function(questId, missionId) {
         // 공통 축포 애니메이션
         window.launchConfettiEffect();
 
-        // 퀘스트를 통째로 완료했을 경우 알림
-        if (isQuestFullyCompleted(questId)) {
-            const nextQuestAccess = canAccessMission(questId + 1, 1);
-            
-            if (!nextQuestAccess.access) {
-                if (nextQuestAccess.reason === 'teacher_locked_quest') {
-                    alert(`🎉 퀘스트 완료! 다음 단원은 아직 선생님이 잠가두셨습니다.`);
-                } else if (nextQuestAccess.reason === 'not_created') {
-                    alert(`🏆 모든 퀘스트를 완벽하게 완료했습니다! 대단해요!`);
-                }
-            } else {
-                alert(`🎉 퀘스트 완료! 새로운 단원의 문이 열렸습니다.`);
-            }
-        }
+        // 💡 퀘스트 완료 안내창은 표시하지 않음 (파이널 이미지에서 인체탐험지도로 돌아가기 안내)
         return true; 
     }
     return false;
