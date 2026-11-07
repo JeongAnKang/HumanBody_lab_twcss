@@ -2,10 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quest 5: 배설</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <!-- 폴더 경로 지정 -->
     <script src="js/dragdrop.js" defer></script>
@@ -199,7 +200,7 @@
             
             <div id="m1-step1" class="step-container active">
                 <div class="step-badge">Step 1</div>
-                <img src="images/q5_m1_intro.png" alt="도입 이미지" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
+                <img src="images/q5_m1_intro.webp" alt="도입 이미지" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
                 <h3 class="text-xl font-bold mb-4 text-center">Q. 오줌은 대부분을 차지하는 물 외에 꼭 제거하여야할 어떤 물질을 포함하고 있을까? (1가지 쓰기)</h3>
                 <div class="flex justify-center items-center gap-2 mb-2">
                     <input type="text" id="m1-s1-input" class="border-2 border-slate-300 rounded-lg px-4 py-2 text-lg focus:border-mint focus:outline-none text-center" placeholder="정답 입력">
@@ -211,7 +212,7 @@
             <div id="m1-step2" class="step-container mt-8" style="display: none;">
                 <div class="step-badge">Step 2</div>
                 <h3 class="text-xl font-bold mb-4 text-center">노폐물의 생성</h3>
-                <img src="images/q5_m1_s2_waste.png" alt="노폐물 생성" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
+                <img src="images/q5_m1_s2_waste.webp" alt="노폐물 생성" class="h-[500px] w-auto object-contain mx-auto mb-4 rounded-lg border">
                 <p class="mb-4 bg-slate-100 p-3 rounded-lg font-bold">세포에서 산소를 이용하여 영양소를 분해하여 에너지를 내고 나면 이산화탄소와 물이 생김.</p>
                 
                 <div class="interactive-box flex flex-col gap-4">
@@ -292,7 +293,7 @@
                 <p class="text-center font-bold mb-4">필요한 명칭 뱃지를 끌어다 빈칸을 채워보세요! (무한 생성)</p>
                 
                 <div class="relative-img-container flex justify-center mx-auto w-max mb-6">
-                    <img id="m2-s1-img" src="images/q5_m2_s1_urinarysystem.png" alt="배설계 구조" class="h-[600px] w-auto object-contain rounded-lg border shadow-sm">
+                    <img id="m2-s1-img" src="images/q5_m2_s1_urinarysystem.webp" alt="배설계 구조" class="h-[600px] w-auto object-contain rounded-lg border shadow-sm">
                     
                     <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="콩팥" style="top: 63%; left: 9%;"></div>
                     <div class="img-drop-zone clone-zone w-[90px] h-[36px] text-sm" data-answer="오줌관" style="top: 71%; left: 9%;"></div>
@@ -389,7 +390,7 @@
                 <p class="text-center font-bold mb-6 text-slate-600">그림을 참고하여 각 부분에 대한 설명을 바르게 연결해 보세요!</p>
                 
                 <div class="flex justify-center w-full mb-6">
-                    <img src="images/q5_m3_s1_nephron.png" alt="콩팥단위 구조" class="h-[540px] w-auto object-contain rounded-xl border-2 border-slate-200 shadow-sm">
+                    <img src="images/q5_m3_s1_nephron.webp" alt="콩팥단위 구조" class="h-[540px] w-auto object-contain rounded-xl border-2 border-slate-200 shadow-sm">
                 </div>
 
                 <div class="bg-slate-100 p-4 rounded-xl flex gap-3 flex-wrap justify-center mb-6 border-2 border-slate-200 shadow-inner">
@@ -434,7 +435,7 @@
                     <p class="font-bold text-slate-600 mb-4 text-center">버튼을 눌러 각 영역의 성분 차이를 관찰해 보세요! (여러 개 동시 관찰 가능)</p>
                     
                     <div class="relative inline-block mx-auto h-[400px]">
-                        <img id="m3-s2-base-img" src="images/q5_m3_s3_urin_01.png" alt="오줌 생성 작용" class="h-full w-auto object-contain rounded-lg border shadow-sm">
+                        <img id="m3-s2-base-img" src="images/q5_m3_s3_urin_01.webp" alt="오줌 생성 작용" class="h-full w-auto object-contain rounded-lg border shadow-sm">
                         <img id="m3-s2-filter-img" src="images/q5_m3_s3_urin_circle_2.png" alt="여과액" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 opacity-0">
                         <img id="m3-s2-pelvis-img" src="images/q5_m3_s3_urin_circle_3.png" alt="콩팥깔때기액" class="absolute top-0 left-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300 opacity-0">
                     </div>
@@ -660,7 +661,7 @@
                 </div>
                 
                 <div id="m4-final-btn" class="text-center mt-10 hidden animate-[fadeIn_0.5s_ease-in-out]">
-                    <img src="images/q5_m4_final.png" alt="최종 완료 축하 이미지" class="h-[540px] w-auto object-contain mx-auto mb-6 rounded-xl border-4 border-green-200 shadow-lg">
+                    <img src="images/q5_m4_final.webp" alt="최종 완료 축하 이미지" class="h-[540px] w-auto object-contain mx-auto mb-6 rounded-xl border-4 border-green-200 shadow-lg">
                     <h3 class="text-2xl font-black text-green-500 mb-6">🎉 Mission 4 최종 완료 축하합니다! 보상을 획득하셨습니다! 🎉</h3>
                     <button class="btn-primary max-w-[300px] bg-[var(--color-mint)] text-white text-[1.3rem] px-10 py-4 rounded-xl shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-2 border-white transition-transform duration-200 hover:scale-105" onclick="location.href='index.html'">
                         인체탐험지도로 돌아가기 🏠
@@ -699,41 +700,8 @@
         // 1. 미션 전환 및 진행 상태 업데이트 (공통 엔진 사용)
         // ==========================================
         function updateNavUI(activeMissionNum) {
-            for(let i = 1; i <= 4; i++) {
-                const nav = document.getElementById('nav-m' + i);
-                if(!nav) continue;
-                
-                let isCompleted = false;
-                let isAccessible = false;
-                
-                if (typeof window.isMissionCompleted === 'function') {
-                    isCompleted = window.isMissionCompleted(QUEST_ID, i);
-                }
-                
-                if (typeof window.canAccessMission === 'function') {
-                    isAccessible = window.canAccessMission(QUEST_ID, i).access;
-                }
-                
-                const isLocked = !isAccessible;
-                const isActive = (i === activeMissionNum);
-                
-                nav.className = 'mission-item';
-                let icon = '';
-                
-                if (isActive) {
-                    nav.classList.add('active');
-                    icon = '💖';
-                } else if (isCompleted) {
-                    nav.classList.add('completed');
-                    icon = '✅';
-                } else if (isLocked) {
-                    nav.classList.add('locked');
-                    icon = '🔒';
-                } else {
-                    icon = '🔓';
-                }
-                nav.querySelector('.mission-icon').innerText = icon;
-            }
+            // 사이드바는 main.js의 공통 함수(renderMissionNav)로 그립니다. 미션 이름은 아래 사이드바 HTML에 적힌 것을 사용합니다.
+            window.renderMissionNav(QUEST_ID, activeMissionNum);
         }
 
         function switchMission(num) {

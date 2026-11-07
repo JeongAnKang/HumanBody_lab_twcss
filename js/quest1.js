@@ -65,43 +65,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 💡 다시 들어오면 마지막으로 진행할 수 있는 미션에서 이어서 시작 (퀘스트 3~6과 동일)
+    // 다른 초기화 코드가 모두 끝난 뒤 이동하도록 setTimeout 사용
+    setTimeout(() => {
+        const resumeMission = (typeof getLastAvailableMission === 'function') ? getLastAvailableMission(1) : 1;
+        if (resumeMission > 1 && typeof window['transitionToMission' + resumeMission] === 'function') {
+            window['transitionToMission' + resumeMission]();
+        }
+    }, 0);
 });
 
 function updateSidebarUI(activeNavId) {
+    // 사이드바는 main.js의 공통 함수(renderMissionNav)로 그립니다.
     const missionTitles = { 1: "영양소<br>종류", 2: "기능과<br>특징", 3: "영양소<br>검출", 4: "내용<br>정리" };
-
-    [1, 2, 3, 4].forEach(num => {
-        const id = 'nav-m' + num;
-        const el = document.getElementById(id);
-        if (!el) return;
-        
-        el.className = 'mission-item'; 
-        let icon = '';
-        
-        const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(1, num);
-        
-        // 💡 수정된 부분: 외부 스크립트 한계를 피해, 이전 미션을 완료했으면 즉시 접근(자물쇠 해제) 처리
-        let isAccessible = false;
-        if (num === 1 || isCompleted) {
-            isAccessible = true;
-        } else if (typeof isMissionCompleted === 'function' && isMissionCompleted(1, num - 1)) {
-            isAccessible = true; // 이전 미션(예: 미션3)을 완료하면 현재 미션(미션4) 열림
-        } else if (typeof canAccessMission === 'function') {
-            const res = canAccessMission(1, num);
-            if (res) isAccessible = res.access;
-        }
-        
-        if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
-        else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
-        else if (!isAccessible) { el.classList.add('locked'); icon = '🔒'; } 
-        else { el.classList.add('available'); icon = '🔓'; }
-        
-        el.innerHTML = `
-            <div class="mission-icon text-xl mb-2">${icon}</div>
-            <div class="text-sm font-bold whitespace-nowrap">Mission ${num}</div>
-            <div class="text-sm leading-snug mt-1">${missionTitles[num]}</div>
-        `;
-    });
+    renderMissionNav(1, parseInt(String(activeNavId).replace('nav-m', ''), 10), missionTitles);
 }
 
 // ==========================================
@@ -262,17 +240,7 @@ function verifyQ2() {
     }
 }
 
-function launchConfettiEffect() {
-    // 외부 축포 라이브러리를 불러오지 못한 경우(학교망 차단 등) 축포만 건너뛰고 진행은 계속
-    if (typeof confetti !== 'function') return;
-    const duration = 1000; 
-    const end = Date.now() + duration;
-    (function frame() {
-        confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-        confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-        if (Date.now() < end) requestAnimationFrame(frame);
-    }());
-}
+// 축포 효과는 main.js의 공통 함수(window.launchConfettiEffect)를 사용합니다.
 
 // ==========================================
 // Mission 2: 카드 분류 및 뱃지 퀴즈
@@ -364,24 +332,24 @@ const NUTRIENTS = ['탄수화물', '단백질', '지방', '바이타민', '무�
 const CARD_DATA = [
     { id: 1, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '주로 에너지원으로 이용된다.' },
     { id: 2, nutrient: '탄수화물', type: '특징', imgSrc: null, text: '포도당, 엿당, 설탕, 녹말 등이 있다.' },
-    { id: 3, nutrient: '탄수화물', type: '그림', imgSrc: 'images/q1_m2_01.png', text: '밥, 국수, 빵, 감자, 고구마 등에 많이 들어 있다.' },
+    { id: 3, nutrient: '탄수화물', type: '그림', imgSrc: 'images/q1_m2_01.webp', text: '밥, 국수, 빵, 감자, 고구마 등에 많이 들어 있다.' },
     { id: 4, nutrient: '단백질', type: '특징', imgSrc: null, text: '주로 몸을 구성하고 생명활동을 조절한다.' },
     { id: 5, nutrient: '단백질', type: '특징', imgSrc: null, text: '심한 굶주림, 고강도 운동시 에너지원으로 이용된다.' },
-    { id: 6, nutrient: '단백질', type: '그림', imgSrc: 'images/q1_m2_02.png', text: '살코기, 생선, 달걀, 두부, 콩 등에 많이 들어 있다.' },
+    { id: 6, nutrient: '단백질', type: '그림', imgSrc: 'images/q1_m2_02.webp', text: '살코기, 생선, 달걀, 두부, 콩 등에 많이 들어 있다.' },
     { id: 7, nutrient: '지방', type: '특징', imgSrc: null, text: '몸을 구성하는 성분이고, g당 에너지 저장량이 많다.' },
     { id: 8, nutrient: '지방', type: '특징', imgSrc: null, text: '단열층을 만들어 체온을 유지하는 데 중요한 역할을 한다.' },
-    { id: 9, nutrient: '지방', type: '그림', imgSrc: 'images/q1_m2_03.png', text: '땅콩, 깨, 버터, 참기름 등에 많이 들어 있다.' },
+    { id: 9, nutrient: '지방', type: '그림', imgSrc: 'images/q1_m2_03.webp', text: '땅콩, 깨, 버터, 참기름 등에 많이 들어 있다.' },
     { id: 10, nutrient: '바이타민', type: '특징', imgSrc: null, text: '몸의 구성성분은 아니나, 적은 양으로 생명 활동을 조절한다.' },
     { id: 11, nutrient: '바이타민', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
-    { id: 12, nutrient: '바이타민', type: '그림', imgSrc: 'images/q1_m2_04.png', text: '과일, 채소 등에 많이 들어 있다.' },
+    { id: 12, nutrient: '바이타민', type: '그림', imgSrc: 'images/q1_m2_04.webp', text: '과일, 채소 등에 많이 들어 있다.' },
     { id: 13, nutrient: '무기염류', type: '특징', imgSrc: null, text: '뼈와 이 등 몸을 구성하거나 생명 활동을 조절한다.' },
     { id: 14, nutrient: '무기염류', type: '특징', imgSrc: null, text: '대부분 체내에서 합성할 수 없으므로 음식물을 통해 섭취해야 한다.' },
     { id: 15, nutrient: '무기염류', type: '특징', imgSrc: null, text: '칼슘, 칼륨, 나트륨, 철, 마그네슘 등이 있다.' },
-    { id: 16, nutrient: '무기염류', type: '그림', imgSrc: 'images/q1_m2_05.png', text: '멸치, 다시마, 우유, 치즈, 버섯 등에 많이 들어 있다.' },
+    { id: 16, nutrient: '무기염류', type: '그림', imgSrc: 'images/q1_m2_05.webp', text: '멸치, 다시마, 우유, 치즈, 버섯 등에 많이 들어 있다.' },
     { id: 17, nutrient: '물', type: '특징', imgSrc: null, text: '몸의 구성 성분 중 차지하는 비율이 가장 높다.' },
     { id: 18, nutrient: '물', type: '특징', imgSrc: null, text: '체내에서 여러 가지 물질을 운반한다.' },
     { id: 19, nutrient: '물', type: '특징', imgSrc: null, text: '더울 때 땀으로 나와 인체가 정상 체온을 유지할 수 있도록 매일 마신다.' },
-    { id: 20, nutrient: '물', type: '그림', imgSrc: 'images/q1_m2_06.png', text: '우리가 매일 마시는 액체' }
+    { id: 20, nutrient: '물', type: '그림', imgSrc: 'images/q1_m2_06.webp', text: '우리가 매일 마시는 액체' }
 ];
 
 let deck = [];

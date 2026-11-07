@@ -6,6 +6,7 @@
     <title>Quest 4: 호흡</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <script src="js/dragdrop.js" defer></script>
     <script src="js/main.js" defer></script>
@@ -124,7 +125,7 @@
                 <div class="intro-activity bg-white p-6 rounded-2xl shadow-sm flex flex-col items-center border-2 border-gray-100 mb-8">
                     <h3 class="text-[1.3rem] font-bold text-gray-800 mb-4">🤔 생각 열기: 호흡은 왜 필요할까?</h3>
                     <div class="image-container w-full max-w-lg mb-6 rounded-xl overflow-hidden shadow-md">
-                        <img src="images/q4_m1_intro.png" alt="호흡계 도입 이미지" class="w-full h-auto object-cover">
+                        <img src="images/q4_m1_intro.webp" alt="호흡계 도입 이미지" class="w-full h-auto object-cover">
                     </div>
                     <div class="question-box bg-[#F4F9F4] p-5 rounded-xl w-full text-center mb-6">
                         <p class="text-[1.1rem] text-gray-700 font-bold mb-3 leading-relaxed">
@@ -594,7 +595,7 @@
                 
                 <div class="relative-img-container mb-6 flex justify-center">
                     <div class="relative inline-block">
-                        <img src="images/q4_m3_s1_01_exchanges.jpg" alt="기체 교환" class="rounded-xl shadow-md max-w-full" style="max-height: 500px; width: auto;" onerror="this.src='https://placehold.co/800x500?text=기체교환+이미지'">
+                        <img src="images/q4_m3_s1_01_exchanges.webp" alt="기체 교환" class="rounded-xl shadow-md max-w-full" style="max-height: 500px; width: auto;" onerror="this.src='https://placehold.co/800x500?text=기체교환+이미지'">
                         
                         <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-1" style="top: 24.5%; left: 9%; width: 80px; height: 32px;"></div>
                         <div class="dnd-zone dnd-single-slot img-drop-zone" data-dnd-accept="m3-1" id="m3-img-2" style="top: 33%; left: 9%; width: 80px; height: 32px;"></div>
@@ -858,7 +859,7 @@
                     <div id="m4-step3-feedback" class="mt-4 font-bold text-red-500"></div>
                     
                     <div id="m4-reward-area" class="hidden mt-8 text-center animate-[fadeIn_0.5s_ease-in-out]">
-                        <img src="images/q4_m4_final.png" alt="전국 체조대회 무대에서 응원 공연을 펼치는 학생들" class="w-full max-w-3xl h-auto mx-auto mb-6 rounded-xl border-4 border-green-200 shadow-lg">
+                        <img src="images/q4_m4_final.webp" alt="전국 체조대회 무대에서 응원 공연을 펼치는 학생들" class="w-full max-w-3xl h-auto mx-auto mb-6 rounded-xl border-4 border-green-200 shadow-lg">
                         <h3 class="text-2xl font-black text-green-500 mb-6">🎉 Mission 4 최종 완료 축하합니다! 보상을 획득하셨습니다! 🎉</h3>
                         <button class="btn-primary max-w-[300px] bg-[var(--color-mint)] text-white text-[1.3rem] px-10 py-4 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-2 border-white transition-transform duration-200" onclick="location.href='index.html'">
                             인체탐험지도로 돌아가기 🏠
@@ -912,41 +913,8 @@
 
         // --- 미션 네비게이션 상태 업데이트 (공통 엔진 사용) ---
         function updateNavUI(activeMissionNum) {
-            for(let i = 1; i <= 4; i++) {
-                const nav = document.getElementById('nav-m' + i);
-                if(!nav) continue;
-                
-                let isCompleted = false;
-                let isAccessible = false;
-                
-                if (typeof window.isMissionCompleted === 'function') {
-                    isCompleted = window.isMissionCompleted(QUEST_ID, i);
-                }
-                
-                if (typeof window.canAccessMission === 'function') {
-                    isAccessible = window.canAccessMission(QUEST_ID, i).access;
-                }
-                
-                const isLocked = !isAccessible;
-                const isActive = (i === activeMissionNum);
-                
-                nav.className = 'mission-item';
-                let icon = '';
-                
-                if (isActive) {
-                    nav.classList.add('active');
-                    icon = '💓';
-                } else if (isCompleted) {
-                    nav.classList.add('completed');
-                    icon = '✅';
-                } else if (isLocked) {
-                    nav.classList.add('locked');
-                    icon = '🔒';
-                } else {
-                    icon = '🔓';
-                }
-                nav.querySelector('.mission-icon').innerText = icon;
-            }
+            // 사이드바는 main.js의 공통 함수(renderMissionNav)로 그립니다. 미션 이름은 아래 사이드바 HTML에 적힌 것을 사용합니다.
+            window.renderMissionNav(QUEST_ID, activeMissionNum);
         }
 
         function switchMission(num) {

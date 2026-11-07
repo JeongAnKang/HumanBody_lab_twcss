@@ -1,17 +1,7 @@
 // =====================================
 // Quest 2 공통 / 미션 제어 로직
 // =====================================
-function launchConfettiEffect() {
-    // 외부 축포 라이브러리를 불러오지 못한 경우(학교망 차단 등) 축포만 건너뛰고 진행은 계속
-    if (typeof confetti !== 'function') return;
-    const duration = 1000; 
-    const end = Date.now() + duration;
-    (function frame() {
-        confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-        confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
-        if (Date.now() < end) requestAnimationFrame(frame);
-    }());
-}
+// 축포 효과는 main.js의 공통 함수(window.launchConfettiEffect)를 사용합니다.
 
 function updateGuideText(defaultText) {
     const guide = document.getElementById('main-guide-text');
@@ -22,39 +12,9 @@ function updateGuideText(defaultText) {
 }
 
 function updateSidebarUI(activeNavId) {
+    // 사이드바는 main.js의 공통 함수(renderMissionNav)로 그립니다.
     const missionTitles = { 1: "소화<br>계", 2: "소화의<br>종류", 3: "영양소<br>분해", 4: "영양소<br>흡수" };
-
-    [1, 2, 3, 4].forEach(num => {
-        const id = 'nav-m' + num;
-        const el = document.getElementById(id);
-        if (!el) return;
-        
-        el.className = 'mission-item w-full'; 
-        let icon = '';
-        
-        const isCompleted = typeof isMissionCompleted === 'function' && isMissionCompleted(2, num);
-        let isAccessible = false;
-        
-        if (num === 1) {
-            isAccessible = true;
-        } else if (typeof canAccessMission === 'function') {
-            const res = canAccessMission(2, num);
-            if (res) isAccessible = res.access;
-        } else if (isCompleted || (typeof isMissionCompleted === 'function' && isMissionCompleted(2, num - 1))) {
-            isAccessible = true; 
-        }
-        
-        if (id === activeNavId) { el.classList.add('active'); icon = '💓'; } 
-        else if (isCompleted) { el.classList.add('completed'); icon = '✅'; } 
-        else if (!isAccessible) { el.classList.add('locked'); icon = '🔒'; } 
-        else { el.classList.add('available'); icon = '🔓'; }
-        
-        el.innerHTML = `
-            <div class="mission-icon text-xl mb-2">${icon}</div>
-            <div class="text-sm font-bold whitespace-nowrap">Mission ${num}</div>
-            <div class="text-sm leading-snug mt-1">${missionTitles[num]}</div>
-        `;
-    });
+    renderMissionNav(2, parseInt(String(activeNavId).replace('nav-m', ''), 10), missionTitles);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -91,6 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof canAccessMission === 'function' && canAccessMission(2, 4).access) transitionToMission4();
         else alert("🔒 앞선 미션을 먼저 완료해야 열립니다!");
     });
+
+    // 💡 다시 들어오면 마지막으로 진행할 수 있는 미션에서 이어서 시작 (퀘스트 3~6과 동일)
+    // 다른 초기화 코드가 모두 끝난 뒤 이동하도록 setTimeout 사용
+    setTimeout(() => {
+        const resumeMission = (typeof getLastAvailableMission === 'function') ? getLastAvailableMission(2) : 1;
+        if (resumeMission > 1 && typeof window['transitionToMission' + resumeMission] === 'function') {
+            window['transitionToMission' + resumeMission]();
+        }
+    }, 0);
 });
 
 // =====================================

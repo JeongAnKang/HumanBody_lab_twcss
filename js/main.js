@@ -1,14 +1,16 @@
 // ==========================================
 // 1. 교사 설정 및 퀘스트 데이터
 // ==========================================
-const TEACHER_ACCESS = Object.freeze({
-    unlockedQuest:6,        
-    lockedQuest: 6,          
-    explicitLocks: []        
+// 💡 교사 설정: 수업 진도에 맞춰 아래 숫자만 바꾸면 됩니다.
+const TEACHER_SETTINGS = Object.freeze({
+    // ① 바로 열어 둘 퀘스트: 1번부터 이 번호까지는 앞 퀘스트를 끝내지 않아도 들어갈 수 있어요.
+    //    그보다 뒤의 퀘스트는 앞 퀘스트를 모두 완료하면 차례로 열려요.
+    openQuestsUpTo: 6,
+    // ② 공개할 마지막 퀘스트: 이 번호보다 뒤의 퀘스트는 완료 여부와 상관없이 잠겨요. (전부 공개: 6)
+    lastVisibleQuest: 6,
+    // ③ 특정 미션만 잠그기: '퀘스트:미션' 형식 (예: ['3:2'] → 퀘스트 3의 미션 2 잠금)
+    lockedMissions: []
 });
-
-// 💡 교사 커스텀 설정: 특정 퀘스트 이하 강제 오픈 (메인 맵 & 미션 1)
-const OPEN_QUEST_LIMIT = 6; // 열어둘 퀘스트의 최대 번호를 적어주세요. (예: 6이면 1~6번 퀘스트 모두 오픈)
 
 const QUESTS = Object.freeze({
     1: { title: '영양소', missions: [{id: 1}, {id: 2}, {id: 3}, {id: 4}] },
@@ -75,46 +77,30 @@ function canAccessMission(questId, missionId) {
     const missionExists = QUESTS[questId].missions.some(m => m.id === missionId);
     if (!missionExists) return { access: false, reason: 'not_created' };
 
-    if (TEACHER_ACCESS.explicitLocks.includes(`${questId}:${missionId}`)) {
+    if (TEACHER_SETTINGS.lockedMissions.includes(`${questId}:${missionId}`)) {
         return { access: false, reason: 'explicit_lock' };
     }
-    if (questId > TEACHER_ACCESS.lockedQuest) {
+    if (questId > TEACHER_SETTINGS.lastVisibleQuest) {
         return { access: false, reason: 'teacher_locked_quest' };
     }
-    
-    // 👇 [수정됨] 지정된 퀘스트 번호 이하이면서, 1번 미션일 경우 무조건 접근 허용
-    if (questId <= OPEN_QUEST_LIMIT && missionId === 1) {
-        return { access: true, reason: 'teacher_override' };
-    }
-    
     if (isMissionCompleted(questId, missionId)) {
         return { access: true, reason: 'completed' };
     }
-    if (questId <= TEACHER_ACCESS.unlockedQuest && missionId === 1) {
-        return { access: true, reason: 'teacher_unlocked' };
+    if (missionId === 1) {
+        if (questId === 1) return { access: true, reason: 'first_mission' };
+        if (questId <= TEACHER_SETTINGS.openQuestsUpTo) return { access: true, reason: 'teacher_open' };
+        if (isQuestFullyCompleted(questId - 1)) return { access: true, reason: 'next_quest' };
+        return { access: false, reason: 'locked' };
     }
-    if (questId === 1 && missionId === 1) {
-        return { access: true, reason: 'first_mission' };
-    }
-    if (missionId > 1 && isMissionCompleted(questId, missionId - 1)) {
+    if (isMissionCompleted(questId, missionId - 1)) {
         return { access: true, reason: 'next_mission' };
     }
-    if (missionId === 1 && questId > 1 && isQuestFullyCompleted(questId - 1)) {
-        return { access: true, reason: 'next_quest' };
-    }
-
     return { access: false, reason: 'locked' };
 }
 window.canAccessMission = canAccessMission;
 
-// 💡 메인 맵용 퀘스트 진입 권한 검사 함수 추가
+// 메인 지도(index.html)에서 퀘스트에 들어갈 수 있는지 = 그 퀘스트의 미션 1에 들어갈 수 있는지
 function canAccessQuest(questId) {
-    questId = parseInt(questId);
-    // 지정된 퀘스트 번호 이하라면 무조건 접근 허용
-    if (questId <= OPEN_QUEST_LIMIT) {
-        return { access: true, reason: 'teacher_override' };
-    }
-    // 그 외는 1번 미션의 접근 권한 상태를 따름
     return canAccessMission(questId, 1);
 }
 window.canAccessQuest = canAccessQuest;
@@ -147,6 +133,48 @@ window.launchConfettiEffect = function() {
         confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF8FAB', '#82D1D9', '#FF9F1C'] });
         if (Date.now() < end) requestAnimationFrame(frame);
     }());
+};
+
+// ==========================================
+// 5-1. 퀘스트 화면 사이드바(미션 목록) 공통 렌더링
+// ==========================================
+// 모든 퀘스트(1~6)가 이 함수 하나로 사이드바를 그립니다.
+//  - 현재 미션: active(💓) / 완료한 미션: completed(✅)
+//  - 들어갈 수 있는 미션: available(🔓) / 잠긴 미션: locked(🔒)
+// titles를 넘기지 않으면 기존 사이드바에 적힌 미션 이름을 그대로 사용합니다.
+const MISSION_STATE_CLASSES = ['active', 'completed', 'available', 'locked'];
+const MISSION_STATE_ICONS = { active: '💓', completed: '✅', available: '🔓', locked: '🔒' };
+
+window.renderMissionNav = function(questId, activeMission, titles) {
+    questId = parseInt(questId, 10);
+    activeMission = parseInt(activeMission, 10);
+    const missions = (QUESTS[questId] && QUESTS[questId].missions) || [];
+
+    missions.forEach(({ id }) => {
+        const el = document.getElementById('nav-m' + id);
+        if (!el) return;
+
+        let title = titles && titles[id];
+        if (title === undefined) {
+            const titleEl = el.querySelector('.mission-title') || el.children[2];
+            title = titleEl ? titleEl.innerHTML : '';
+        }
+
+        let state;
+        if (id === activeMission) state = 'active';
+        else if (isMissionCompleted(questId, id)) state = 'completed';
+        else if (canAccessMission(questId, id).access) state = 'available';
+        else state = 'locked';
+
+        el.classList.add('mission-item');
+        el.classList.remove(...MISSION_STATE_CLASSES);
+        el.classList.add(state);
+        el.innerHTML = `
+            <div class="mission-icon text-xl mb-2">${MISSION_STATE_ICONS[state]}</div>
+            <div class="text-sm font-bold whitespace-nowrap">Mission ${id}</div>
+            <div class="mission-title text-sm leading-snug mt-1">${title}</div>
+        `;
+    });
 };
 
 // ==========================================

@@ -22,7 +22,7 @@
 
 body {
     font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-    background: url('images/HB_main_01.png') center/cover no-repeat;
+    background: url('images/HB_main_01.webp') center/cover no-repeat;
     color: var(--text-main);
     height: 100vh;       
     height: 100dvh;      

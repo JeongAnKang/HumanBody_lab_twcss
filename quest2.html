@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quest 2: 소화</title>
     
     <!-- 공통 CSS 연결 -->
@@ -107,7 +107,7 @@
             box-sizing: border-box; 
         }
         
-        .cell-sim-container { width: 100%; max-width: 650px; min-height: 450px; margin: 0 auto; background-color: #ffeaa7; background-image: url('images/q2_m2_01_cellMembrane.png'); background-size: 100% 100%; background-position: center; border-radius: 12px; position: relative; display: flex; border: 2px solid #ddd; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+        .cell-sim-container { width: 100%; max-width: 650px; min-height: 450px; margin: 0 auto; background-color: #ffeaa7; background-image: url('images/q2_m2_01_cellMembrane.webp'); background-size: 100% 100%; background-position: center; border-radius: 12px; position: relative; display: flex; border: 2px solid #ddd; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
         
         .cell-outside { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; position: relative; z-index: 2; }
         .cell-membrane { width: 110px; position: relative; display: flex; align-items: center; justify-content: center; z-index: 2; }
@@ -200,7 +200,7 @@
             
             <div id="m1-phase1" class="quiz-area visible flex flex-col w-full min-h-[calc(100dvh-180px)] p-0">
                 <div class="flex-1 min-h-[150px] flex flex-col items-center justify-center mb-4">
-                    <img src="images/q2_m1_01_intro.png" alt="도입 일러스트" class="max-w-full max-h-[60vh] h-full object-contain rounded-2xl shadow-[var(--shadow-soft)]" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_01_intro.png)'">
+                    <img src="images/q2_m1_01_intro.webp" alt="도입 일러스트" class="max-w-full max-h-[60vh] h-full object-contain rounded-2xl shadow-[var(--shadow-soft)]" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x300?text=이미지+준비중+(q2_m1_01_intro.webp)'">
                     <h3 class="text-[var(--text-main)] text-[1.3rem] font-bold mt-4 text-center break-keep">
                         우리가 먹은 음식물 속의 영양소는 어떤 과정을 거쳐 온 몸의 세포로 공급될까?
                     </h3>
@@ -545,7 +545,7 @@
                 <p class="text-center text-[var(--text-sub)] font-bold mb-3 text-[0.95rem]">아래 버튼을 눌러 소화액이 작용하는 과정을 확인하고, 표를 완성하세요!</p>
                 
                 <div class="relative w-full max-w-[800px] mx-auto mb-3 border border-[#eee] rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="images/q2_m3_02_digestion_base.png" class="w-full max-h-[600px] object-contain relative z-0 mx-auto" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
+                    <img src="images/q2_m3_02_digestion_base.webp" class="w-full max-h-[600px] object-contain relative z-0 mx-auto" alt="소화과정 베이스" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=이미지+준비중+(q2_m3_02_digestion-base.png)'">
                     
                     <img src="images/q2_m3_02_digestion_saliva.png" id="layer-saliva" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="침">
                     <img src="images/q2_m3_02_digestion_pepsin.png" id="layer-pepsin" class="absolute top-0 left-0 w-full h-full object-contain z-10 opacity-0 transition-opacity duration-500 pointer-events-none mx-auto" alt="위액">
@@ -691,7 +691,7 @@
             <div id="m3-step3-intro" class="hidden opacity-0 transition-opacity duration-500 ease-in-out mt-10 pt-8 border-t-2 border-dashed border-[#eee]">
                 <h3 class="text-[var(--color-coral)] text-center mb-4 text-[1.4rem] font-bold">Step 3. 소화효소의 특징</h3>
                 <p class="text-center text-[var(--text-sub)] font-bold mb-4">소화효소의 일반적인 특징을 살펴봅시다.</p>
-                <img src="images/q2_m3_01_enzyme.png" alt="소화효소 특징" class="max-w-full mx-auto mb-6 rounded-xl shadow-md" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x300?text=이미지+준비중+(q2_m3_01_enzyme.png)'">
+                <img src="images/q2_m3_01_enzyme.webp" alt="소화효소 특징" class="max-w-full mx-auto mb-6 rounded-xl shadow-md" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x300?text=이미지+준비중+(q2_m3_01_enzyme.webp)'">
                 
                 <div class="text-center">
                     <button class="btn-primary max-w-[250px] mx-auto" id="btn-check-m3-s3-intro" onclick="showM3Step3Main()">확인</button>
@@ -713,22 +713,22 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#A5D8FF] flex flex-col items-center">
-                        <img src="images/q2_m2_05_amylase.png" alt="아밀레이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=아밀레이스'">
+                        <img src="images/q2_m2_05_amylase.webp" alt="아밀레이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=아밀레이스'">
                         <div class="text-center font-black text-[1.1rem] text-[#1864AB] mb-3 w-full border-b-2 border-dashed border-[#A5D8FF] pb-2">아밀레이스(7)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-amylase" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#FFB3C6] flex flex-col items-center">
-                        <img src="images/q2_m2_04_pepsin.png" alt="펩신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=펩신'">
+                        <img src="images/q2_m2_04_pepsin.webp" alt="펩신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=펩신'">
                         <div class="text-center font-black text-[1.1rem] text-[#C2255C] mb-3 w-full border-b-2 border-dashed border-[#FFB3C6] pb-2">펩신(3)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-pepsin" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#D8F5A2] flex flex-col items-center">
-                        <img src="images/q2_m2_03_trypsin.png" alt="트립신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=트립신'">
+                        <img src="images/q2_m2_03_trypsin.webp" alt="트립신" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=트립신'">
                         <div class="text-center font-black text-[1.1rem] text-[#5C940D] mb-3 w-full border-b-2 border-dashed border-[#D8F5A2] pb-2">트립신(4)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-trypsin" data-dnd-capacity="15"></div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-md border-2 border-[#FFE066] flex flex-col items-center">
-                        <img src="images/q2_m2_02_lipase.png" alt="라이페이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=라이페이스'">
+                        <img src="images/q2_m2_02_lipase.webp" alt="라이페이스" class="w-full h-24 object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=라이페이스'">
                         <div class="text-center font-black text-[1.1rem] text-[#E67700] mb-3 w-full border-b-2 border-dashed border-[#FFE066] pb-2">라이페이스(4)</div>
                         <div class="enzyme-drop-zone dnd-zone w-full" id="zone-lipase" data-dnd-capacity="15"></div>
                     </div>
@@ -791,7 +791,7 @@
                 <div class="max-w-[900px] mx-auto mb-6">
                     <div class="m4-img-box w-full mb-6 p-5">
                         <div class="font-black text-[#333] mb-4 text-[1.2rem]">🔍 내벽 구조 명칭 맞추기</div>
-                        <img src="images/q2_m4_01_smallintestine.png" alt="작은창자 안쪽 벽" class="w-full max-h-[450px] object-contain rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x400?text=이미지+준비중+(q2_m4_01_smallintestine.png)'">
+                        <img src="images/q2_m4_01_smallintestine.webp" alt="작은창자 안쪽 벽" class="w-full max-h-[450px] object-contain rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x400?text=이미지+준비중+(q2_m4_01_smallintestine.webp)'">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -952,7 +952,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-6 mb-4">
                         <div class="m4-img-box flex flex-col justify-center h-full !mb-0 p-4">
                             <div class="font-black text-[#333] mb-3 text-[1.1rem]">🔍 영양소 이동 경로</div>
-                            <img src="images/q2_m4_03_pathway.png" alt="영양소 이동 경로" class="w-full max-h-[370px] object-contain rounded-lg" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x370?text=이미지+준비중+(q2_m4_03_pathway.png)'">
+                            <img src="images/q2_m4_03_pathway.webp" alt="영양소 이동 경로" class="w-full max-h-[370px] object-contain rounded-lg" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x370?text=이미지+준비중+(q2_m4_03_pathway.webp)'">
                         </div>
 
                         <div class="flex flex-col justify-center gap-3">
